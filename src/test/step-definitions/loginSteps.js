@@ -6,6 +6,7 @@ Given('I navigate to url {string}', async function (url) {
 });
 
 Given('I verify title this page is {string}', async function (title) {
+  // await this.page.waitForTimeout(10000);
   expect(await this.page.title()).toContain(title);
 });
 

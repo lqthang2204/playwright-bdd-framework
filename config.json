@@ -1,0 +1,25 @@
+{
+    "mode": "desktop", 
+    "headless": false,
+    "browser": "webkit",
+    "timeout": 30000,
+    "waitForTimeout": 5000,
+    "ignoreDefaultArgs": ["--enable-automation"],
+    "args": [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-dev-shm-usage",
+      "--disable-gpu",
+      "--disable-software-rasterizer",
+      "--disable-web-security",
+      "--allow-file-access-from-files"
+    ],
+    "executablePath": "/usr/bin/google-chrome",
+    "userDataDir": "/tmp/chrome-user-data",
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "device": "iPhone 12"
+  }
+  
