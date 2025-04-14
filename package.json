@@ -2,11 +2,14 @@
   "name": "playwright-cucumber-bdd",
   "version": "1.0.0",
   "scripts": {
-    "test": "npx cucumber-js"
+    "test": "npx cucumber-js",
+      "postinstall": "npx playwright install",
+      "debug": "node --inspect-brk=5858 ./node_modules/.bin/cucumber-js ./src/test/features/login.feature --tags @debug"
+
   },
   "dependencies": {
-    "@cucumber/cucumber": "^9.0.0",
-    "playwright": "^1.40.0",
-    "@playwright/test": "^1.40.0"
+    "@cucumber/cucumber": "^9.6.0",
+    "@playwright/test": "^1.40.0",
+    "playwright": "^1.40.0"
   }
 }

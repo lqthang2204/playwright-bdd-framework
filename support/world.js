@@ -1,7 +1,9 @@
-const { setWorldConstructor } = require('@cucumber/cucumber');
+const { setWorldConstructor, setDefaultTimeout } = require('@cucumber/cucumber');
 const { chromium, firefox, webkit, devices } = require('playwright');
 const path = require('path');
 const config = require(path.resolve(__dirname, '../config.json'));
+
+setDefaultTimeout(parseInt(config.setDefaultTimeout) || 60000); // <-- Set global timeout
 
 class CustomWorld {
   constructor() {
@@ -11,44 +13,52 @@ class CustomWorld {
     this.config = config;
   }
 
-async launchBrowser() {
-  const browserType = this._get_BrowserType();// 'chromium', 'firefox', or 'webkit'
-  const launchOptions = {
-    headless: this.config.headless,
-    args: this.config.args,
-    extcutablePath: this.config.executablePath,
-    timeout: this.config.timeout,
-    
+  async launchBrowser() {
+    const browserType = this._getBrowserType(); // 'chromium', 'firefox', or 'webkit'
+    // Desktop or mobile args
+    const args = this.config.mode === 'desktop' ? this.config.desktop.args : [];
+    const launchOptions = {
+      headless: this.config.headless ?? true,
+      args: args,
+      executablePath: this.config.executablePath ?? undefined,
+    };
+    this.browser = await browserType.launch(launchOptions);
+
+    if (this.config.mode === 'mobile') {  
+      const device = devices[this.config.device];
+      this.context = await thhis.browser.newContext({
+        ...device,
+        ...this.config.mobile.viewport,
+      });
+    }else{
+      this.context = await this.browser.newContext({
+        viewport: this.config.desktop.viewport,
+        userDataDir: this.config.userDataDir ?? undefined,
+        ignoreDefaultArgs: this.config.ignoreDefaultArgs ?? false,
+        acceptDownloads: this.config.acceptDownloads ?? false,
+        userDataDir: this.config.userDataDir ?? undefined,
+        viewport: this.config.viewport ?? null,
+      });
+    }
+    this.page = await this.context.newPage();
   }
-  this.browser = await browserType.launch(launchOptions);
-  this.context = await this.browser.newContext({
-    viewport: this.config.viewport,
-    ignoreDefaultArgs: this.config.ignoreDefaultArgs,
-    acceptDownloads: this.config.acceptDownloads,
-    geolocation: this.config.geolocation,
-    permissions: this.config.permissions,
-    locale: this.config.locale,
-    timezoneId: this.config.timezoneId,
-  });
-  this.page = await this.context.newPage();
 
-}
-async closeBrowser() {
-  await this.browser?.close();
-}
+  async closeBrowser() {
+    await this.browser?.close();
+  }
 
-
-_get_BrowserType() { 
-  switch (this.config.browser){
-    case 'chromium':
-      return chromium;
-    case 'firefox':
-      return firefox;
-    case 'webkit':
-      return webkit;
-    default:
-      throw new Error(`Unsupported browser type: ${this.config.browser}`);
+  _getBrowserType() {
+    switch (this.config.browser) {
+      case 'chromium':
+        return chromium;
+      case 'firefox':
+        return firefox;
+      case 'webkit':
+        return webkit;
+      default:
+        throw new Error(`Unsupported browser type: ${this.config.browser}`);
+    }
   }
 }
-}
+
 setWorldConstructor(CustomWorld);

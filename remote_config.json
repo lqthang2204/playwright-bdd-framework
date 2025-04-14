@@ -1,0 +1,35 @@
+{
+    "providers": [
+      {
+        "name": "saucelabs",
+        "username": "your-sauce-username",
+        "accessKey": "your-sauce-access-key",
+        "url": "https://ondemand.eu-central-1.saucelabs.com:443/wd/hub",
+        "platformName": "macOS 10.13",
+        "browserVersion": "latest",
+        "build": "Playwright Cloud Build",
+        "testName": "Sauce Labs Run"
+      },
+      {
+        "name": "browserstack",
+        "username": "your-bs-username",
+        "accessKey": "your-bs-access-key",
+        "url": "https://hub-cloud.browserstack.com/wd/hub",
+        "platformName": "Windows 10",
+        "browserVersion": "latest",
+        "build": "Playwright Cloud Build",
+        "testName": "BrowserStack Run"
+      },
+      {
+        "name": "lambdatest",
+        "username": "your-lt-username",
+        "accessKey": "your-lt-access-key",
+        "url": "https://hub.lambdatest.com/wd/hub",
+        "platformName": "Windows 11",
+        "browserVersion": "latest",
+        "build": "Playwright Cloud Build",
+        "testName": "LambdaTest Run"
+      }
+    ]
+  }
+  

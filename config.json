@@ -1,25 +1,67 @@
 {
-    "mode": "desktop", 
-    "headless": false,
-    "browser": "webkit",
-    "timeout": 30000,
-    "waitForTimeout": 5000,
-    "ignoreDefaultArgs": ["--enable-automation"],
-    "args": [
-      "--no-sandbox",
-      "--disable-setuid-sandbox",
-      "--disable-dev-shm-usage",
-      "--disable-gpu",
-      "--disable-software-rasterizer",
-      "--disable-web-security",
-      "--allow-file-access-from-files"
-    ],
-    "executablePath": "/usr/bin/google-chrome",
-    "userDataDir": "/tmp/chrome-user-data",
-    "viewport": {
-      "width": 1280,
-      "height": 800
+  "mode": "desktop",
+  "env": "QA",
+  "environments": {
+    "QA": {
+      "links": {
+        "frontend": "https://qa.example.com",
+        "auth": "https://auth.qa.example.com",
+        "api": "https://api.qa.example.com"
+      },
+      "screenshotOnFailure": true
     },
-    "device": "iPhone 12"
+    "staging": {
+      "links": {
+        "frontend": "https://staging.example.com",
+        "auth": "https://auth.staging.example.com",
+        "api": "https://api.staging.example.com"
+      },
+      "screenshotOnFailure": true
+    },
+    "production": {
+      "links": {
+        "frontend": "https://www.example.com",
+        "auth": "https://auth.example.com",
+        "api": "https://api.example.com"
+      },
+      "screenshotOnFailure": true
+    }
+  },
+  "remote": false,
+  "remote_path_config": "remote_config.json",
+  "headless": false,
+  "browser": "chromium",
+  "setDefaultTimeout": 30000,
+  "executablePath": null,
+  "userDataDir": "/tmp/chrome-user-data",
+  "ignoreDefaultArgs": [
+    "--enable-automation",
+    "--enable-automation"
+  ],
+  "acceptDownloads": false,
+  "logging": {
+    "level": "info",
+    "logToFile": true,
+    "logFilePath": "./logs/test_execution.log"
+  },
+  "desktop": {
+    "viewport": null,
+    "args": [
+      "--start-maximized",
+      "--disable-infobars",
+      "--disable-web-security",
+      "--disable-extensions",
+      "--disable-gpu",
+      "--no-sandbox",
+      "--disable-dev-shm-usage",
+      "--disable-setuid-sandbox",
+      "--disable-software-rasterizer",
+      "--disable-accelerated-2d-canvas"
+    ]
+  },
+  "mobile": {
+    "device": "iPhone 12",
+    "path_capability": "./capabilitiesMobile/capabilities_android.json"
   }
-  
+
+}
