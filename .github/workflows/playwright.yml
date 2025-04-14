@@ -1,26 +1,40 @@
 name: Playwright Tests
+
 on:
   push:
-    branches: [ main, master ]
+    branches: [main]
   pull_request:
-    branches: [ main, master ]
+    branches: [main]
+
 jobs:
   test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest, ubuntu-latest]  # Run on both macOS and Windows, ubuntu-latest is default
     timeout-minutes: 60
-    runs-on: ubuntu-latest
+
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
       with:
         node-version: lts/*
+
     - name: Install dependencies
       run: npm ci
+
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
+
     - name: Install cucumber
       run: npm install @cucumber/cucumber
-    - name: Test feature with chrome on Ubuntu
+
+    - name: Run Playwright tests
       run: npm test
+
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
