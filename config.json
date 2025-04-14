@@ -29,7 +29,7 @@
   },
   "remote": false,
   "remote_path_config": "remote_config.json",
-  "headless": false,
+  "headless": true,
   "browser": "chromium",
   "setDefaultTimeout": 30000,
   "executablePath": null,
