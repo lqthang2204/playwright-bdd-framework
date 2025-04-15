@@ -2,8 +2,8 @@
     "providers": [
       {
         "name": "saucelabs",
-        "username": "your-sauce-username",
-        "accessKey": "your-sauce-access-key",
+        "username": "${SAUCE_USERNAME}",
+        "accessKey": "${SAUCE_ACCESS_KEY}",
         "url": "https://ondemand.eu-central-1.saucelabs.com:443/wd/hub",
         "platformName": "macOS 10.13",
         "browserVersion": "latest",
@@ -12,8 +12,8 @@
       },
       {
         "name": "browserstack",
-        "username": "your-bs-username",
-        "accessKey": "your-bs-access-key",
+        "username": "${BROWSERSTACK_USERNAME}",
+        "accessKey": "${BROWSERSTACK_ACCESS_KEY}",
         "url": "https://hub-cloud.browserstack.com/wd/hub",
         "platformName": "Windows 10",
         "browserVersion": "latest",
@@ -22,8 +22,8 @@
       },
       {
         "name": "lambdatest",
-        "username": "your-lt-username",
-        "accessKey": "your-lt-access-key",
+        "username": "${LT_USERNAME}",
+        "accessKey": "${LT_ACCESS_KEY}",
         "url": "https://hub.lambdatest.com/wd/hub",
         "platformName": "Windows 11",
         "browserVersion": "latest",
