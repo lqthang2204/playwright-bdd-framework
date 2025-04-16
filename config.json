@@ -1,6 +1,7 @@
 {
   "mode": "desktop",
   "env": "QA",
+  "is_generate_report": false,
   "environments": {
     "QA": {
       "links": {
@@ -63,7 +64,7 @@
     "device": "iPhone 12",
     "path_capability": "./capabilitiesMobile/capabilities_android.json"
   },
-  "emailNotification": {
+  "is_send_email": {
     "enabled": true,
     "smtp": {
       "host": "smtp.gmail.com",

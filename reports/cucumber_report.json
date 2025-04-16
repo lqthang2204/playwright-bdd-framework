@@ -1,0 +1,66 @@
+[
+  {
+    "description": "",
+    "elements": [
+      {
+        "description": "",
+        "id": "login-functionality;open-login-page",
+        "keyword": "Scenario",
+        "line": 3,
+        "name": "Open login page",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 1336245700
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 4,
+            "name": "I navigate to url \"https://playwright.dev/\"",
+            "match": {
+              "location": "src\\test\\step-definitions\\loginSteps.js:6"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 650934499
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 5,
+            "name": "I verify title this page is \"Fast and reliable end-to-end testing for modern web apps | Playwright\"",
+            "match": {
+              "location": "src\\test\\step-definitions\\loginSteps.js:10"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 49740700
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 58320299
+            }
+          }
+        ],
+        "tags": [],
+        "type": "scenario"
+      }
+    ],
+    "id": "login-functionality",
+    "line": 1,
+    "keyword": "Feature",
+    "name": "Login functionality",
+    "tags": [],
+    "uri": "src\\test\\features\\login.feature"
+  }
+]

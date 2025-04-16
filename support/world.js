@@ -11,6 +11,7 @@ class CustomWorld {
     this.context = null;
     this.page = null;
     this.config = config;
+    console.log("Config loaded:", this.config.is_generate_report);
   }
 
   async launchBrowser() {
@@ -26,7 +27,7 @@ class CustomWorld {
 
     if (this.config.mode === 'mobile') {  
       const device = devices[this.config.device];
-      this.context = await thhis.browser.newContext({
+      this.context = await this.browser.newContext({
         ...device,
         ...this.config.mobile.viewport,
       });
@@ -62,3 +63,4 @@ class CustomWorld {
 }
 
 setWorldConstructor(CustomWorld);
+
