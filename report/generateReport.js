@@ -5,6 +5,8 @@ const config = require(path.resolve(__dirname, '../config.json'));
 const runEnv = process.env.RUN_ENV || 'local'; // Default to 'local' if not set
 const { generateEmailHTML } = require('./inject_template_report'); // Import the function
 
+// npm install cucumber-html-reporter@5.5.0
+
 if (!config.is_generate_report) {
     console.log("Report generation is turned OFF.");
     process.exit(0);

@@ -12,7 +12,7 @@
     "playwright": "^1.40.0"
   },
   "devDependencies": {
-    "cucumber-html-reporter": "^5.7.0",
+    "cucumber-html-reporter": "^5.5.0",
     "cucumber-pretty": "^1.0.0"
   }
 }
