@@ -2,7 +2,7 @@
   "name": "playwright-cucumber-bdd",
   "version": "1.0.0",
   "scripts": {
-    "test": "cucumber-js --format json:reports/cucumber_report.json && node ./report/generateReport.js",
+    "test": "cucumber-js",
     "postinstall": "npx playwright install",
     "debug": "node --inspect-brk=5858 ./node_modules/.bin/cucumber-js ./src/test/features/login.feature --tags @debug"
   },
