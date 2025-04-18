@@ -1,15 +1,16 @@
 const { Given, Then } = require('@cucumber/cucumber');
-const {test, expect } = require('@playwright/test');
-const assert = require('assert');
-
+const { expect } = require('@playwright/test');
 
 Given('I navigate to url {string}', async function (url) {
   await this.page.goto(url);
 });
 
-Given('I verify title this page is {string}', async function (title) {
-  await this.page.waitForLoadState('load');
-  await expect(this.page).toHaveTitle(title);
+Then('I verify title this page is {string}', async function (expectedTitle) {
+  try {
+    await this.page.waitForLoadState('load');
+    await expect(this.page).toHaveTitle(expectedTitle);
+  } catch (error) {
+    console.error(`Step failed: ${error.message}`);
+    throw error; // Re-throw the error to mark the step as failed
+  }
 });
-
-

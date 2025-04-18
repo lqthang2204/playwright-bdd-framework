@@ -28,6 +28,7 @@ const options = {
   }
 };
 
+
 reporter.generate(options);
 if(config.is_send_email && config.is_generate_report) {
     const emailHTML = generateEmailHTML("./reports/cucumber_report.json", "./reports/cucumber_report.html"); // Generate the email HTML
