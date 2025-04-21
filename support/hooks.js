@@ -2,18 +2,6 @@ const { Before, After, BeforeAll } = require('@cucumber/cucumber');
 const fs = require('fs');
 const path = require('path');
 
-// const screenshotsDir = path.resolve(__dirname, '../../reports/screenshots');
-
-// BeforeAll(() => {
-//   if (fs.existsSync(screenshotsDir)) {
-//     fs.readdirSync(screenshotsDir).forEach(file => {
-//       const filePath = path.join(screenshotsDir, file);
-//       fs.unlinkSync(filePath); // Delete each file
-//     });
-//     console.log('Cleared screenshots directory.');
-//   }
-// });
-
 Before(async function () {
   // Launch the browser before each scenario
   await this.launchBrowser(); // from CustomWorld

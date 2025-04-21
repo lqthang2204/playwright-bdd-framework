@@ -3,6 +3,7 @@ const config = require(path.resolve(__dirname, './config.json'));
 // const { config } = require('./support/world'); // Import config from world.js
 module.exports = {
   default: {
+    "tags": config.tags, // Tags to filter scenarios
     paths: ['src/test/features/**/*.feature'],
     require: [
       'src/test/step-definitions/**/*.js',
