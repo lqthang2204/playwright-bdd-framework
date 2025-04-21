@@ -1,0 +1,89 @@
+{
+  "mode": "desktop",
+  "env": "QA",
+  "tags": "@smoke",
+  "is_generate_report": true,
+  "headless": true,
+  "parallel": 3,
+  "environments": [
+    {
+      "name": "QA",
+      "links": {
+        "index": "https://playwright.dev/",
+        "automationexercise": "https://automationexercise.com/",
+        "api": "https://api.qa.example.com"
+      },
+      "screenshotOnFailure": true
+    },
+    {
+      "name": "staging",
+      "links": {
+        "index": "https://automationexercise.com/",
+        "automationexercise": "https://auth.staging.example.com",
+        "api": "https://api.staging.example.com"
+      },
+      "screenshotOnFailure": true
+    },
+    {
+      "name": "production",
+      "links": {
+        "frontend": "https://playwright.dev/",
+        "auth": "https://auth.example.com",
+        "api": "https://api.example.com"
+      },
+      "screenshotOnFailure": true
+    }
+  ],
+  "remote": false,
+  "remote_path_config": "remote_config.json",
+  "browser": "chromium",
+  "setDefaultTimeout": 30000,
+  "executablePath": null,
+  "userDataDir": "/tmp/chrome-user-data",
+  "ignoreDefaultArgs": [
+    "--enable-automation",
+    "--enable-automation"
+  ],
+  "acceptDownloads": false,
+  "logging": {
+    "level": "info",
+    "logToFile": true,
+    "logFilePath": "./logs/test_execution.log"
+  },
+  "desktop": {
+    "viewport": null,
+    "args": [
+      "--start-maximized",
+      "--disable-infobars",
+      "--disable-web-security",
+      "--disable-extensions",
+      "--disable-gpu",
+      "--no-sandbox",
+      "--disable-dev-shm-usage",
+      "--disable-setuid-sandbox",
+      "--disable-software-rasterizer",
+      "--disable-accelerated-2d-canvas"
+    ]
+  },
+  "mobile": {
+    "device": "iPhone 12",
+    "path_capability": "./capabilitiesMobile/capabilities_android.json"
+  },
+  "is_send_email": {
+    "enabled": true,
+    "smtp": {
+      "host": "smtp.gmail.com",
+      "port": 587,
+      "secure": false,
+      "auth": {
+        "user": "${EMAIL_USER}",
+        "pass": "${EMAIL_PASS}"
+      }
+    },
+    "from": "automation@test.com",
+    "to": ["peter@example.com", "qa-team@example.com"],
+    "subject": "Playwright Test Execution Report",
+    "attachReport": true,
+    "reportPath": "./Template/index.html"
+  }
+}

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Playwright Test Report</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      padding: 20px;
+      color: #333;
+    }
+    .container {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      max-width: 600px;
+      margin: auto;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    h2 {
+      color: #4CAF50;
+    }
+    .summary-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    .summary-table th, .summary-table td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+    .summary-table th {
+      background-color: #f2f2f2;
+    }
+    .footer {
+      margin-top: 20px;
+      font-size: 12px;
+      color: #777;
+      text-align: center;
+    }
+    .success { color: #4CAF50; font-weight: bold; }
+    .fail { color: #f44336; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>✅ Playwright Test Report Summary</h2>
+
+    <p><strong>Environment:</strong> QA</p>
+    <p><strong>Date:</strong> {{date}}</p>
+
+    <table class="summary-table">
+      <thead>
+        <tr>
+          <th>Total Tests</th>
+          <th>Passed</th>
+          <th>Failed</th>
+          <th>Duration</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>{{total}}</td>
+          <td class="success">{{passed}}</td>
+          <td class="fail">{{failed}}</td>
+          <td>{{duration}}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    {{#if reportLink}}
+    <p style="margin-top: 20px;">
+      📄 <a href="{{reportLink}}" target="_blank">View Full Report</a>
+    </p>
+    {{/if}}
+
+    <div class="footer">
+      This is an automated email from your Playwright CI/CD pipeline.
+    </div>
+  </div>
+</body>
+</html>
