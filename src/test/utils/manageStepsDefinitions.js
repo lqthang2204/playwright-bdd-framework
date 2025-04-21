@@ -8,6 +8,7 @@ function go_to_url(url, config){
     if (!targetUrl && !validdate_url(url)) {
         throw new Error(`URL "${url}" not found in environment "${config.env}".`);
     }
+    console.log("url TET ", url.replace(/^"|"$/g, ''));
     return targetUrl || url.replace(/^"|"$/g, ''); // Remove trailing slash if present
 
 }
@@ -16,12 +17,7 @@ module.exports = {
   };
 function validdate_url(url) {
   const urlPattern = new RegExp(
-    "^(https?:\\/\\/)?" + // Optional protocol (http or https)
-    "((([a-zA-Z0-9\\-]+\\.)+[a-zA-Z]{2,})|" + // Domain name
-    "localhost|" + // OR localhost
-    "\\d{1,3}(\\.\\d{1,3}){3})" + // OR IPv4 address
-    "(\\:\\d+)?(\\/.*)?$", // Optional port and path
-    "i"
+    "^(https?:\\/\\/)?" // Optional protocol (http or https)
 );
     return urlPattern.test(url);  
 }
