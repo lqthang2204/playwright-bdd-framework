@@ -1,36 +1,41 @@
 {
   "mode": "desktop",
   "env": "QA",
-  "is_generate_report": false,
-  "environments": {
-    "QA": {
+  "tags": "@smoke",
+  "is_generate_report": true,
+  "parallel": 3,
+  "environments": [
+    {
+      "name": "QA",
       "links": {
-        "frontend": "https://qa.example.com",
-        "auth": "https://auth.qa.example.com",
+        "index": "https://playwright.dev/",
+        "automationexercise": "https://automationexercise.com/",
         "api": "https://api.qa.example.com"
       },
       "screenshotOnFailure": true
     },
-    "staging": {
+    {
+      "name": "staging",
       "links": {
-        "frontend": "https://staging.example.com",
-        "auth": "https://auth.staging.example.com",
+        "index": "https://automationexercise.com/",
+        "automationexercise": "https://auth.staging.example.com",
         "api": "https://api.staging.example.com"
       },
       "screenshotOnFailure": true
     },
-    "production": {
+    {
+      "name": "production",
       "links": {
-        "frontend": "https://www.example.com",
+        "frontend": "https://playwright.dev/",
         "auth": "https://auth.example.com",
         "api": "https://api.example.com"
       },
       "screenshotOnFailure": true
     }
-  },
+  ],
   "remote": false,
   "remote_path_config": "remote_config.json",
-  "headless": true,
+  "headless": false,
   "browser": "chromium",
   "setDefaultTimeout": 30000,
   "executablePath": null,
@@ -81,5 +86,4 @@
     "attachReport": true,
     "reportPath": "./Template/index.html"
   }
-
 }
