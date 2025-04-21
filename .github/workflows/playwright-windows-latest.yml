@@ -1,4 +1,4 @@
-name: Playwright Tests ubuntu-latest
+name: Playwright Tests windows-latest
 
 on:
   push:
@@ -11,7 +11,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest]  # Run on both macOS and Windows, ubuntu-latest is default
+        os: [windows-latest]  # Run on both macOS and Windows, ubuntu-latest is default
     timeout-minutes: 60
 
     steps:
@@ -38,6 +38,6 @@ jobs:
     - uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
-        name: playwright-report
-        path: playwright-report/
+        name: reports
+        path: reports/
         retention-days: 30
