@@ -5,12 +5,23 @@ function go_to_url(url, config){
       throw new Error(`Environment "${config.env}" not found in config file.`);
     }
     const targetUrl = currentEnv.links[url];
-    if (!targetUrl) {
-      throw new Error(`URL "${url}" not found in environment "${config.env}".`);
+    if (!targetUrl && !validdate_url(url)) {
+        throw new Error(`URL "${url}" not found in environment "${config.env}".`);
     }
-    return targetUrl
+    return targetUrl || url.replace(/^"|"$/g, ''); // Remove trailing slash if present
 
 }
 module.exports = {
     go_to_url: go_to_url,
   };
+function validdate_url(url) {
+  const urlPattern = new RegExp(
+    "^(https?:\\/\\/)?" + // Optional protocol (http or https)
+    "((([a-zA-Z0-9\\-]+\\.)+[a-zA-Z]{2,})|" + // Domain name
+    "localhost|" + // OR localhost
+    "\\d{1,3}(\\.\\d{1,3}){3})" + // OR IPv4 address
+    "(\\:\\d+)?(\\/.*)?$", // Optional port and path
+    "i"
+);
+    return urlPattern.test(url);  
+}
