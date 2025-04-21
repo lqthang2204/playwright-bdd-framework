@@ -1,4 +1,4 @@
-name: Playwright Tests ubuntu-latest
+name: Playwright Tests macos-latest
 
 on:
   push:
@@ -11,7 +11,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest]  # Run on both macOS and Windows, ubuntu-latest is default
+        os: [macos-latest]  # Run on both macOS and Windows, ubuntu-latest is default
     timeout-minutes: 60
 
     steps:

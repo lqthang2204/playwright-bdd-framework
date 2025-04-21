@@ -3,6 +3,7 @@
   "env": "QA",
   "tags": "@smoke",
   "is_generate_report": true,
+  "headless": true,
   "parallel": 3,
   "environments": [
     {
@@ -35,7 +36,6 @@
   ],
   "remote": false,
   "remote_path_config": "remote_config.json",
-  "headless": false,
   "browser": "chromium",
   "setDefaultTimeout": 30000,
   "executablePath": null,
