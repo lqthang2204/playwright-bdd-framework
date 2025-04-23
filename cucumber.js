@@ -13,8 +13,8 @@ module.exports = {
       'progress',
       ...(config.is_generate_report
         ? [
-            'json:./reports/cucumber_report.json',
-            'html:./reports/cucumber_report.html'
+            'html:./reports/cucumber_report.html',
+            'json:./reports/cucumber_report.json'
           ]
         : [])
     ],
