@@ -27,7 +27,7 @@ deleteFile(reportFeatureFolder)
 const tags = process.env.TAGS || config.tags;
 
 // Build the command to run cucumber-js
-const command = `npx cucumber-js --tags "${tags}"`;
+const command = `cucumber-js --tags "${tags}"`;
 const command_posttest = 'node support/report_chart.js';
 
 console.log(`Running: ${command}`);
