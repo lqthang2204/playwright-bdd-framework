@@ -12,7 +12,7 @@ Feature: Login functionality 1
     Given I navigate to url https://playwright.dev/
     And I verify title this page is "Fast and reliable end-to-end testing for modern web apps | Playwright"
 
-@regression
+@smoke
   Scenario: Open login page 3
     Given I navigate to url "https://playwright.dev/"
-    And I verify title this page is "Fast and reliable end-to-end testing for modern web apps | Playwright"    
+    And I verify title this page is "Fast and reliable end-to-end testing for dsmodern web apps | Playwright"    

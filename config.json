@@ -1,7 +1,7 @@
 {
   "mode": "desktop",
   "env": "QA",
-  "tags": "@smoke",
+  "tags": "@smoke and not @regression",
   "is_generate_report": true,
   "headless": true,
   "parallel": 3,
