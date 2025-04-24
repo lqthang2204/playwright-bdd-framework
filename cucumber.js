@@ -7,7 +7,8 @@ module.exports = {
     paths: ['src/test/features/**/*.feature'],
     require: [
       'src/test/step-definitions/**/*.js',
-      'support/**/*.js'
+      'support/**/hooks.js',
+      'support/**/world.js'
     ],
     format: [
       'progress',

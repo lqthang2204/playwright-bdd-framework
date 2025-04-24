@@ -2,9 +2,9 @@
   "mode": "desktop",
   "env": "QA",
   "tags": "@smoke and not @regression",
-  "is_generate_report": true,
+  "is_generate_report": false,
   "headless": true,
-  "parallel": 3,
+  "parallel": 4,
   "environments": [
     {
       "name": "QA",

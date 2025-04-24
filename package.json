@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "scripts": {
     "test": "node run-tests.js",
-    "posttest": "npx node support/report_chart.js",
     "postinstall": "npx playwright install",
     "debug": "node --inspect-brk=5858 ./node_modules/.bin/cucumber-js ./src/test/features/login.feature --tags @debug"
   },
