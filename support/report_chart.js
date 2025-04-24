@@ -1,17 +1,22 @@
 const report = require("multiple-cucumber-html-reporter");
+const os = require("os");
+const path = require('path');
+const config = require(path.resolve(__dirname, '../config.json'));
+
+const browserName = config.browser === "chromium" ? "chrome" : config.browser;
 
 report.generate({
   jsonDir: "reports/multi-report",
   reportPath: "reports/multi-report",
   metadata: {
     browser: {
-      name: "chrome",
+      name: browserName,
       version: "60",
     },
-    device: "Local test machine",
+    device: os.hostname(),
     platform: {
-      name: "ubuntu",
-      version: "16.04",
+      name: os.platform(),
+      version: os.release(),
     },
   },
   customData: {
@@ -20,8 +25,8 @@ report.generate({
       { label: "Project", value: "Custom project" },
       { label: "Release", value: "1.2.3" },
       { label: "Cycle", value: "B11221.34321" },
-      { label: "Execution Start Time", value: "Nov 19th 2017, 02:31 PM EST" },
-      { label: "Execution End Time", value: "Nov 19th 2017, 02:56 PM EST" },
+      { label: "Execution Start Time", value: new Date().toLocaleString() },
+      { label: "Execution End Time", value: new Date().toLocaleString() },
     ],
   },
 });

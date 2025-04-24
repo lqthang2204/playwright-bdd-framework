@@ -11,7 +11,7 @@ module.exports = {
       'support/**/world.js'
     ],
     format: [
-      'progress',
+      'progress-bar',
       ...(config.is_generate_report
         ? [
             // 'html:./reports/multi-report/cucumber_report.html',
