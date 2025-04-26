@@ -6,6 +6,7 @@ function go_to_url(url, config){
     const targetUrl = currentEnv.links[url];
     if (!targetUrl && !validdate_url(url)) {
         throw new Error(`URL "${url}" not found in environment "${config.env}".`);
+        
     }
     return targetUrl || url.replace(/^"|"$/g, ''); // Remove trailing slash if present
 

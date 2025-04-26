@@ -26,8 +26,17 @@ deleteFile(reportFeatureFolder)
 // Get tags from the environment variable or fallback to config.json
 const tags = process.env.TAGS || config.tags;
 
-// Build the command to run cucumber-js
-const command = `cucumber-js --tags "${tags}"`;
+// Build the command to run cucumber-js'
+let command = undefined;
+if (!tags) {
+    console.error("No tags provided, so framework run all feature file.");
+    command = `cucumber-js`;
+}
+else {
+    console.log("Using tags:", tags);
+    command = `cucumber-js --tags "${tags}"`;
+}
+
 const command_posttest = 'node support/report_chart.js';
 
 console.log(`Running: ${command}`);

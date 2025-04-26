@@ -1,19 +1,30 @@
-const { Before, After, BeforeAll } = require('@cucumber/cucumber');
+const { Before, After,AfterStep, BeforeAll } = require('@cucumber/cucumber');
 const fs = require('fs');
 const path = require('path');
+const pageFixture = require('../support/pageFixture.js')
+const config = require('../config.json'); 
+
+BeforeAll(async function(){
+    pageFixture.config = config; // Assign the config to the pageFixture object`
+    console.log(`Running before all scenarios "${pageFixture.config.env}".`);  
+  
+})
 
 Before(async function () {
-  // Launch the browser before each scenario
+  // Check if the browser is already launched  
   await this.launchBrowser(); // from CustomWorld
 });
 
-After(async function (scenario) {
-  if (scenario.result?.status === 'FAILED') {
+AfterStep(async function(step) {
+  console.log(`step result: ${step.result.status}`);
+  if(step.result.status === 'FAILED'){
+    console.log(`Step failed: ${step.pickle.name}`);
     // Define the screenshot path
     const screenshotPath = path.resolve(
       __dirname,
-      `../../reports/screenshots/${scenario.pickle.name.replace(/[^a-zA-Z0-9]/g, '_')}.png`
+      `../../reports/screenshots/${step.pickle.name.replace(/[^a-zA-Z0-9]/g, '_')}.png`
     );
+    console.log(`Screenshot path: ${screenshotPath}`);
 
     // Take a screenshot and save it to the specified path
     await this.page.screenshot({ path: screenshotPath });
@@ -24,7 +35,8 @@ After(async function (scenario) {
 
     console.log(`Screenshot saved at: ${screenshotPath}`);
   }
-
-  // Close the browser after each scenario
+});
+After(async function (scenario) {
+// Close the browser after each scenario
   await this.closeBrowser(); // from CustomWorld
 });
