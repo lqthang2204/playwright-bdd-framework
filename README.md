@@ -1,3 +1,6 @@
+[![Build Status](https://github.com/lqthang2204/BDDDevicesAutomation/actions/workflows/project-runner-windows.yml/badge.svg)](https://github.com/lqthang2204/BDDDevicesAutomation/actions)
+[![GitHub last commit](https://img.shields.io/github/last-commit/lqthang2204/BDDDevicesAutomation.svg)](https://github.com/lqthang2204/BDDDevicesAutomation/commits/main)
+
 # Playwright-Cucumber-BDD Framework
 
 This project is a **Behavior-Driven Development (BDD)** framework that integrates **Playwright** with **Cucumber.js**. It allows you to write end-to-end tests in Gherkin syntax and execute them using Playwright's powerful browser automation capabilities.
