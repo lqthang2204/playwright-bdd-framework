@@ -37,38 +37,47 @@ function isValidUrl(url) {
  * Launch the browser, create a context, and initialize the page.
  * @returns {Promise<void>}
  */
+/**
+ * Launch the browser, create a context, and initialize the page.
+ * @returns {Promise<void>}
+ */
 async function getPage() {
-  const browserType = getBrowserType(); // Get the browser type dynamically
-  const config = pageFixture.config; // Access the global config
+  try {
+    const browserType = getBrowserType(); // Get the browser type dynamically
+    const config = pageFixture.config; // Access the global config
 
-  // Define launch options
-  const launchOptions = {
-    headless: config.headless ?? true,
-    args: config.mode === 'desktop' ? config.desktop?.args || [] : [],
-    executablePath: config.executablePath ?? undefined,
-  };
+    // Define launch options
+    const launchOptions = {
+      headless: config.headless ?? true,
+      args: config.mode === 'desktop' ? config.desktop?.args || [] : [],
+      executablePath: config.executablePath ?? undefined,
+    };
 
-  // Launch the browser
-  this.browser = await browserType.launch(launchOptions);
+    // Launch the browser
+    pageFixture.browser = await browserType.launch(launchOptions);
 
-  // Create a new browser context based on the mode (desktop or mobile)
-  if (config.mode === 'mobile') {
-    const device = devices[config.device];
-    this.context = await this.browser.newContext({
-      ...device,
-      ...config.mobile?.viewport,
-    });
-  } else {
-    this.context = await this.browser.newContext({
-      viewport: config.desktop?.viewport || null,
-      userDataDir: config.userDataDir ?? undefined,
-      ignoreDefaultArgs: config.ignoreDefaultArgs ?? false,
-      acceptDownloads: config.acceptDownloads ?? false,
-    });
+    // Create a new browser context based on the mode (desktop or mobile)
+    if (config.mode === 'mobile') {
+      const device = devices[config.device];
+      pageFixture.context = await pageFixture.browser.newContext({
+        ...device,
+        ...config.mobile?.viewport,
+      });
+    } else {
+      pageFixture.context = await pageFixture.browser.newContext({
+        viewport: config.desktop?.viewport || null,
+        userDataDir: config.userDataDir ?? undefined,
+        ignoreDefaultArgs: config.ignoreDefaultArgs ?? false,
+        acceptDownloads: config.acceptDownloads ?? false,
+      });
+    }
+
+    // Create a new page and assign it to the pageFixture
+    pageFixture.page = await pageFixture.context.newPage();
+  } catch (error) {
+    console.error('Error initializing browser and page:', error.message);
+    throw error; // Re-throw the error to ensure it is handled by the caller
   }
-
-  // Create a new page and assign it to the pageFixture
-  pageFixture.page = await this.context.newPage();
 }
 
 /**

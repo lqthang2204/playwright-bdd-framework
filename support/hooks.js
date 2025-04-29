@@ -23,10 +23,10 @@ async function takeScreenshot(step, page) {
 
     const screenshotPath = path.resolve(
       screenshotDir,
-      `${step.text.replace(/[^a-zA-Z0-9]/g, '_')}.png`
+      `${step.pickle.name.replace(/[^a-zA-Z0-9]/g, '_')}.png`
     );
 
-    console.log(`Taking screenshot for failed step: ${step.text}`);
+    console.log(`Taking screenshot for failed step: ${step.pickle.name}`);
     await page.screenshot({ path: screenshotPath });
 
     console.log(`Screenshot saved at: ${screenshotPath}`);
@@ -52,7 +52,7 @@ Before(async function (scenario) {
 AfterStep(async function (step) {
   if (step.result && step.result.status === 'FAILED') {
     console.log(`Step failed: ${step.text}`);
-    const screenshotPath = await takeScreenshot(step, this.page);
+    const screenshotPath = await takeScreenshot(step, pageFixture.page);
 
     if (screenshotPath) {
       const screenshotData = fs.readFileSync(screenshotPath);
