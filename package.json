@@ -9,7 +9,6 @@
   "dependencies": {
     "@cucumber/cucumber": "^9.6.0",
     "@playwright/test": "^1.40.0",
-    "browser-use": "^0.0.1",
     "multiple-cucumber-html-reporter": "^3.9.2",
     "playwright": "^1.40.0"
   },
