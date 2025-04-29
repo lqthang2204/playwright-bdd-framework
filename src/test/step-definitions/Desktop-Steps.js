@@ -19,7 +19,8 @@ Given('I navigate to url {word}', async function (url) {
 
     console.log('Navigation successful.');
   } catch (error) {
-    console.error(`Error during navigation: ${error.message}`);
+    console.error(`Error during navigation to URL "${url}":`, error.message);
+    console.error('Stack trace:', error.stack);
     throw error; // Re-throw the error to mark the step as failed
   }
 
@@ -40,7 +41,8 @@ Then('I verify title this page is {string}', async function (expectedTitle) {
 
     console.log('Page title verification successful.');
   } catch (error) {
-    console.error(`Error during title verification: ${error.message}`);
+    console.error(`Error during title verification. Expected: "${expectedTitle}":`, error.message);
+    console.error('Stack trace:', error.stack);
     throw error; // Re-throw the error to mark the step as failed
   }
 });

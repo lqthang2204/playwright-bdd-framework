@@ -4,6 +4,7 @@ const path = require('path');
 const pageFixture = require('../support/pageFixture.js');
 const config = require('../config.json');
 
+
 // Set the default timeout for Cucumber steps (e.g., 60 seconds)
 const unifiedTimeout = parseInt(config.setDefaultTimeout) || 60000;
 setDefaultTimeout(unifiedTimeout);
@@ -16,15 +17,14 @@ function logError(message, error) {
 // Helper function to take a screenshot
 async function takeScreenshot(step, page) {
   try {
-    const screenshotDir = path.resolve(__dirname, '../../reports/screenshots');
+    const screenshotDir = path.resolve(__dirname, '../reports/screenshots');
     if (!fs.existsSync(screenshotDir)) {
       fs.mkdirSync(screenshotDir, { recursive: true }); // Create the directory if it doesn't exist
     }
 
-    const screenshotPath = path.resolve(
-      screenshotDir,
-      `${step.pickle.name.replace(/[^a-zA-Z0-9]/g, '_')}.png`
-    );
+    const stepName = step.pickle?.name || step.text || 'unknown_step';
+    const sanitizedStepName = stepName.replace(/[^a-zA-Z0-9]/g, '_'); // Sanitize the step name
+    const screenshotPath = path.resolve(screenshotDir,`${sanitizedStepName}.png`);
 
     console.log(`Taking screenshot for failed step: ${step.pickle.name}`);
     await page.screenshot({ path: screenshotPath });
@@ -39,8 +39,13 @@ async function takeScreenshot(step, page) {
 
 // BeforeAll: Runs once before all scenarios
 BeforeAll(async function () {
-  pageFixture.config = config; // Assign the config to the pageFixture object
-  console.log(`Global setup: Running before all scenarios in environment "${pageFixture.config.env}".`);
+  try {
+    pageFixture.config = config; // Assign the config to the pageFixture object
+    console.log(`Global setup: Running before all scenarios in environment "${pageFixture.config.env}".`);
+  } catch (error) {
+    throw new Error(`Error during global setup: ${error.message}`);
+    
+  }
 });
 
 // Before: Runs before each scenario

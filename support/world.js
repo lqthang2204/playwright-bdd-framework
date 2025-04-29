@@ -1,7 +1,5 @@
-const { setWorldConstructor, setDefaultTimeout, World } = require('@cucumber/cucumber');
+const { setWorldConstructor, World } = require('@cucumber/cucumber');
 const { chromium, firefox, webkit, devices } = require('playwright');
-const path = require('path');
-const config = require(path.resolve(__dirname, '../config.json'));
 
 class CustomWorld extends World {
   constructor(options) {

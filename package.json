@@ -4,11 +4,12 @@
   "scripts": {
     "test": "node run-tests.js",
     "postinstall": "npx playwright install",
-    "debug": "node --inspect-brk=5858 ./node_modules/.bin/cucumber-js ./src/test/features/login.feature --tags @debug"
+    "debug": "node run-tests.js ./src/test/features/login.feature"
   },
   "dependencies": {
     "@cucumber/cucumber": "^9.6.0",
     "@playwright/test": "^1.40.0",
+    "browser-use": "^0.0.1",
     "multiple-cucumber-html-reporter": "^3.9.2",
     "playwright": "^1.40.0"
   },

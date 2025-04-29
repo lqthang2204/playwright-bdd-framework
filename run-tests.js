@@ -17,11 +17,15 @@ const reportFeatureFolder = path.resolve(
     __dirname,
     "./reports/multi-report/features/"
 );
-
+const screenshots = path.resolve(
+    __dirname,
+    "./reports/screenshots"
+);
 // Delete the files if they exist
 deleteFile(reportPathJson);
 deleteFile(reportPathHtml);
 deleteFile(reportFeatureFolder)
+deleteFile(screenshots)
 
 // Get tags from the environment variable or fallback to config.json
 const tags = process.env.TAGS || config.tags;
