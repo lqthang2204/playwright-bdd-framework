@@ -52,8 +52,8 @@ async function takeScreenshot(step, page, is_capture) {
 // BeforeAll: Runs once before all scenarios
 BeforeAll(async function () {
   try {
-    pageFixture.config = config; // Assign the config to the pageFixture object
-    console.log(`Global setup: Running before all scenarios in environment "${pageFixture.config.env}".`);
+    pageFixture.setConfig(config) // Assign the config to the pageFixture object
+    console.log(`Global setup: Running before all scenarios in environment "${pageFixture.getConfig().env}".`);
   } catch (error) {
     throw new Error(`Error during global setup: ${error.message}`);
     
@@ -75,12 +75,12 @@ AfterStep(async function (step) {
     }
 
     // Find the current environment configuration
-    const currentEnv = pageFixture.config.environments.find(
-      (env) => env.name === pageFixture.config.env
+    const currentEnv = pageFixture.getConfig().environments.find(
+      (env) => env.name === pageFixture.getConfig().env
     );
 
     if (!currentEnv) {
-      console.error(`Environment "${pageFixture.config.env}" not found in configuration.`);
+      console.error(`Environment "${pageFixture.getConfig().env}" not found in configuration.`);
       return;
     }
 
@@ -95,7 +95,7 @@ AfterStep(async function (step) {
     console.log(`Step failed: ${step.text || 'unknown_step'}`);
 
     // Take a screenshot
-    const screenshotPath = await takeScreenshot(step, pageFixture.page, isScreenshotEnabled);
+    const screenshotPath = await takeScreenshot(step, pageFixture.getPage(), isScreenshotEnabled);
     if (screenshotPath) {
       // Attach the screenshot to the Cucumber report
       const screenshotData = fs.readFileSync(screenshotPath);

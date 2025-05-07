@@ -44,7 +44,7 @@ function isValidUrl(url) {
 async function getPage() {
   try {
     const browserType = getBrowserType(); // Get the browser type dynamically
-    const config = pageFixture.config; // Access the global config
+    const config = pageFixture.getConfig(); // Access the global config
 
     // Define launch options
     const launchOptions = {
@@ -63,7 +63,7 @@ async function getPage() {
     // Create a new browser context based on the mode (desktop or mobile)
     if (config.mode === 'mobile') {
       const device = devices[config.device];
-      context = await pageFixture.browser.newContext({
+      context = await pageFixture.getBrowser().newContext({
         ...device,
         ...config.mobile?.viewport,
       });
@@ -77,9 +77,9 @@ async function getPage() {
     }
 
     // Create a new page and assign it to the pageFixture
-    pageFixture.browser = browser;
-    pageFixture.context = context;
-    pageFixture.page = await context.newPage();
+    pageFixture.setBrowser(browser)
+    pageFixture.setContext(context);
+    pageFixture.setPage(await context.newPage());
   } catch (error) {
     console.error('Error initializing browser and page:', error.message);
     throw error; // Re-throw the error to ensure it is handled by the caller
@@ -91,7 +91,7 @@ async function getPage() {
  * @returns {object} - The Playwright browser type (chromium, firefox, or webkit).
  */
 function getBrowserType() {
-  const browser = pageFixture.config.browser;
+  const browser = pageFixture.getConfig().browser;
   switch (browser) {
     case 'chromium':
       return chromium;
