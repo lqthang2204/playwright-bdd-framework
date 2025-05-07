@@ -39,5 +39,5 @@ jobs:
       if: ${{ !cancelled() }}
       with:
         name: reports
-        path: reports/
+        path: reports/multi-report
         retention-days: 30
