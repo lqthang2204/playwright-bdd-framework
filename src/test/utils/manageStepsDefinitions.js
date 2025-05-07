@@ -52,19 +52,23 @@ async function getPage() {
       args: config.mode === 'desktop' ? config.desktop?.args || [] : [],
       executablePath: config.executablePath ?? undefined,
     };
+        // Add `--start-maximized` if viewport is null
+    if (!config.desktop?.viewport) {
+      launchOptions.args.push('--start-maximized');
+    }
 
     // Launch the browser
-    pageFixture.browser = await browserType.launch(launchOptions);
+      browser = await browserType.launch(launchOptions);
 
     // Create a new browser context based on the mode (desktop or mobile)
     if (config.mode === 'mobile') {
       const device = devices[config.device];
-      pageFixture.context = await pageFixture.browser.newContext({
+      context = await pageFixture.browser.newContext({
         ...device,
         ...config.mobile?.viewport,
       });
     } else {
-      pageFixture.context = await pageFixture.browser.newContext({
+      context = await browser.newContext({
         viewport: config.desktop?.viewport || null,
         userDataDir: config.userDataDir ?? undefined,
         ignoreDefaultArgs: config.ignoreDefaultArgs ?? false,
@@ -73,7 +77,9 @@ async function getPage() {
     }
 
     // Create a new page and assign it to the pageFixture
-    pageFixture.page = await pageFixture.context.newPage();
+    pageFixture.browser = browser;
+    pageFixture.context = context;
+    pageFixture.page = await context.newPage();
   } catch (error) {
     console.error('Error initializing browser and page:', error.message);
     throw error; // Re-throw the error to ensure it is handled by the caller
