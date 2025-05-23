@@ -2,7 +2,7 @@
 [![Build Status](https://github.com/lqthang2204/playwright-bdd-framework/actions/workflows/playwright-ubuntu-latest.yml/badge.svg)](https://github.com/lqthang2204/playwright-bdd-framework/actions)
 [![Build Status](https://github.com/lqthang2204/playwright-bdd-framework/actions/workflows/playwright-macos-latest.yml/badge.svg)](https://github.com/lqthang2204/playwright-bdd-framework/actions)
 [![GitHub last commit](https://img.shields.io/github/last-commit/lqthang2204/playwright-bdd-framework.svg)](https://github.com/lqthang2204/playwright-bdd-framework/commits/main)
-[![Releases downloads](https://img.shields.io/github/downloads/myorg/playwright-bdd-framework/total.svg)](https://github.com/myorg/playwright-bdd-framework/releases)
+[![Releases downloads](https://img.shields.io/github/downloads/lqthang2204/playwright-bdd-framework/total.svg)](https://github.com/myorg/playwright-bdd-framework/releases)
 
 # Playwright-Cucumber-BDD Framework
 
