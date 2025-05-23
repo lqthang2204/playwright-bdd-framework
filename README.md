@@ -1,5 +1,8 @@
-[![Build Status](https://github.com/lqthang2204/BDDDevicesAutomation/actions/workflows/project-runner-windows.yml/badge.svg)](https://github.com/lqthang2204/BDDDevicesAutomation/actions)
-[![GitHub last commit](https://img.shields.io/github/last-commit/lqthang2204/BDDDevicesAutomation.svg)](https://github.com/lqthang2204/BDDDevicesAutomation/commits/main)
+[![Build Status](https://github.com/lqthang2204/playwright-bdd-framework/actions/workflows/playwright-windows-latest.yml/badge.svg)](https://github.com/lqthang2204/playwright-bdd-framework/actions)
+[![Build Status](https://github.com/lqthang2204/playwright-bdd-framework/actions/workflows/playwright-ubuntu-latest.yml/badge.svg)](https://github.com/lqthang2204/playwright-bdd-framework/actions)
+[![Build Status](https://github.com/lqthang2204/playwright-bdd-framework/actions/workflows/playwright-macos-latest.yml/badge.svg)](https://github.com/lqthang2204/playwright-bdd-framework/actions)
+[![GitHub last commit](https://img.shields.io/github/last-commit/lqthang2204/playwright-bdd-framework.svg)](https://github.com/lqthang2204/playwright-bdd-framework/commits/main)
+[![Releases downloads](https://img.shields.io/github/downloads/playwright-bdd-framework/playwright-bdd-framework/total.svg)](https://github.com/lqthang2204/playwright-bdd-framework/releases)
 
 # Playwright-Cucumber-BDD Framework
 
