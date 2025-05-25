@@ -1,5 +1,8 @@
 const pageFixture = require('../../../support/pageFixture.js');
 const { chromium, firefox, webkit, devices } = require('playwright');
+const {remote}  = require('webdriverio');
+const path = require('path');
+const fs = require('fs');
 
 /**
  * Get the target URL based on the environment and configuration.
@@ -43,43 +46,47 @@ function isValidUrl(url) {
  */
 async function getPage() {
   try {
-    const browserType = getBrowserType(); // Get the browser type dynamically
-    const config = pageFixture.getConfig(); // Access the global config
-
-    // Define launch options
-    const launchOptions = {
-      headless: config.headless ?? true,
-      args: config.mode === 'desktop' ? config.desktop?.args || [] : [],
-      executablePath: config.executablePath ?? undefined,
-    };
-        // Add `--start-maximized` if viewport is null
-    if (!config.desktop?.viewport) {
-      launchOptions.args.push('--start-maximized');
-    }
-
-    // Launch the browser
-      browser = await browserType.launch(launchOptions);
-
+  
     // Create a new browser context based on the mode (desktop or mobile)
     if (config.mode === 'mobile') {
-      const device = devices[config.device];
-      context = await pageFixture.getBrowser().newContext({
-        ...device,
-        ...config.mobile?.viewport,
-      });
+      console.log('Launching mobile browser...');
+      
+      const capabilities = getCapabilities()
+      
+
+      console.log('Launching mobile browser...', pageFixture.getConfig().mobile.device);
+
+      
     } else {
+      const browserType = getBrowserType(); // Get the browser type dynamically
+      const config = pageFixture.getConfig(); // Access the global config
+  
+      // Define launch options
+      const launchOptions = {
+        headless: config.headless ?? true,
+        args: config.mode === 'desktop' ? config.desktop?.args || [] : [],
+        executablePath: config.executablePath ?? undefined,
+      };
+          // Add `--start-maximized` if viewport is null
+      if (!config.desktop?.viewport) {
+        launchOptions.args.push('--start-maximized');
+      }
+  
+      // Launch the browser
+        browser = await browserType.launch(launchOptions);
       context = await browser.newContext({
         viewport: config.desktop?.viewport || null,
         userDataDir: config.userDataDir ?? undefined,
         ignoreDefaultArgs: config.ignoreDefaultArgs ?? false,
         acceptDownloads: config.acceptDownloads ?? false,
       });
+      pageFixture.setBrowser(browser)
+      pageFixture.setContext(context);
+      pageFixture.setPage(await context.newPage());
     }
 
     // Create a new page and assign it to the pageFixture
-    pageFixture.setBrowser(browser)
-    pageFixture.setContext(context);
-    pageFixture.setPage(await context.newPage());
+  
   } catch (error) {
     console.error('Error initializing browser and page:', error.message);
     throw error; // Re-throw the error to ensure it is handled by the caller
@@ -103,8 +110,44 @@ function getBrowserType() {
       throw new Error(`Unsupported browser type: ${browser}`);
   }
 }
+// ...existing code...
+async function instanceDriver(name_file) {
+  const path_file = path.resolve(__dirname, '../../../capabilitiesMobile/' + name_file + '.json');
 
+  // Read and parse the JSON file
+  const capabilitiesContent = fs.readFileSync(path_file, 'utf-8');
+  const capabilities = JSON.parse(capabilitiesContent);
+  console.log(`Opening application with capabilities from: ${path_file}`);
+  console.log('Capabilities:', capabilities);
+
+const wdOpts = {
+  protocol: 'http', // Thêm dòng này
+  hostname: process.env.APPIUM_HOST || '127.0.0.1',
+  port: process.env.APPIUM_PORT ? parseInt(process.env.APPIUM_PORT) : 4723,
+  path: '/', 
+  logLevel: 'info',
+  capabilities,
+};
+
+
+try {
+  const driver = await remote(wdOpts);
+  if (!driver) {
+    console.error('Driver was not created!');
+    throw new Error('Driver was not created!');
+  }
+  console.log('Driver created, getting session...');
+  pageFixture.setDriver(driver);
+} catch (err) {
+  console.error('Error creating Appium session:', err.message);
+  console.error(err.stack);
+  throw err;
+}
+}
+// ...existing code...
+// ...existing code...
 module.exports = {
   goToUrl,
   getPage,
+  instanceDriver
 };

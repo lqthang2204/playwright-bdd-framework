@@ -6,7 +6,8 @@ class PageFixture {
         this.page = undefined;
         this.context = undefined;   
         this.browser = undefined;
-        this.config = undefined
+        this.config = undefined;
+        this.driver = undefined;
     }
     /**
      * set the page instance.
@@ -65,6 +66,24 @@ class PageFixture {
     getConfig(){
         return this.config;
     }
+
+    /**
+     * set the driver instance
+     * @param {import('webdriverio').Remote} driver - The WebDriverIO remote instance.
+     */ 
+    setDriver(driver){
+        this.driver = driver;
+    }  
+    /**
+     * get the current driver instance
+     * @returns {import('webdriverio').Remote | undefined} - The current WebDriverIO remote instance.
+     */
+    getDriver(){
+        return this.driver;
+    }
+    /**
+     * Reset the page fixture, clearing all stored instances.
+     */
     reset(){
         this.page = undefined;
         this.context = undefined;   
