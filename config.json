@@ -1,10 +1,10 @@
 {
   "mode": "desktop",
   "env": "QA",
-  "tags": "@smoke",
+  "tags": "@smoke and not @regression",
   "is_generate_report": true,
   "headless": true,
-  "parallel": 3,
+  "parallel":2,
   "environments": [
     {
       "name": "QA",
@@ -52,8 +52,8 @@
   },
   "desktop": {
     "viewport": null,
+    "_commnent_": "If you want to run the tests in a specific resolution, you can set the viewport size here.   'viewport': {'width': 1920,'height': 1080},",
     "args": [
-      "--start-maximized",
       "--disable-infobars",
       "--disable-web-security",
       "--disable-extensions",

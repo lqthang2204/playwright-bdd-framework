@@ -1,12 +1,8 @@
 {
-    "automationName": "uiautomator2",
-    "platformName": "android",
-    "udid": "emulator-5554",
-    "appPackage": "com.google.android.deskclock",
-    "appActivity": "com.android.deskclock.DeskClock",
-     "appium_url" : "127.0.0.1:4723",
-     "noReset": true,
-     "waitForAppScript": true,
-    "autoGrantPermissions": true,
-    "autolaunch": true
-  }
+  "platformName": "Android",
+  "appium:automationName": "UiAutomator2",
+  "appium:deviceName": "emulator-5554",
+  "appium:appPackage": "com.google.android.deskclock",
+  "appium:appActivity": "com.android.deskclock.DeskClock"
+
+}
