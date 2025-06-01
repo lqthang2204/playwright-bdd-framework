@@ -14,14 +14,14 @@ class PageFixture {
      * @param {import('playwright').Page} page - The Playwright page instance.  
      * 
      */
-    setPage(page){
+    setPageFixture(page){
         this.page = page;
     }
     /**
      * get the current page instance.
      * @returns {import('playwright').Page | undefined}  - The current Playwright page instance.
      */
-    getPage(){
+    getPageFixture(){
         return this.page;
     }
     /**

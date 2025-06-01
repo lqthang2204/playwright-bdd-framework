@@ -22,7 +22,7 @@ class manageStepsDefinitions {
   }
 
   const targetUrl = currentEnv.links[url];
-  if (!targetUrl && !isValidUrl(url)) {
+  if (!targetUrl && !this.isValidUrl(url)) {
     throw new Error(`URL "${url}" not found in environment "${config.env}".`);
   }
 
@@ -53,17 +53,17 @@ async getPage() {
   try {
   
     // Create a new browser context based on the mode (desktop or mobile)
-    if (config.mode === 'mobile') {
+    if (pageFixture.getConfig().mode === 'mobile') {
       console.log('Launching mobile browser...');
       
-      const capabilities = getCapabilities()
+      // const capabilities = getCapabilities()
       
 
       console.log('Launching mobile browser...', pageFixture.getConfig().mobile.device);
 
       
     } else {
-      const browserType = getBrowserType(); // Get the browser type dynamically
+      const browserType = this.getBrowserType(); // Get the browser type dynamically
       const config = pageFixture.getConfig(); // Access the global config
   
       // Define launch options
@@ -78,8 +78,8 @@ async getPage() {
       }
   
       // Launch the browser
-        browser = await browserType.launch(launchOptions);
-      context = await browser.newContext({
+      let browser = await browserType.launch(launchOptions);
+      let context = await browser.newContext({
         viewport: config.desktop?.viewport || null,
         userDataDir: config.userDataDir ?? undefined,
         ignoreDefaultArgs: config.ignoreDefaultArgs ?? false,
@@ -87,7 +87,7 @@ async getPage() {
       });
       pageFixture.setBrowser(browser)
       pageFixture.setContext(context);
-      pageFixture.setPage(await context.newPage());
+      pageFixture.setPageFixture(await context.newPage());
     }
 
     // Create a new page and assign it to the pageFixture

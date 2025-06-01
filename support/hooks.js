@@ -95,7 +95,7 @@ AfterStep(async function (step) {
     console.log(`Step failed: ${step.text || 'unknown_step'}`);
 
     // Take a screenshot
-    const screenshotPath = await takeScreenshot(step, pageFixture.getPage(), isScreenshotEnabled);
+    const screenshotPath = await takeScreenshot(step, pageFixture.getPageFixture(), isScreenshotEnabled);
     if (screenshotPath) {
       // Attach the screenshot to the Cucumber report
       const screenshotData = fs.readFileSync(screenshotPath);
