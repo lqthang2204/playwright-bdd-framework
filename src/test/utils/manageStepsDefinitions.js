@@ -10,7 +10,12 @@ const fs = require('fs');
  * @param {object} config - The configuration object.
  * @returns {string} - The resolved target URL.
  */
-function goToUrl(url, config) {
+class manageStepsDefinitions {
+  constructor() {
+    this.browser = null;
+    this.context = null;
+  }
+   goToUrl(url, config) {
   const currentEnv = config.environments.find(env => env.name === config.env);
   if (!currentEnv) {
     throw new Error(`Environment "${config.env}" not found in config file.`);
@@ -29,7 +34,7 @@ function goToUrl(url, config) {
  * @param {string} url - The URL to validate.
  * @returns {boolean} - True if the URL is valid, false otherwise.
  */
-function isValidUrl(url) {
+ isValidUrl(url) {
   const urlPattern = new RegExp(
     "^(https?:\\/\\/)?" // Optional protocol (http or https)
   );
@@ -44,7 +49,7 @@ function isValidUrl(url) {
  * Launch the browser, create a context, and initialize the page.
  * @returns {Promise<void>}
  */
-async function getPage() {
+async getPage() {
   try {
   
     // Create a new browser context based on the mode (desktop or mobile)
@@ -97,7 +102,7 @@ async function getPage() {
  * Get the browser type based on the configuration.
  * @returns {object} - The Playwright browser type (chromium, firefox, or webkit).
  */
-function getBrowserType() {
+ getBrowserType() {
   const browser = pageFixture.getConfig().browser;
   switch (browser) {
     case 'chromium':
@@ -111,7 +116,7 @@ function getBrowserType() {
   }
 }
 // ...existing code...
-async function instanceDriver(name_file) {
+ async instanceDriver(name_file) {
   const path_file = path.resolve(__dirname, '../../../capabilitiesMobile/' + name_file + '.json');
 
   // Read and parse the JSON file
@@ -127,27 +132,24 @@ const wdOpts = {
   path: '/', 
   logLevel: 'info',
   capabilities,
-};
+}
 
 
-try {
-  const driver = await remote(wdOpts);
-  if (!driver) {
-    console.error('Driver was not created!');
-    throw new Error('Driver was not created!');
+// ...existing code...
+  try {
+    const driver = await remote(wdOpts);
+    if (!driver) {
+      console.error('Driver was not created!');
+      throw new Error('Driver was not created!');
+    }
+    console.log('Driver created, getting session...');
+    pageFixture.setDriver(driver);
+  } catch (err) {
+    console.error('Error creating Appium session:', err.message);
+    console.error(err.stack);
+    throw err;
   }
-  console.log('Driver created, getting session...');
-  pageFixture.setDriver(driver);
-} catch (err) {
-  console.error('Error creating Appium session:', err.message);
-  console.error(err.stack);
-  throw err;
+} 
 }
-}
-// ...existing code...
-// ...existing code...
-module.exports = {
-  goToUrl,
-  getPage,
-  instanceDriver
-};
+
+module.exports = new manageStepsDefinitions();

@@ -1,6 +1,6 @@
 const { Given, Then } = require('@cucumber/cucumber');
 const { expect } = require('@playwright/test');
-const { goToUrl,getPage } = require('../utils/manageStepsDefinitions.js'); // Adjusted path
+const manageStepsDefinitions = require('../utils/manageStepsDefinitions.js'); // Adjusted path
 const pageFixture = require('../../../support/pageFixture.js');
 
 Given('I navigate to url {word}', async function (url) {
@@ -11,7 +11,7 @@ Given('I navigate to url {word}', async function (url) {
 
     // Resolve the target URL
     console.log(`Resolving target URL for: ${url}`);
-    const targetUrl = goToUrl(url, pageFixture.getConfig());
+    const targetUrl = manageStepsDefinitions.goToUrl(url, pageFixture.getConfig());
 
     // Navigate to the target URL
     console.log(`Navigating to: ${targetUrl}`);
