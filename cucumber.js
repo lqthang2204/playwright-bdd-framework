@@ -4,7 +4,6 @@ const config = require(path.resolve(__dirname, './config.json'));
 module.exports = {
   default: {
     parallel: config.parallel, // Run tests with 2 workers
-    paths: ['src/test/features/**/*.feature'],
     require: [
       'src/test/step-definitions/**/*.js',
       'support/**/hooks.js',

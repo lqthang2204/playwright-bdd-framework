@@ -7,7 +7,7 @@ Given('I navigate to url {word}', async function (url) {
   try {
     // Initialize the browser and page
     console.log('Initializing browser and page...');
-    await manageStepsDefinitions.getPage()
+    await manageStepsDefinitions.launch()
 
     // Resolve the target URL
     console.log(`Resolving target URL for: ${url}`);

@@ -1,4 +1,4 @@
-const { Before, After, AfterStep, BeforeAll, setDefaultTimeout } = require('@cucumber/cucumber');
+const { Before, After, AfterStep, BeforeAll, setDefaultTimeout, AfterAll } = require('@cucumber/cucumber');
 const fs = require('fs');
 const path = require('path');
 const pageFixture = require('../support/pageFixture.js');
@@ -112,6 +112,9 @@ AfterStep(async function (step) {
 
 // After: Runs after each scenario
 After(async function () {
+ 
+});
+AfterAll(async function () {
   console.log('Scenario teardown: Closing browser...');
   try {
     if (this.page) {

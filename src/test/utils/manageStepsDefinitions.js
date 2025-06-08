@@ -5,10 +5,6 @@ const path = require('path');
 const fs = require('fs');
 
 class ManageStepsDefinitions {
-  constructor() {
-    this.browser = null;
-    this.context = null;
-  }
 
   /**
    * Resolve a URL based on environment config.
@@ -36,24 +32,25 @@ class ManageStepsDefinitions {
       return false;
     }
   }
+async launch(dataCapabilities) {
+  const config = pageFixture.getConfig();
+  if(config.mode === 'mobile'){
+     await this.instanceDriver(dataCapabilities);
+  }else{
+    console.log('Launching desktop browser...');
+     await this.getPage();
 
+  }
+}
   /**
    * Launch the browser, create a context, and initialize the page.
    */
   async getPage() {
     try {
       const config = pageFixture.getConfig();
-      if (config.mode === 'mobile') {
-        console.log('Launching mobile browser...', config.mobile?.device);
-        // Mobile browser logic can be implemented here if needed
-        // For native mobile, use instanceDriver instead
-        return;
-      }
-
       const browserType = this.getBrowserType();
       const launchOptions = {
         headless: config.headless ?? true,
-        args: config.mode === 'desktop' ? config.desktop?.args || [] : [],
         executablePath: config.executablePath ?? undefined,
       };
       if (!config.desktop?.viewport) {
@@ -98,19 +95,8 @@ class ManageStepsDefinitions {
   /**
    * Launch a mobile application using Appium.
    */
-  async instanceDriver(name_file) {
-    const path_file = path.resolve(__dirname, '../../../capabilitiesMobile/' + name_file + '.json');
-    let capabilities;
-    try {
-      const capabilitiesContent = fs.readFileSync(path_file, 'utf-8');
-      capabilities = JSON.parse(capabilitiesContent);
-    } catch (err) {
-      console.error(`Failed to read or parse capabilities file: ${path_file}`);
-      throw err;
-    }
-
-    console.log(`Opening application with capabilities from: ${path_file}`);
-    console.log('Capabilities:', capabilities);
+  async instanceDriver(dataCapabilities) {
+    console.log('Capabilities:', dataCapabilities);
 
     const wdOpts = {
       protocol: 'http',
@@ -118,7 +104,7 @@ class ManageStepsDefinitions {
       port: process.env.APPIUM_PORT ? parseInt(process.env.APPIUM_PORT) : 4723,
       path: '/', // Appium 2.x uses root path
       logLevel: 'info',
-      capabilities,
+      capabilities: dataCapabilities
     };
 
     try {

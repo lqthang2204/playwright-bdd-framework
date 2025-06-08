@@ -3,8 +3,11 @@ const os = require("os");
 const path = require('path');
 const config = require(path.resolve(__dirname, '../config.json'));
 
-const browserName = config.browser === "chromium" ? "chrome" : config.browser;
 
+const browserName = config.browser === "chromium" ? "chrome" : config.browser;
+const device = config.mode === "mobile"
+  ? (config.mobile && config.mobile.platformName ? config.mobile.platformName : "Mobile")
+  : "Desktop";
 report.generate({
   jsonDir: "reports/multi-report",
   reportPath: "reports/multi-report",
@@ -12,8 +15,9 @@ report.generate({
     browser: {
       name: browserName,
       version: "60",
+      
     },
-    device: os.hostname(),
+    device: device,
     platform: {
       name: os.platform(),
       version: os.release(),

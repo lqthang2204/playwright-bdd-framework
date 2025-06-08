@@ -9,7 +9,7 @@ Feature: Login functionality 1
 
 @smoke
   Scenario: Open login page 2
-    Given I navigate to url https://playwright.dev/
+    Given I navigate to url http://playwright.dev/
     And I verify title this page is "Fast and reliable end-to-end testingdsds for modern web apps | Playwright"
 
 @smoke @regression

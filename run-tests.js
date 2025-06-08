@@ -5,40 +5,33 @@ const fs = require("fs");
 
 console.log("Running tests with the following configuration:");
 
-const reportPathJson = path.resolve(
-    __dirname,
-    "./reports/multi-report/cucumber_report.json"
-);
-const reportPathHtml = path.resolve(
-    __dirname,
-    "./reports/multi-report/index.html"
-);
-const reportFeatureFolder = path.resolve(
-    __dirname,
-    "./reports/multi-report/features/"
-);
-const screenshots = path.resolve(
-    __dirname,
-    "./reports/screenshots"
-);
+// Paths
+const reportPathJson = path.resolve(__dirname, "./reports/multi-report/cucumber_report.json");
+const reportPathHtml = path.resolve(__dirname, "./reports/multi-report/index.html");
+const reportFeatureFolder = path.resolve(__dirname, "./reports/multi-report/features/");
+const screenshots = path.resolve(__dirname, "./reports/screenshots");
 // Delete the files if they exist
-deleteFile(reportPathJson);
-deleteFile(reportPathHtml);
-deleteFile(reportFeatureFolder)
-deleteFile(screenshots)
+[reportPathJson, reportPathHtml, reportFeatureFolder, screenshots].forEach(deleteFile);
+
+// Determine feature folder based on mode
+let featureFolder = "/Users/lequangthang/Playwright-workspace/playwright-bdd-framework/src/test/features/";
+if (config.mode === "mobile") {
+    featureFolder = featureFolder +"mobile/";
+} else if (config.mode === "desktop") {
+    featureFolder = featureFolder+"desktop/";
+}
 
 // Get tags from the environment variable or fallback to config.json
 const tags = process.env.TAGS || config.tags;
 
 // Build the command to run cucumber-js'
-let command = undefined;
+let command;
 if (!tags) {
-    console.error("No tags provided, so framework run all feature file.");
-    command = `cucumber-js`;
-}
-else {
+    console.warn("No tags provided, running all feature files.");
+    command = `cucumber-js ${featureFolder}`;
+} else {
     console.log("Using tags:", tags);
-    command = `cucumber-js --tags "${tags}"`;
+    command = `cucumber-js ${featureFolder} --tags "${tags}"`;
 }
 
 const command_posttest = 'node support/report_chart.js';
