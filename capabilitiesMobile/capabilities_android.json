@@ -4,5 +4,4 @@
   "appium:deviceName": "emulator-5554",
   "appium:appPackage": "com.google.android.deskclock",
   "appium:appActivity": "com.android.deskclock.DeskClock"
-
 }

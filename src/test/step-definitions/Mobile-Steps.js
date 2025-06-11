@@ -10,8 +10,8 @@ const managetable = require('../../../libs/dataTable.js');
 Given('I open application with config below', async function (dataTable) {
     console.log('Opening application with config below:', dataTable);
     // Override the data table with the capabilities file
-    const capabilities = await managetable.OverrideTable(dataTable); // Assuming dataTable is a single cell with the path to the config file
-    await manageStepsDefinitions.launch(capabilities)
+    const {capabilities, appiumServerUrl} = await managetable.OverrideTable(dataTable); // Assuming dataTable is a single cell with the path to the config file
+    await manageStepsDefinitions.launch(capabilities, appiumServerUrl)
     console.log('Application opened with config:', capabilities);
     
 }

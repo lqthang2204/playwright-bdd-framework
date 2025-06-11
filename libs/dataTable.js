@@ -23,10 +23,18 @@ class manageTable{
             throw new Error(`Failed to parse capabilities file: ${capFilePath}\n${err.message}`);
         }
     }
+    let appiumServerUrl = undefined
 
     // Merge/override with table values (skip the capabilitiesFile row)
     for (const [key, value] of rows) {
         if (key === "capabilitiesFile") continue;
+        if (key == 'appiumServerUrl') {
+            appiumServerUrl = value.trim();
+            if (!appiumServerUrl) {
+                throw new Error('appiumServerUrl must be a non-empty string');
+            }
+            continue;
+        }
         const capKey = await this.checkPrefix(key);
         capabilities[capKey] = value;
     }
@@ -39,7 +47,7 @@ class manageTable{
         }
     }
 
-    return capabilities;
+    return {capabilities, appiumServerUrl};
 }
 async checkPrefix(key) {
     if (typeof key !== 'string' || !key.trim()) {

@@ -32,10 +32,10 @@ class ManageStepsDefinitions {
       return false;
     }
   }
-async launch(dataCapabilities) {
+async launch(dataCapabilities, appiumServerUrl) {
   const config = pageFixture.getConfig();
   if(config.mode === 'mobile'){
-     await this.instanceDriver(dataCapabilities);
+     await this.instanceDriver(dataCapabilities, appiumServerUrl);
   }else{
     console.log('Launching desktop browser...');
      await this.getPage();
@@ -95,17 +95,23 @@ async launch(dataCapabilities) {
   /**
    * Launch a mobile application using Appium.
    */
-  async instanceDriver(dataCapabilities) {
+  async instanceDriver(dataCapabilities, appiumServerUrl) {
     console.log('Capabilities:', dataCapabilities);
+    if (appiumServerUrl=== undefined) {
+      appiumServerUrl = process.env.APPIUM_SERVER_URL || 'http://127.0.1:4723/'; 
+    }
 
-    const wdOpts = {
-      protocol: 'http',
-      hostname: process.env.APPIUM_HOST || '127.0.0.1',
-      port: process.env.APPIUM_PORT ? parseInt(process.env.APPIUM_PORT) : 4723,
-      path: '/', // Appium 2.x uses root path
-      logLevel: 'info',
-      capabilities: dataCapabilities
-    };
+  // Parse the URL to extract protocol, hostname, port, and path
+  const urlObj = new URL(appiumServerUrl);
+
+  const wdOpts = {
+    protocol: urlObj.protocol.replace(':', ''),
+    hostname: urlObj.hostname,
+    port: urlObj.port ? parseInt(urlObj.port, 10) : 4723,
+    path: urlObj.pathname,
+    logLevel: 'info',
+    capabilities: dataCapabilities
+  };
 
     try {
       const driver = await remote(wdOpts);
