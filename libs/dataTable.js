@@ -19,6 +19,15 @@ class manageTable{
         }
         try {
             capabilities = JSON.parse(fs.readFileSync(capFilePath, 'utf-8'));
+
+            //after loading capabilities from file, normoolaize keys
+            const normalizedCaps = {};
+            for(const[key, value] of Object.entries(capabilities)){
+                const capKey = await this.checkPrefix(key);
+                normalizedCaps[capKey] = value;
+
+            }
+            capabilities = normalizedCaps;
         } catch (err) {
             throw new Error(`Failed to parse capabilities file: ${capFilePath}\n${err.message}`);
         }
