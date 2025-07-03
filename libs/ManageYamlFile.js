@@ -44,9 +44,8 @@ class ManageYamlFile {
     ) {
         if (pageFixture.getMapLocator() && pageFixture.getMapLocator() instanceof Map) {
             const mapYaml = pageFixture.getMapLocator()
-            const data = {};
             if (mapYaml.has(fileName)) {
-                data = mapYaml.get(fileName);
+                return mapYaml.get(fileName);
             } else {
                 try {
                     const rootDir = path.resolve(__dirname, relativeTo);
