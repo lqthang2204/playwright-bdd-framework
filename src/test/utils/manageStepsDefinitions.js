@@ -54,6 +54,7 @@ async launch(dataCapabilities, appiumServerUrl) {
         executablePath: config.executablePath ?? undefined,
       };
       if (!config.desktop?.viewport) {
+        launchOptions.args = launchOptions.args || [];
         launchOptions.args.push('--start-maximized');
       }
 
@@ -69,6 +70,7 @@ async launch(dataCapabilities, appiumServerUrl) {
       pageFixture.setContext(context);
       pageFixture.setPageFixture(await context.newPage());
       console.log('Browser and page initialized successfully.');
+      return pageFixture.getPageFixture();
     } catch (error) {
       console.error('Error initializing browser and page:', error.message);
       throw error;
