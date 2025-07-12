@@ -11,7 +11,8 @@
       "links": {
         "index": "https://playwright.dev/",
         "automationexercise": "https://automationexercise.com/",
-        "api": "https://api.qa.example.com"
+        "api": "https://api.qa.example.com",
+        "KodeIT": "https://www.letskodeit.com/practice"
       },
       "screenshotOnFailure": true
     },

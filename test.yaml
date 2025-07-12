@@ -1,0 +1,19 @@
+elements:
+  - id: test
+    description: A menu item that links to Dashboard
+    cache: true
+    timeout: 5000
+    locators:
+      - device: WEB
+        strategy: getByRole
+        role: button
+        name: singin
+        filter:
+          hasText: Dashboard
+          hasClass: active
+      - device: IOS
+        strategy: ACCESSIBILITY_ID
+        value: Add alarm
+      - device: ANDROID
+        strategy: ID
+        value: com.android.chrome:id/signin_fre_dismiss_button
