@@ -8,7 +8,8 @@ class PageFixture {
     this.browser = undefined;
     this.config = undefined;
     this.driver = undefined;
-    this.MapYamlFile = new Map(); // Should be an instance of Map
+    this.MapYamlFile = new Map();
+    this.flag = true // Should be an instance of Map
   }
   /**
    * set the page instance.
@@ -98,6 +99,20 @@ class PageFixture {
    */
   getMapLocator() {
     return this.MapYamlFile;
+  }
+  /**
+   * set value for flag when read file Yaml
+   * @param {boolean} flag - The flag value to set.
+   */
+  setFlag(flag){
+    this.flag = flag
+  }
+  /**
+   * get value for flag when read file Yaml
+   * @returns {boolean} - The current flag value.
+   */
+  getFlag(){
+    return this.flag;
   }
   /**
    * Reset the page fixture, clearing all stored instances.

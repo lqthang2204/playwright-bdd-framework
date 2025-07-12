@@ -1,6 +1,6 @@
 Feature: Test all feature of KodeIT
 
-@KodeIT
+@KodeIT @smoke
   Scenario: Open and login to KodeIT
     Given I navigate to url KodeIT
     And I verify title this page is "Practice Page"
