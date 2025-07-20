@@ -5,8 +5,11 @@ const pageFixture = require('../../../support/pageFixture.js');
 const manageYamlFile = require("../../../libs/ManageYamlFile.js")
 
     Given('I change the page spec to {word}', async function (fileName) {
-           // Write code here that turns the phrase above into concrete actions
-           const data = await manageYamlFile.readFileYaml(fileName, '../Resources/Pages/', '.yaml')
-           console.log("data", data);
-           console.log("Map contain value is", pageFixture.getMapLocator().entries());
+           this.dataYaml = await manageYamlFile.readFileYaml(fileName, '../Resources/Pages/', '.yaml')});
+
+    Then('I {word} element Sign-in-button', async function (action) {
+          const element = await manageYamlFile.lookUpElementInYaml('Sign-in-button', this.dataYaml);
+           console.log(`Performing action "${action}" on element "Sign-in-button"`);
+           await manageStepsDefinitions.performActionOnElement(action, element, this.page);
          });
+         

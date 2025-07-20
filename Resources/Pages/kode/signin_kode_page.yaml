@@ -1,43 +1,39 @@
 elements:
-  - id: menu-item1
+  - id: Sign-in-button
     description: A menu item that links to Dashboard
     cache: true
     timeout: 5000
     locators:
-      - device: WEB
-        strategy: getByRole
-        role: button
-        name: singin
-        filter:
-          hasText: Dashboard
-          hasClass: active
+      - device: DESKTOP
+        type: XPATH
+        value: //*[text()="Sign In"]
       - device: IOS
-        strategy: ACCESSIBILITY_ID
+        type: ACCESSIBILITY_ID
         value: Add alarm
       - device: ANDROID
-        strategy: ID
+        type: ID
         value: com.android.chrome:id/signin_fre_dismiss_button
-  - id: dashboard-title1
-    description: The title element on the Dashboard page
-    cache: false
+  - id: Sign-in-button-2
+    description: The Sign in button on the Dashboard page
+    cache: true
     locators:
-      - device: WEB
-        strategy: getByText
-        value: Dashboard
+      - device: DESKTOP
+        type: XPATH
+        value: //*[contains(text(), "Sign In")]
       - device: ANDROID
-        strategy: ID
+        type: ID
         value: com.example.android:id/dashboard_title
-  - id: sign-in-button1
+  - id: sign-in-button-3
     description: The sign-in button for all platforms
     cache: false
     locators:
-      - device: WEB
-        strategy: getByRole
+      - device: DESKTOP
+        type: getByRole
         role: button
         name: Sign in
       - device: ANDROID
-        strategy: ACCESSIBILITY_ID
+        type: ACCESSIBILITY_ID
         value: Sign in
       - device: ANDROID
-        strategy: ID
+        type: ID
         value: com.android.chrome:id/signin_button
