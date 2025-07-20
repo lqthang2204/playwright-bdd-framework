@@ -7,7 +7,7 @@ Given('I navigate to url {word}', async function (url) {
   try {
     // Initialize the browser and page
     console.log('Initializing browser and page...');
-    await manageStepsDefinitions.launch()
+    await this.launchBrowser();
 
     // Resolve the target URL
     console.log(`Resolving target URL for: ${url}`);
@@ -15,7 +15,7 @@ Given('I navigate to url {word}', async function (url) {
 
     // Navigate to the target URL
     console.log(`Navigating to: ${targetUrl}`);
-    await pageFixture.getPageFixture().goto(targetUrl, { waitUntil: 'load' });
+    await this.page.goto(targetUrl, { waitUntil: 'load' });
 
     console.log('Navigation successful.');
   } catch (error) {
@@ -30,10 +30,10 @@ Then('I verify title this page is {string}', async function (expectedTitle) {
   try {
     // Wait for the page to load
     console.log('Waiting for the page to load...');
-    await pageFixture.getPageFixture().waitForLoadState('load');
+    await this.page.waitForLoadState('load');
 
     // Get the actual title of the page
-    const actualTitle = await pageFixture.getPageFixture().title();
+    const actualTitle = await this.page.title();
     console.log(`Verifying page title. Expected: "${expectedTitle}", Actual: "${actualTitle}"`);
 
     // Assert the title matches the expected value

@@ -5,39 +5,39 @@ elements:
     timeout: 5000
     locators:
       - device: WEB
-        strategy: getByRole
+        type: getByRole
         role: button
         name: singin
         filter:
           hasText: Dashboard
           hasClass: active
       - device: IOS
-        strategy: ACCESSIBILITY_ID
+        type: ACCESSIBILITY_ID
         value: Add alarm
       - device: ANDROID
-        strategy: ID
+        type: ID
         value: com.android.chrome:id/signin_fre_dismiss_button
   - id: dashboard-title2-general
     description: The title element on the Dashboard page
     cache: false
     locators:
       - device: WEB
-        strategy: getByText
+        type: getByText
         value: Dashboard
       - device: ANDROID
-        strategy: ID
+        type: ID
         value: com.example.android:id/dashboard_title
   - id: sign-in-button2-general
     description: The sign-in button for all platforms
     cache: false
     locators:
       - device: WEB
-        strategy: getByRole
+        type: getByRole
         role: button
         name: Sign in
       - device: ANDROID
-        strategy: ACCESSIBILITY_ID
+        type: ACCESSIBILITY_ID
         value: Sign in
       - device: ANDROID
-        strategy: ID
+        type: ID
         value: com.android.chrome:id/signin_button

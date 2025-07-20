@@ -6,8 +6,9 @@ const config = require('../config.json');
 
 
 // Set the default timeout for Cucumber steps (e.g., 60 seconds)
-const unifiedTimeout = parseInt(config.setDefaultTimeout) || 60000;
+const unifiedTimeout = parseInt(config.setDefaultTimeout) || 30000;
 setDefaultTimeout(unifiedTimeout);
+pageFixture.setTimeout(unifiedTimeout); // Set the timeout in pageFixture
 
 // Helper function to log errors
 function logError(message, error) {
@@ -95,7 +96,7 @@ AfterStep(async function (step) {
     console.log(`Step failed: ${step.text || 'unknown_step'}`);
 
     // Take a screenshot
-    const screenshotPath = await takeScreenshot(step, pageFixture.getPageFixture(), isScreenshotEnabled);
+    const screenshotPath = await takeScreenshot(step, this.page, isScreenshotEnabled);
     if (screenshotPath) {
       // Attach the screenshot to the Cucumber report
       const screenshotData = fs.readFileSync(screenshotPath);
