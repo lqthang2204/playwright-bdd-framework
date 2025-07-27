@@ -28,11 +28,11 @@ async function takeScreenshot(step, page, is_capture) {
         fs.mkdirSync(screenshotDir, { recursive: true }); // Create the directory if it doesn't exist
       }
   
-      const stepName = step.pickle?.name || step.text || 'unknown_step';
+      const stepName = step.pickleStep.text  || step.text || 'unknown_step';
       const sanitizedStepName = stepName.replace(/[^a-zA-Z0-9]/g, '_'); // Sanitize the step name
       const screenshotPath = path.resolve(screenshotDir,`${sanitizedStepName}.png`);
   
-      console.log(`Taking screenshot for failed step: ${step.pickle.name}`);
+      console.log(`Taking screenshot for failed step: ${step.pickle.text || 'unknown_step'}`);
       await page.screenshot({ path: screenshotPath });
   
       console.log(`Screenshot saved at: ${screenshotPath}`);
@@ -93,7 +93,7 @@ AfterStep(async function (step) {
     }
 
     // Log the failed step
-    console.log(`Step failed: ${step.text || 'unknown_step'}`);
+    console.log(`Step failed: ${step.pickleStep.text || 'unknown_step'}`);
 
     // Take a screenshot
     const screenshotPath = await takeScreenshot(step, this.page, isScreenshotEnabled);

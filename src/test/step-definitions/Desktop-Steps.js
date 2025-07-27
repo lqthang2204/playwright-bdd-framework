@@ -11,11 +11,11 @@ Given('I navigate to url {word}', async function (url) {
 
     // Resolve the target URL
     console.log(`Resolving target URL for: ${url}`);
-    const targetUrl = manageStepsDefinitions.goToUrl(url, pageFixture.getConfig());
+    const targetUrl = await manageStepsDefinitions.goToUrl(url, pageFixture.getConfig());
 
     // Navigate to the target URL
     console.log(`Navigating to: ${targetUrl}`);
-    await this.page.goto(targetUrl, { waitUntil: 'load' });
+    await this.page.goto(targetUrl, { waitUntil: 'load' , timeout: pageFixture.getTimeout()});
 
     console.log('Navigation successful.');
   } catch (error) {
@@ -26,18 +26,19 @@ Given('I navigate to url {word}', async function (url) {
 
 });
 
-Then('I verify title this page is {string}', async function (expectedTitle) {
+Then(/^I verify title this page is( not)? (\w+) "(.*)"$/, async function (negative, matchType, expectedTitle) {
   try {
     // Wait for the page to load
     console.log('Waiting for the page to load...');
     await this.page.waitForLoadState('load');
 
     // Get the actual title of the page
-    const actualTitle = await this.page.title();
-    console.log(`Verifying page title. Expected: "${expectedTitle}", Actual: "${actualTitle}"`);
+    // const actualTitle = await this.page.title();
+    // console.log(`Verifying page title. Expected: "${expectedTitle}", Actual: "${actualTitle}"`);
 
-    // Assert the title matches the expected value
-    expect(actualTitle).toBe(expectedTitle);
+    // // Assert the title matches the expected value
+    // expect(actualTitle).toBe(expectedTitle);
+    await manageStepsDefinitions.verifyTitlePage(negative, matchType, expectedTitle, this.page);
 
     console.log('Page title verification successful.');
   } catch (error) {

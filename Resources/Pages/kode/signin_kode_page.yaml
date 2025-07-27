@@ -5,7 +5,7 @@ elements:
     timeout: 5000
     locators:
       - device: DESKTOP
-        type: XPATH
+        type: locator
         value: //*[text()="Sign In"]
       - device: IOS
         type: ACCESSIBILITY_ID
@@ -14,26 +14,101 @@ elements:
         type: ID
         value: com.android.chrome:id/signin_fre_dismiss_button
   - id: Sign-in-button-2
-    description: The Sign in button on the Dashboard page
+    description: A menu item that links to Dashboard
     cache: true
-    locators:
-      - device: DESKTOP
-        type: XPATH
-        value: //*[contains(text(), "Sign In")]
-      - device: ANDROID
-        type: ID
-        value: com.example.android:id/dashboard_title
-  - id: sign-in-button-3
-    description: The sign-in button for all platforms
-    cache: false
+    timeout: 5000
     locators:
       - device: DESKTOP
         type: getByRole
-        role: button
-        name: Sign in
-      - device: ANDROID
+        role: link
+        name: Sign In
+      - device: IOS
         type: ACCESSIBILITY_ID
-        value: Sign in
+        value: Add alarm
       - device: ANDROID
         type: ID
-        value: com.android.chrome:id/signin_button
+        value: com.android.chrome:id/signin_fre_dismiss_button
+  - id: rdb_bmw_1
+    description: option for BMW in the radio button group
+    cache: true
+    locators:
+      - device: DESKTOP
+        type: locator
+        value: '#radio-btn-example'
+        child:
+          type: getByText
+          value: BMW
+      - device: ANDROID
+        type: ID
+        value: com.example.android:id/dashboard_title
+  - id: rdb_bmw_2
+    description: option for BMW in the radio button group
+    cache: true
+    locators:
+      - device: DESKTOP
+        type: locator
+        value: '#bmwradio'
+      - device: ANDROID
+        type: ID
+        value: com.example.android:id/dashboard_title
+  - id: rdb_bmw_3
+    description: option for BMW in the radio button group 3
+    cache: true
+    locators:
+      - device: DESKTOP
+        type: getByLabel
+        value: BMW 
+      - device: ANDROID
+        type: ID
+        value: com.example.android:id/dashboard_title
+  - id: typing-text-field
+    description: field for typing text
+    cache: true
+    locators:
+      - device: DESKTOP
+        type: getByRole
+        role: textbox
+        name: Start Typing... 
+      - device: ANDROID
+        type: ID
+        value: com.example.android:id/dashboard_title
+  - &text-honda-checkbox
+    id: text-honda-checkbox
+    description: option for Honda in the checkbox group
+    cache: true
+    locators:
+      - device: DESKTOP
+        type: getByText
+        value: Honda
+      - device: ANDROID
+        type: ID
+        value: com.example.android:id/dashboard_title
+  - id: chk-honda-group
+    description: option for Honda in the checkbox group
+    cache: true
+    locators:
+      - device: DESKTOP
+        type: locator
+        value: '#checkbox-example-div'
+        element: *text-honda-checkbox
+      - device: ANDROID
+        type: ID
+        value: com.example.android:id/dashboard_title
+  - id: chk-honda
+    description: option for Honda in the checkbox group
+    cache: true
+    locators:
+      - device: DESKTOP
+        type: locator
+        value: '#hondacheck'
+      - device: ANDROID
+        type: ID
+        value: com.example.android:id/dashboard_title
+
+#         page.getByRole() to locate by explicit and implicit accessibility attributes.
+# page.getByText() to locate by text content.
+# page.getByLabel() to locate a form control by associated label's text.
+# page.getByPlaceholder() to locate an input by placeholder.
+# page.getByAltText() to locate an element, usually image, by its text alternative.
+# page.getByTitle() to locate an element by its title attribute.
+# page.getByTestId() to locate an element based on its data-testid attribute (other attributes can be configured).

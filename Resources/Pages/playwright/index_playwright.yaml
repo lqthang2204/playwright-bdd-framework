@@ -1,0 +1,87 @@
+elements:
+  - id: start_link
+    description: Link start button
+    cache: true
+    timeout: 5000
+    locators:
+      - device: DESKTOP
+        type: locator
+        value: a
+        options:
+          hasText: Get started
+      - device: IOS
+        type: ACCESSIBILITY_ID
+        value: Add alarm
+      - device: ANDROID
+        type: ID
+        value: com.android.chrome:id/signin_fre_dismiss_button
+  - id: Page_Object_Model_section_link
+    description: link to Page Object Model section
+    cache: true
+    timeout: 5000
+    locators:
+      - device: DESKTOP
+        type: locator
+        value: li
+        options:
+          hasText: Guides
+        child:
+          type: locator
+          value: a
+          options:
+            hasText: Page Object Model
+      - device: IOS
+        type: ACCESSIBILITY_ID
+        value: Add alarm
+      - device: ANDROID
+        type: ID
+        value: com.android.chrome:id/signin_fre_dismiss_button
+  - id: Page_Object_Model_section_link_2
+    description: link to Page Object Model section
+    cache: true
+    timeout: 5000
+    locators:
+      - device: DESKTOP
+        type: locator
+        value: li
+        options:
+          hasText: Guides
+        child:
+          type: locator
+          value: a
+          options:
+            hasText: Page Object Model
+      - device: IOS
+        type: ACCESSIBILITY_ID
+        value: Add alarm
+      - device: ANDROID
+        type: ID
+        value: com.android.chrome:id/signin_fre_dismiss_button
+  - &tab_header
+    id: tab_header
+    description: link to npm in the header
+    cache: true
+    timeout: 5000
+    locators:
+      - device: DESKTOP
+        type: getbyrole
+        role: tab
+        order: first
+  - id: npm_header_link
+    description: link to npm in the header
+    cache: true
+    timeout: 5000
+    locators:
+      - device: DESKTOP
+        type: locator
+        value: div
+        filter:
+          hasText: npmyarnpnpmnpx playwright testyarn playwright testpnpm exec playwright test
+        element: *tab_header
+      - device: IOS
+        type: ACCESSIBILITY_ID
+        value: Add alarm
+      - device: ANDROID
+        type: ID
+        value: com.android.chrome:id/signin_fre_dismiss_button
+

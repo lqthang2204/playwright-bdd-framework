@@ -1,8 +1,8 @@
-const { setWorldConstructor, World } = require('@cucumber/cucumber');
+const { setWorldConstructor, World , setDefaultTimeout} = require('@cucumber/cucumber');
 const { chromium, firefox, webkit, devices } = require('playwright');
 const manageStepsDefinitions = require('../src/test/utils/manageStepsDefinitions.js');
 const pageFixture = require('./pageFixture.js'); // Adjusted path
-
+const config = require('../config.json');
 class CustomWorld extends World {
   constructor(options) {
     super(options); // Call the parent constructor
@@ -10,6 +10,7 @@ class CustomWorld extends World {
     this.context = null;
     this.page = null;
     this.driver = null
+
   }
   async launchBrowser() {
     try {

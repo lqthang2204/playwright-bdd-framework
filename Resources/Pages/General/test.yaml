@@ -1,43 +1,22 @@
 elements:
-  - id: menu-item-general
-    description: A menu item that links to Dashboard
-    cache: true
-    timeout: 5000
+  - id: unique-element-id
+    description: Mô tả mục đích sử dụng của element này
+    cache: true | false
+    timeout: 5000 # ms
     locators:
       - device: WEB
-        type: getByRole
-        role: button
-        name: singin
-        filter:
-          hasText: Dashboard
-          hasClass: active
+        type: getByRole | getByLabel | getByText | css | xpath | locator
+        role: optional (nếu type là getByRole)
+        name: optional (nếu type là getByRole/getByText)
+        value: optional (nếu type là css/xpath)
+        filter: # Optional - chỉ áp dụng nếu type hỗ trợ filter
+          hasText: optional
+          hasClass: optional
+          hasNotText: optional
+          has: optional (JSON object cho nested locator)
       - device: IOS
-        type: ACCESSIBILITY_ID
-        value: Add alarm
+        type: ACCESSIBILITY_ID | XPATH | ID | CLASS
+        value: native-ios-locator
       - device: ANDROID
-        type: ID
-        value: com.android.chrome:id/signin_fre_dismiss_button
-  - id: dashboard-title2-general
-    description: The title element on the Dashboard page
-    cache: false
-    locators:
-      - device: WEB
-        type: getByText
-        value: Dashboard
-      - device: ANDROID
-        type: ID
-        value: com.example.android:id/dashboard_title
-  - id: sign-in-button2-general
-    description: The sign-in button for all platforms
-    cache: false
-    locators:
-      - device: WEB
-        type: getByRole
-        role: button
-        name: Sign in
-      - device: ANDROID
-        type: ACCESSIBILITY_ID
-        value: Sign in
-      - device: ANDROID
-        type: ID
-        value: com.android.chrome:id/signin_button
+        type: ACCESSIBILITY_ID | XPATH | ID | CLASS
+        value: native-android-locator
