@@ -46,7 +46,12 @@ class ManageStepsDefinitions {
 
     case "GETBYROLE":
       const options = { ...(locatorObj.name && { name: locatorObj.name }) };
-      locator = page.getByRole(locatorObj.role, options);
+       if (locator === null) {
+          locator = page.getByRole(locatorObj.role, options);
+       }
+       else{
+          locator = locator.getByRole(locatorObj.role, options);
+       } 
       break;
 
     case "GETBYLABEL":
@@ -74,7 +79,7 @@ class ManageStepsDefinitions {
   }
 
   // 👉 Nếu có locator con (child)
-  if (locatorObj.child) {
+  if (locatorObj?.child){
     locator = await this.buildLocator(locatorObj.child, page, locator, dataYaml);
   }
 
@@ -89,15 +94,23 @@ class ManageStepsDefinitions {
     }
   }
 
+
   // 👉 if locator include element in yaml file
   if (locatorObj.element) {
     const elementLocator = locatorObj.element;
     const element = await manageYamlFile.lookUpElementInYaml(elementLocator.id, dataYaml);
     locator = await this.buildLocator(element.locator, page, locator, dataYaml);
   }
-
+  if(locatorObj.index && locatorObj.index.toLowerCase() === "first") {
+    locator = locator.first();
+  }
+  if(locatorObj.index && locatorObj.index.toLowerCase() === "last") {
+    locator = locator.last();
+  } 
   return locator;
+
 }
+
 
   /**
    * Executes a specified action on a given locator with optional parameters.

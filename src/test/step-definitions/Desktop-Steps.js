@@ -16,6 +16,7 @@ Given('I navigate to url {word}', async function (url) {
     // Navigate to the target URL
     console.log(`Navigating to: ${targetUrl}`);
     await this.page.goto(targetUrl, { waitUntil: 'load' , timeout: pageFixture.getTimeout()});
+    await this.page.setDefaultTimeout(pageFixture.getTimeout()); // Set the default timeout for actions on this page
 
     console.log('Navigation successful.');
   } catch (error) {

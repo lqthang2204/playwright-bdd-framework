@@ -5,10 +5,9 @@ elements:
     timeout: 5000
     locators:
       - device: DESKTOP
-        type: locator
-        value: a
-        options:
-          hasText: Get started
+        type: getbyrole
+        role: link
+        name: Get started
       - device: IOS
         type: ACCESSIBILITY_ID
         value: Add alarm
@@ -66,7 +65,6 @@ elements:
       - device: DESKTOP
         type: getbyrole
         role: tab
-        order: first
   - id: npm_header_link
     description: link to npm in the header
     cache: true
@@ -76,8 +74,11 @@ elements:
         type: locator
         value: div
         filter:
-          hasText: npmyarnpnpmnpx playwright testyarn playwright testpnpm exec playwright test
-        element: *tab_header
+          hasText: /^npmyarnpnpmnpx playwright testyarn playwright testpnpm exec playwright test$/
+        next:
+          type: getbyrole
+          role: tab
+          index: first
       - device: IOS
         type: ACCESSIBILITY_ID
         value: Add alarm

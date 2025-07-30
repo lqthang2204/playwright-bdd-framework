@@ -79,7 +79,7 @@ elements:
     locators:
       - device: DESKTOP
         type: getByText
-        value: Honda
+        value: {text}
       - device: ANDROID
         type: ID
         value: com.example.android:id/dashboard_title
