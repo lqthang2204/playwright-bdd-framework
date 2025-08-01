@@ -11,7 +11,7 @@ Given('I open application with config below', async function (dataTable) {
     console.log('Opening application with config below:', dataTable);
     // Override the data table with the capabilities file
     const {capabilities, appiumServerUrl} = await managetable.OverrideTable(dataTable); // Assuming dataTable is a single cell with the path to the config file
-    await manageStepsDefinitions.launch(capabilities, appiumServerUrl)
+    await this.launchApplication(capabilities, appiumServerUrl);
     console.log('Application opened with config:', capabilities);
     
 }
