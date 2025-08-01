@@ -5,9 +5,10 @@ elements:
     timeout: 5000
     locators:
       - device: DESKTOP
-        type: getbyrole
-        role: link
-        name: Get started
+        chain:
+          - type: getbyrole
+            role: link
+            name: Get started
       - device: IOS
         type: ACCESSIBILITY_ID
         value: Add alarm
@@ -71,14 +72,14 @@ elements:
     timeout: 5000
     locators:
       - device: DESKTOP
-        type: locator
-        value: div
-        filter:
-          hasText: /^npmyarnpnpmnpx playwright testyarn playwright testpnpm exec playwright test$/
-        next:
-          type: getbyrole
-          role: tab
-          index: first
+        chain:
+          - type: locator
+            value: div
+            filter:
+              hasText: /^npm playwright testyarn playwright testpnpm exec playwright test$/
+          - type: getbyrole
+            role: tab
+          - type: first
       - device: IOS
         type: ACCESSIBILITY_ID
         value: Add alarm

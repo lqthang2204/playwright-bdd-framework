@@ -31,8 +31,14 @@ class ManageStepsDefinitions {
    * @returns {import('playwright').Locator} The Playwright locator.
    */
  async buildLocator(locatorObj, page, locator = null, dataYaml) {
-  if (!locatorObj || !locatorObj.type) {
-    throw new Error("Locator object is missing or does not contain a type.");
+  if (!locatorObj && Array.isArray(locatorObj.chain) && locatorObj.chain.length > 0) {
+    throw new Error("Locator object is empty or invalid.");
+  }
+  for(const locatorItem of locatorObj.chain) {
+    const locatorType = locatorItem.type.toUpperCase();
+    if (locatorType === "LOCATOR"){
+      
+    }
   }
 
   switch (locatorObj.type.toUpperCase()) {
