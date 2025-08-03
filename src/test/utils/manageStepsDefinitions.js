@@ -5,6 +5,7 @@ const path = require("path");
 const fs = require("fs");
 const { expect } = require("@playwright/test");
 const manageYamlFile = require("../../../libs/ManageYamlFile.js");
+const { type } = require("os");
 
 class ManageStepsDefinitions {
   /**
@@ -30,93 +31,130 @@ class ManageStepsDefinitions {
    * @param {object} locatorObj - The locator object with strategy and relevant properties.
    * @returns {import('playwright').Locator} The Playwright locator.
    */
- async buildLocator(locatorObj, page, locator = null, dataYaml) {
-  if (!locatorObj && Array.isArray(locatorObj.chain) && locatorObj.chain.length > 0) {
-    throw new Error("Locator object is empty or invalid.");
-  }
-  for(const locatorItem of locatorObj.chain) {
-    const locatorType = locatorItem.type.toUpperCase();
-    if (locatorType === "LOCATOR"){
-      
+  async buildLocator(locatorObj, page, locator = null, dataYaml) {
+    if (
+      !locatorObj &&
+      Array.isArray(locatorObj.chain) &&
+      locatorObj.chain.length > 0
+    ) {
+      throw new Error("Locator object is empty or invalid.");
     }
-  }
-
-  switch (locatorObj.type.toUpperCase()) {
-    case "LOCATOR":
+    for (const locatorItem of locatorObj.chain) {
+      const locatorType = locatorItem.type.toUpperCase();
       if (locator === null) {
-        locator = page.locator(locatorObj.value, locatorObj.options || {});
+        switch (locatorType) {
+          case "LOCATOR":
+            locator = page.locator(
+              locatorItem.value,
+              locatorItem.options || {}
+            );
+            // locator = locator.locator(
+            //   locatorItem.value,
+            //   locatorItem.options || {}
+            // );
+            break;
+
+          case "GETBYROLE":
+            const options = {...(locatorItem.name && { name: locatorItem.name }),
+            };
+              locator = page.getByRole(locatorItem.role, options);
+              // locator = locator.getByRole(locatorItem.role, options);
+            break;
+
+          case "GETBYLABEL":
+            locator = page.getByLabel(locatorItem.value);
+            break;
+
+          case "GETBYPLACEHOLDER":
+            locator = page.getByPlaceholder(locatorItem.placeholder);
+            break;
+
+          case "GETBYTEXT":
+              locator = page.getByText(locatorItem.value, { exact: true });
+              // locator = locator.getByText(locatorItem.value, { exact: true });
+            break;
+
+          case "GETBYALTTEXT":
+            locator = page.getByAltText(locatorItem.text);
+            break;
+          case "GETBYALTTEXT":
+            locator = page.getByAltText(locatorItem.text);
+            break;
+          case "FIRST":
+            throw new Error('locator is null, please provide a locator');
+          case "LAST":
+            throw new Error('locator is null, please provide a locator');
+
+          default:
+            throw new Error(`Unsupported locator type: ${locatorItem.type}`);
+        }
       } else {
-        locator = locator.locator(locatorObj.value, locatorObj.options || {});
+        switch (locatorType) {
+          case "LOCATOR":
+            locator = locator.locator(
+              locatorItem.value,
+              locatorItem.options || {}
+            );
+            // locator = locator.locator(
+            //   locatorItem.value,
+            //   locatorItem.options || {}
+            // );
+            break;
+
+          case "GETBYROLE":
+            const options = {...(locatorItem.name && { name: locatorItem.name }),
+            };
+              locator = locator.getByRole(locatorItem.role, options);
+              // locator = locator.getByRole(locatorItem.role, options);
+            break;
+
+          case "GETBYLABEL":
+            locator = locator.getByLabel(locatorItem.value);
+            break;
+
+          case "GETBYPLACEHOLDER":
+            locator = locator.getByPlaceholder(locatorItem.placeholder);
+            break;
+
+          case "GETBYTEXT":
+              locator = locator.getByText(locatorItem.value, { exact: true });
+              // locator = locator.getByText(locatorItem.value, { exact: true });
+            break;
+
+          case "GETBYALTTEXT":
+            locator = locator.getByAltText(locatorItem.text);
+            break;
+          case "GETBYALTTEXT":
+            locator = locator.getByAltText(locatorItem.text);
+            break;
+          case "FIRST":
+            locator = locator.first();
+            break;
+          case "LAST":
+            locator = locator.last();
+            break;  
+          case "NTH":
+            if(locatorItem.index === undefined || locatorItem.index < 0 || typeof locatorItem.index !== 'number') {
+              throw new Error(`Invalid index for NTH locator: ${locatorItem.index}`);
+            }
+            else{
+                locator = locator.nth(locatorItem.index);
+            }
+            break;
+
+          default:
+            throw new Error(`Unsupported locator type: ${locatorItem.type}`);
+        }
       }
-      break;
-
-    case "GETBYROLE":
-      const options = { ...(locatorObj.name && { name: locatorObj.name }) };
-       if (locator === null) {
-          locator = page.getByRole(locatorObj.role, options);
-       }
-       else{
-          locator = locator.getByRole(locatorObj.role, options);
-       } 
-      break;
-
-    case "GETBYLABEL":
-      locator = page.getByLabel(locatorObj.value);
-      break;
-
-    case "GETBYPLACEHOLDER":
-      locator = page.getByPlaceholder(locatorObj.placeholder);
-      break;
-
-    case "GETBYTEXT":
-      if (locator === null) {
-        locator = page.getByText(locatorObj.value, { exact: true });
-      } else {
-        locator = locator.getByText(locatorObj.value, { exact: true });
+      if (locatorItem.filter) {
+      if (locatorItem.filter.hasText) {
+        locator = locator.filter({ hasText: locatorItem.filter.hasText });
       }
-      break;
-
-    case "GETBYALTTEXT":
-      locator = page.getByAltText(locatorObj.text);
-      break;
-
-    default:
-      throw new Error(`Unsupported locator type: ${locatorObj.type}`);
-  }
-
-  // 👉 Nếu có locator con (child)
-  if (locatorObj?.child){
-    locator = await this.buildLocator(locatorObj.child, page, locator, dataYaml);
-  }
-
-  // 👉 Áp dụng bộ lọc (filter)
-  if (locatorObj.filter) {
-    if (locatorObj.filter.hasText) {
-      locator = locator.filter({ hasText: locatorObj.filter.hasText });
     }
-    if (locatorObj.filter.has) {
-      const hasLocator = page.locator(locatorObj.filter.has.selector);
-      locator = locator.filter({ has: hasLocator });
     }
+  
+    return locator;
   }
-
-
-  // 👉 if locator include element in yaml file
-  if (locatorObj.element) {
-    const elementLocator = locatorObj.element;
-    const element = await manageYamlFile.lookUpElementInYaml(elementLocator.id, dataYaml);
-    locator = await this.buildLocator(element.locator, page, locator, dataYaml);
-  }
-  if(locatorObj.index && locatorObj.index.toLowerCase() === "first") {
-    locator = locator.first();
-  }
-  if(locatorObj.index && locatorObj.index.toLowerCase() === "last") {
-    locator = locator.last();
-  } 
-  return locator;
-
-}
-
 
   /**
    * Executes a specified action on a given locator with optional parameters.
