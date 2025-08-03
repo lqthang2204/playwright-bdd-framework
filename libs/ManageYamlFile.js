@@ -70,6 +70,7 @@ class ManageYamlFile {
    * @param {string} suffix - File extension to match (default: '.yaml').
    */
   async storeGeneralFileToCached(relativeTo = "../Resources/Pages/General", suffix = ".yaml") {
+    //if flag is false, skip storing files
     if (!pageFixture.getFlag()) {
       console.warn("[storeGeneralFileToCached] Skipped: General YAML files already cached.");
       return;
@@ -104,6 +105,29 @@ class ManageYamlFile {
     pageFixture.setMapLocator(mapYaml);
     pageFixture.setFlag(false);
   }
+  async lookUpElementInYaml(elementName, data, device = "DESKTOP") {
+    if (!data || typeof data !== 'object') {
+      throw new Error("YAML data is not loaded or is not an object.");
+    }
+    const element = data.elements.find(el => el.id === elementName);
+    if(!element) {
+      throw new Error(`Element "${elementName}" not found in YAML data.`);
+    }
+    const locator = element.locators.find(d => d.device === device);
+    if (!locator) {
+      throw new Error(`Locator for device "${device}" not found in element "${elementName}".`);
+    }
+    console.log(`Locator for device "${device}":`, locator);
+    console.log("element", element);
+    return {
+      id: element.id,
+      description: element.description!== 'undefined' ? element.description : '',
+      cache: element.cache!== 'undefined' ? element.cache : false,
+      timeout: element.timeout!== 'undefined' ? element.timeout : pageFixture.getTimeout(), // default timeout
+      locator
+    }
+
+}
 }
 
 module.exports = new ManageYamlFile();

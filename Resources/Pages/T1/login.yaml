@@ -27,7 +27,7 @@ elements:
       - device: ANDROID
         strategy: ID
         value: com.example.android:id/dashboard_title
-  - id: sign-in-button2
+  - id: sign-in-button
     description: The sign-in button for all platforms
     cache: false
     locators:
