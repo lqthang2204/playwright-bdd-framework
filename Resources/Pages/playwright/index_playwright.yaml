@@ -21,15 +21,15 @@ elements:
     timeout: 5000
     locators:
       - device: DESKTOP
-        type: locator
-        value: li
-        options:
-          hasText: Guides
-        child:
-          type: locator
-          value: a
-          options:
-            hasText: Page Object Model
+        chain:
+          - type: locator
+            value: li
+            options:
+              hasText: Guides
+          - type: locator
+            value: a
+            options:
+              hasText: Page Object Model
       - device: IOS
         type: ACCESSIBILITY_ID
         value: Add alarm
