@@ -116,18 +116,18 @@ After(async function () {
  
 });
 AfterAll(async function () {
-  console.log('Scenario teardown: Closing browser...');
-  try {
-    if (this.page) {
-      await this.page.close();
-    }
-    if (this.context) {
-      await this.context.close();
-    }
-    if (this.browser) {
-      await this.browser.close();
-    }
-  } catch (error) {
-    logError('Error during browser teardown', error);
-  }
+  // console.log('Scenario teardown: Closing browser...');
+  // try {
+  //   if (this.page) {
+  //     await this.page.close();
+  //   }
+  //   if (this.context) {
+  //     await this.context.close();
+  //   }
+  //   if (this.browser) {
+  //     await this.browser.close();
+  //   }
+  // } catch (error) {
+  //   logError('Error during browser teardown', error);
+  // }
 });

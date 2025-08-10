@@ -28,16 +28,16 @@ elements:
       - device: ANDROID
         type: ID
         value: com.android.chrome:id/signin_fre_dismiss_button
-  - id: rdb_bmw_1
+  - id: rdb_bmw
     description: option for BMW in the radio button group
     cache: true
     locators:
       - device: DESKTOP
-        type: locator
-        value: '#radio-btn-example'
-        child:
-          type: getByText
-          value: BMW
+        chain:
+          - type: locator
+            value: '#radio-btn-example'
+          - type: getByText
+            value: BMW
       - device: ANDROID
         type: ID
         value: com.example.android:id/dashboard_title
@@ -46,51 +46,68 @@ elements:
     cache: true
     locators:
       - device: DESKTOP
+        chain:
+          - type: locator
+            value: '#bmwradio'
+      - device: ANDROID
+        type: ID
+        value: com.example.android:id/dashboard_title
+  - id: rdb_benz
+    description: option for benz in the radio button group
+    cache: true
+    locators:
+      - device: DESKTOP
+        chain:
+          - type: locator
+            value: '#benzradio'
+      - device: ANDROID
         type: locator
         value: '#bmwradio'
       - device: ANDROID
         type: ID
         value: com.example.android:id/dashboard_title
-  - id: rdb_bmw_3
-    description: option for BMW in the radio button group 3
+  - id: rdb_button_group
+    description: radio button group
     cache: true
     locators:
       - device: DESKTOP
-        type: getByLabel
-        value: BMW 
+        chain:
+          - type: getByRole
+            role: group
+            name: Radio Button Example
       - device: ANDROID
         type: ID
         value: com.example.android:id/dashboard_title
-  - id: typing-text-field
-    description: field for typing text
+  - id: check_box_honda
+    description: field check box
     cache: true
     locators:
       - device: DESKTOP
-        type: getByRole
-        role: textbox
-        name: Start Typing... 
+        chain:
+          - type: locator
+            value: '#hondacheck'
       - device: ANDROID
         type: ID
         value: com.example.android:id/dashboard_title
-  - &text-honda-checkbox
-    id: text-honda-checkbox
-    description: option for Honda in the checkbox group
+  - id: check_box_benz
+    description: field check box benz
     cache: true
     locators:
       - device: DESKTOP
-        type: getByText
-        value: {text}
+        chain:
+          - type: locator
+            value: '#benzcheck'
       - device: ANDROID
         type: ID
         value: com.example.android:id/dashboard_title
-  - id: chk-honda-group
-    description: option for Honda in the checkbox group
+  - id: check_box_bmw
+    description: field check box bmw
     cache: true
     locators:
       - device: DESKTOP
-        type: locator
-        value: '#checkbox-example-div'
-        element: *text-honda-checkbox
+        chain:
+          - type: locator
+            value: '#bmwcheck'
       - device: ANDROID
         type: ID
         value: com.example.android:id/dashboard_title
@@ -101,6 +118,18 @@ elements:
       - device: DESKTOP
         type: locator
         value: '#hondacheck'
+      - device: ANDROID
+        type: ID
+        value: com.example.android:id/dashboard_title
+  - id: text_field_start
+    description: field text start
+    cache: true
+    locators:
+      - device: DESKTOP
+        chain:
+          - type: getByRole
+            role: textbox
+            name: Start Typing...
       - device: ANDROID
         type: ID
         value: com.example.android:id/dashboard_title

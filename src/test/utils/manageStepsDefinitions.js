@@ -40,120 +40,51 @@ class ManageStepsDefinitions {
       throw new Error("Locator object is empty or invalid.");
     }
     for (const locatorItem of locatorObj.chain) {
-      const locatorType = locatorItem.type.toUpperCase();
-      if (locator === null) {
-        switch (locatorType) {
-          case "LOCATOR":
-            locator = page.locator(
-              locatorItem.value,
-              locatorItem.options || {}
-            );
-            // locator = locator.locator(
-            //   locatorItem.value,
-            //   locatorItem.options || {}
-            // );
-            break;
-
-          case "GETBYROLE":
-            const options = {...(locatorItem.name && { name: locatorItem.name }),
-            };
-              locator = page.getByRole(locatorItem.role, options);
-              // locator = locator.getByRole(locatorItem.role, options);
-            break;
-
-          case "GETBYLABEL":
-            locator = page.getByLabel(locatorItem.value);
-            break;
-
-          case "GETBYPLACEHOLDER":
-            locator = page.getByPlaceholder(locatorItem.placeholder);
-            break;
-
-          case "GETBYTEXT":
-              locator = page.getByText(locatorItem.value, { exact: true });
-              // locator = locator.getByText(locatorItem.value, { exact: true });
-            break;
-
-          case "GETBYALTTEXT":
-            locator = page.getByAltText(locatorItem.text);
-            break;
-          case "GETBYALTTEXT":
-            locator = page.getByAltText(locatorItem.text);
-            break;
-          case "FIRST":
-            throw new Error('locator is null, please provide a locator');
-          case "LAST":
-            throw new Error('locator is null, please provide a locator');
-
-          default:
-            throw new Error(`Unsupported locator type: ${locatorItem.type}`);
-        }
-      } else {
-        switch (locatorType) {
-          case "LOCATOR":
-            locator = locator.locator(
-              locatorItem.value,
-              locatorItem.options || {}
-            );
-            // locator = locator.locator(
-            //   locatorItem.value,
-            //   locatorItem.options || {}
-            // );
-            break;
-
-          case "GETBYROLE":
-            const options = {...(locatorItem.name && { name: locatorItem.name }),
-            };
-              locator = locator.getByRole(locatorItem.role, options);
-              // locator = locator.getByRole(locatorItem.role, options);
-            break;
-
-          case "GETBYLABEL":
-            locator = locator.getByLabel(locatorItem.value);
-            break;
-
-          case "GETBYPLACEHOLDER":
-            locator = locator.getByPlaceholder(locatorItem.placeholder);
-            break;
-
-          case "GETBYTEXT":
-              locator = locator.getByText(locatorItem.value, { exact: true });
-              // locator = locator.getByText(locatorItem.value, { exact: true });
-            break;
-
-          case "GETBYALTTEXT":
-            locator = locator.getByAltText(locatorItem.text);
-            break;
-          case "GETBYALTTEXT":
-            locator = locator.getByAltText(locatorItem.text);
-            break;
-          case "FIRST":
-            locator = locator.first();
-            break;
-          case "LAST":
-            locator = locator.last();
-            break;  
-          case "NTH":
-            if(locatorItem.index === undefined || locatorItem.index < 0 || typeof locatorItem.index !== 'number') {
-              throw new Error(`Invalid index for NTH locator: ${locatorItem.index}`);
-            }
-            else{
-                locator = locator.nth(locatorItem.index);
-            }
-            break;
-
-          default:
-            throw new Error(`Unsupported locator type: ${locatorItem.type}`);
-        }
+      if(locator == null){
+        locator = await this.resolveLocator(page, locatorItem);
+      }else{
+        locator = await this.resolveLocator(locator, locatorItem);
       }
-      if (locatorItem.filter) {
-      if (locatorItem.filter.hasText) {
+      if (locatorItem.filter?.hasText) {
         locator = locator.filter({ hasText: locatorItem.filter.hasText });
       }
+      if (locatorItem.filter?.has) {
+        const hasLocator = page.locator(locatorItem.filter.has.selector);
+        locator = locator.filter({ has: hasLocator });
+      }
     }
-    }
-  
+
     return locator;
+  }
+  async resolveLocator(target, locatorItem, ) {
+    const locatorType = locatorItem.type.toUpperCase();
+    switch(locatorType) {
+      case "LOCATOR":
+        return target.locator(locatorItem.value, locatorItem.options || {});
+      case "GETBYROLE":
+        const options = { ...(locatorItem.name && { name: locatorItem.name }) };
+        return target.getByRole(locatorItem.role, options);
+      case "GETBYLABEL":  
+      return target.getByLabel(locatorItem.value);
+      case "GETBYPLACEHOLDER":
+        return target.getByPlaceholder(locatorItem.placeholder);
+      case "GETBYTEXT":
+        return target.getByText(locatorItem.value, { exact: true });
+      case "GETBYALTTEXT":
+        return target.getByAltText(locatorItem.text);
+      case "FIRST":
+        return target.first();
+      case "LAST":
+        return target.last();
+      case "NTH":
+        if (locatorItem.index === undefined || locatorItem.index < 0 || typeof locatorItem.index !== 'number') {
+          throw new Error(`Invalid index for NTH locator: ${locatorItem.index}`);
+        }
+        return target.nth(locatorItem.index);
+      default:
+        throw new Error(`Unsupported locator type: ${locatorItem.type}`);
+
+    }
   }
 
   /**
@@ -339,7 +270,7 @@ class ManageStepsDefinitions {
     try {
       await this.executeActions(action, locator);
       console.log(
-        `Action "${action}" performed on element "${elementName.id}" with locator "${elementName.locator.value}"`
+        `Action "${action}" performed on element "${elementName.id}" with locator "${elementName.locator}"`
       );
     } catch (error) {
       console.error(
@@ -350,7 +281,7 @@ class ManageStepsDefinitions {
     }
     // Optional sleep to ensure the action is completed before proceeding
     console.log(
-      `Performing action "${action}" on element "${elementName.id}" with locator "${elementName.locator.value}"`
+      `Performing action "${action}" on element "${elementName.id}" with locator "${elementName.locator}"`
     );
   }
 
