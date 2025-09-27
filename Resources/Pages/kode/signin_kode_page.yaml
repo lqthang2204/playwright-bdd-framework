@@ -133,6 +133,18 @@ elements:
       - device: ANDROID
         type: ID
         value: com.example.android:id/dashboard_title
+  - id: author_row1
+    description: row one of table
+    cache: true
+    locators:
+      - device: DESKTOP
+        chain:
+          - type: getByRole
+            role: cell
+            name: Selenium WebDriver With Java
+      - device: ANDROID
+        type: ID
+        value: com.example.android:id/dashboard_title
 
 #         page.getByRole() to locate by explicit and implicit accessibility attributes.
 # page.getByText() to locate by text content.

@@ -1,0 +1,17 @@
+elements:
+  - id: login-button
+    description: Login button
+    cache: true
+    timeout: 5000
+    locators:
+      - device: DESKTOP
+        chain:
+          - type: getbyrole
+            role: link
+            name: Get started
+      - device: ANDROID
+        type: xpaTH
+        value: test-LOGIN
+      - device: IOS
+        type: ACCESSIBILITY_ID
+        value: test-LOGIN
