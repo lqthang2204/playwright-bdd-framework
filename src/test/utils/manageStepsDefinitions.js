@@ -102,6 +102,9 @@ class ManageStepsDefinitions {
           console.log(
             `[${timestamp}] Action: click performed on locator: ${locator}`
           );
+          case "type":
+            await locator.waitFor({ state: 'visible', timeout: 5000 });
+            await locator.fill(value);
           break;
 
         // case 'doubleclick':
@@ -259,7 +262,7 @@ class ManageStepsDefinitions {
         throw new Error(`Unsupported browser type: ${browser}`);
     }
   }
-  async performActionOnElement(action, elementName, page, dataYaml) {
+  async performActionOnElement(action, elementName, page, dataYaml, value= null) {
     console.log(elementName, action);
     const locator = await this.buildLocator(
       elementName.locator,
@@ -268,7 +271,7 @@ class ManageStepsDefinitions {
       dataYaml
     );
     try {
-      await this.executeActions(action, locator);
+      await this.executeActions(action, locator, value);
       console.log(
         `Action "${action}" performed on element "${elementName.id}" with locator "${elementName.locator}"`
       );

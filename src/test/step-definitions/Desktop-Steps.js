@@ -3,29 +3,6 @@ const { expect } = require('@playwright/test');
 const manageStepsDefinitions = require('../utils/manageStepsDefinitions.js'); // Adjusted path
 const pageFixture = require('../../../support/pageFixture.js');
 
-Given('I navigate to url {word}', async function (url) {
-  try {
-    // Initialize the browser and page
-    console.log('Initializing browser and page...');
-    await this.launchBrowser();
-
-    // Resolve the target URL
-    console.log(`Resolving target URL for: ${url}`);
-    const targetUrl = await manageStepsDefinitions.goToUrl(url, pageFixture.getConfig());
-
-    // Navigate to the target URL
-    console.log(`Navigating to: ${targetUrl}`);
-    await this.page.goto(targetUrl, { waitUntil: 'load' , timeout: pageFixture.getTimeout()});
-    await this.page.setDefaultTimeout(pageFixture.getTimeout()); // Set the default timeout for actions on this page
-
-    console.log('Navigation successful.');
-  } catch (error) {
-    console.error(`Error during navigation to URL "${url}":`, error.message);
-    console.error('Stack trace:', error.stack);
-    throw error; // Re-throw the error to mark the step as failed
-  }
-
-});
 
 Then(/^I verify title this page is( not)? (\w+) "(.*)"$/, async function (negative, matchType, expectedTitle) {
   try {
