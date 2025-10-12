@@ -3,56 +3,10 @@
  */
 class PageFixture {
   constructor() {
-    this.page = undefined;
-    this.context = undefined;
-    this.browser = undefined;
     this.config = undefined;
-    this.driver = undefined;
     this.MapYamlFile = new Map();
     this.flag = true // Should be an instance of Map
-  }
-  /**
-   * set the page instance.
-   * @param {import('playwright').Page} page - The Playwright page instance.
-   *
-   */
-  setPageFixture(page) {
-    this.page = page;
-  }
-  /**
-   * get the current page instance.
-   * @returns {import('playwright').Page | undefined}  - The current Playwright page instance.
-   */
-  getPageFixture() {
-    return this.page;
-  }
-  /**
-   * set the bropwser instance
-   * @param {import('playwright').Browser} browser - The Playwright browser instance.
-   */
-  setBrowser(browser) {
-    this.browser = browser;
-  }
-  /**
-   * get the current browser instance
-   * @returns {import('playwright').Browser | undefined} - The current Playwright browser instance.
-   */
-  getBrowser() {
-    return this.browser;
-  }
-  /**
-   * set the browser context instance
-   * @param {import('playwright').BrowserContext} context - The Playwright browser context instance.
-   */
-  setContext(context) {
-    this.context = context;
-  }
-  /**
-   * get the current browser context instance
-   * @returns {import('playtwright').BrowserContext | undefined} - The current Playwright browser context instance.
-   */
-  getContext() {
-    return this.context;
+    this.timeout = 3000; // Default timeout
   }
   /**
    * set the configuration object
@@ -69,20 +23,6 @@ class PageFixture {
     return this.config;
   }
 
-  /**
-   * set the driver instance
-   * @param {import('webdriverio').Remote} driver - The WebDriverIO remote instance.
-   */
-  setDriver(driver) {
-    this.driver = driver;
-  }
-  /**
-   * get the current driver instance
-   * @returns {import('webdriverio').Remote | undefined} - The current WebDriverIO remote instance.
-   */
-  getDriver() {
-    return this.driver;
-  }
   /**
    * Set the locator map object for the current test context.
    * This is typically a mapping of element identifiers to their selectors or locator strategies,
@@ -114,6 +54,21 @@ class PageFixture {
   getFlag(){
     return this.flag;
   }
+  /**
+   * Set a timeout for operations.
+   * @param {number} timeout - The timeout value in milliseconds.
+   */
+  setTimeout(timeout) {
+    this.timeout = timeout;
+  }
+  /**
+   * 
+   * @returns {number} - The current timeout value in milliseconds.
+   */
+  getTimeout() {
+    return this.timeout;
+  }
+
   /**
    * Reset the page fixture, clearing all stored instances.
    */
