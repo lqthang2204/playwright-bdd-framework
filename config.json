@@ -1,9 +1,9 @@
 {
-  "mode": "desktop",
+  "mode": "mobile",
   "env": "QA",
-  "tags": "@smoke and not @regression",
+  "tags": "@mobileAndroid2",
   "is_generate_report": true,
-  "headless": true,
+  "headless": false,
   "parallel":2,
   "environments": [
     {
@@ -12,7 +12,10 @@
         "index": "https://playwright.dev/",
         "automationexercise": "https://automationexercise.com/",
         "api": "https://api.qa.example.com",
-        "KodeIT": "https://www.letskodeit.com/practice"
+        "KodeIT": "https://www.letskodeit.com/practice",
+        "playwright": "https://playwright.dev",
+          "tech1": "https://saas-rel-2026a.onespresso.net"
+
       },
       "screenshotOnFailure": true
     },
@@ -38,7 +41,7 @@
   "remote": false,
   "remote_path_config": "remote_config.json",
   "browser": "chromium",
-  "setDefaultTimeout": 30000,
+  "setDefaultTimeout": 180000,
   "executablePath": null,
   "userDataDir": "/tmp/chrome-user-data",
   "ignoreDefaultArgs": [
@@ -67,7 +70,7 @@
     ]
   },
   "mobile": {
-    "device": "iPhone 12",
+    "device": "ANDROID",
     "path_capability": "./capabilitiesMobile/capabilities_android.json"
   },
   "is_send_email": {
