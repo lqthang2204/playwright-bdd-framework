@@ -28,7 +28,7 @@ class ManageStepsDefinitionsMobile {
             case "Class Chain":
                 return driver.$(`-ios class chain:${element.value}`);
             //android specific
-            case "ANDROID_UIAUTOMATOR":
+            case "UIAUTOMATOR":
                 return driver.$(`android=${element.value}`);
             default:
                 throw new Error(`Unsupported locator type: ${locatorType}`);    

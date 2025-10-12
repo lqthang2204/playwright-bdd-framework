@@ -20,9 +20,8 @@ class CustomWorld extends World {
       console.error('Error initializing browser, context, or page:', error.message);
       throw error;
     }
-    
-    
   }
+  
  async launchApplication(dataCapabilities, appiumServerUrl) {
    const config = pageFixture.getConfig();
    if(config.mode === 'mobile'){
