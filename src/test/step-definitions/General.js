@@ -5,6 +5,7 @@ const pageFixture = require("../../../support/pageFixture.js");
 const manageYamlFile = require("../../../libs/ManageYamlFile.js");
 const chalk = require("chalk");
 const ManageStepsDefinitionsMobile= require("../utils/ManageStepsDefinitionsMobile.js");
+const WebSteps = require("./WebSteps.js");
 
 Given("I change the page spec to {word}", async function (fileName) {
   this.dataYaml = await manageYamlFile.readFileYaml(
@@ -34,20 +35,23 @@ Then("I {word} element {word}", async function (action, elementId) {
     this.dataYaml, device
   );
   console.log(`Performing action "${action}" on element "${elementId}"`);
-  if(pageFixture.getConfig().mode === 'DESKTOP')
-  {
-    await manageStepsDefinitions.performActionOnElement(
-    action,
-    locatorItem,
-    this.page,
-    this.dataYaml
-  );
-  }else{
-    const element = await ManageStepsDefinitionsMobile.resolveLocatorMobile(this.driver, locatorItem)
-    await ManageStepsDefinitionsMobile.executeActions(action, element)
+  // if(pageFixture.getConfig().mode === 'DESKTOP')
+  // {
+  //   await manageStepsDefinitions.performActionOnElement(
+  //   action,
+  //   locatorItem,
+  //   this.page,
+  //   this.dataYaml
+  // );
+  // }else{
+  //   const element = await ManageStepsDefinitionsMobile.resolveLocatorMobile(this.driver, locatorItem)
+  //   await ManageStepsDefinitionsMobile.executeActions(action, element)
 
+  // }
+  if (device.toUpperCase() === "DESKTOP") {
+    const webSteps = new WebSteps(this.page);
+    const locator = await web
   }
-  
   console.log(
     `Action "${action}" performed on element "${elementId}" successfully.`
   );

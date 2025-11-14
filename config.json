@@ -1,7 +1,7 @@
 {
-  "mode": "mobile",
+  "mode": "desktop",
   "env": "QA",
-  "tags": "@mobileAndroid2",
+  "tags": "@T1",
   "is_generate_report": true,
   "headless": false,
   "parallel":2,

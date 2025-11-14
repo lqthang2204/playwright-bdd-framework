@@ -33,18 +33,5 @@ Feature: Test all feature of KodeIT
     And I click element npm_header_link
     And I click element Page_Object_Model_section_link
 
-# And I verify title this page is "Login"
-
-#   await page.locator('#radio-btn-example').getByText('BMW').click();
-# await page.locator('#benzradio').check();
-# await page.locator('#hondaradio').check();
-# await page.locator('#bmwcheck').check();
-# await page.locator('#benzcheck').check();
-# await page.locator('#checkbox-example-div').getByText('Honda').click();
-# await page.locator('#hondacheck').check();
-# await page.locator('#carselect').selectOption('benz');
-# await page.locator('#multiple-select-example').selectOption('orange');
-# await page.getByRole('textbox', { name: 'Start Typing...' }).click();
-# await page.getByRole('textbox', { name: 'Start Typing...' }).fill('test');
 
 

@@ -1,99 +1,51 @@
 elements:
-  - id: menu-item2
+  - id: use-without-account
     description: A menu item that links to Dashboard
     cache: true
     timeout: 5000
     locators:
       - device: WEB
-        strategy: getByRole
+        type: getByRole
         role: button
         name: singin
         filter:
           hasText: Dashboard
           hasClass: active
       - device: IOS
-        strategy: ACCESSIBILITY_ID
-        value: Add alarm
-      - device: ANDROID
-        strategy: ID
-        value: com.android.chrome:id/signin_fre_dismiss_button
-  - id: dashboard-title2
-    description: The title element on the Dashboard page
-    cache: false
-    locators:
-      - device: WEB
-        strategy: getByText
-        value: Dashboard
-      - device: ANDROID
-        strategy: ID
-        value: com.example.android:id/dashboard_title
-  - id: sign-in-button
-    description: The sign-in button for all platforms
-    cache: false
-    locators:
-      - device: WEB
-        strategy: getByRole
-        role: button
-        name: Sign in
-      - device: ANDROID
-        strategy: ACCESSIBILITY_ID
-        value: Sign in
-      - device: ANDROID
-        strategy: ID
-        value: com.android.chrome:id/signin_button
-  - id: use-without-account-button
-    description: The "Use without an account" button for all platforms
-    cache: true
-    timeout: 5000
-    locators:
-      - device: WEB
-        type: getByRole
-        role: button
-        name: singin
-        filter:
-          hasText: Dashboard
-          hasClass: active
-      - type: IOS
-        strategy: ACCESSIBILITY_ID
+        type: ACCESSIBILITY_ID
         value: Add alarm
       - device: ANDROID
         type: uiautomator
         value: new UiSelector().resourceId("com.android.chrome:id/signin_fre_dismiss_button")
   - id: no-thanks-button
-    description: no
+    description: A menu item that links to Dashboard
     cache: true
     timeout: 5000
     locators:
-      - device: WEB
-        type: getByRole
-        role: button
-        name: singin
-        filter:
-          hasText: Dashboard
-          hasClass: active
-      - type: IOS
-        strategy: ACCESSIBILITY_ID
-        value: Add alarm
       - device: ANDROID
-        type: xpath
-        value: //android.widget.Button[@resource-id="com.android.chrome:id/negative_button"]
-  - id: logon_button
-    description: logon button
+        type: id
+        value: com.android.chrome:id/negative_button
+  - id: userName
+    description: A menu item that links to Dashboard
     cache: true
     timeout: 5000
     locators:
-      - device: WEB
-        type: getByRole
-        role: button
-        name: singin
-        filter:
-          hasText: Dashboard
-          hasClass: active
-      - type: IOS
-        strategy: ACCESSIBILITY_ID
+      - device: DESKTOP
+        chain:
+          - type: GETBYROLE
+            role: textbox
+            name: User name or email address
+      - device: IOS
+        type: ACCESSIBILITY_ID
         value: Add alarm
       - device: ANDROID
-        type: xpath
+        type: uiautomator
+        value: new UiSelector().resourceId("com.android.chrome:id/signin_fre_dismiss_button")
+  - id: logon-button
+    description: A menu item that links to Dashboard
+    cache: true
+    timeout: 5000
+    locators:
+      - device: ANDROID
+        type: XPATH
         value: //android.widget.Button[@resource-id="BtnLogOn"]
-
-
