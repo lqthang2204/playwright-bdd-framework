@@ -23,6 +23,8 @@ class BaseSteps{
                 return await this.clear(locator);
             case "GET TEXT":
                 return await this.getText(locator);
+            case "VERIFY TITLE":
+                return await this.verifyTitle(value, expectedTitle);
             default:
                 throw new Error(`Unsupported action: ${action}`);
         }
@@ -39,5 +41,6 @@ class BaseSteps{
     async type(locator, value){throw new Error ("type() not implemented");}
     async clear(locator){throw new Error ("clear() not implemented");}
     async getText(locator){throw new Error ("getText() not implemented");}  
+    async verifyTitle(expectedTitle){throw new Error ("verifyTitle() not implemented");}
 }
 module.exports = BaseSteps;

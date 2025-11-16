@@ -97,35 +97,86 @@ Given('I navigate to url {word}', async function (url) {
 
 });
        
-    Given('I {word} {string} into element {word}', async function (action, value, elementId) {
-      let device = null;
-      if (pageFixture.getConfig().mode === 'mobile') {
-      const config = pageFixture.getConfig();
+    Given("I {word} {string} into element {word}", async function (action, value, elementId) {
+  try {
+    //  Detect current execution mode (DESKTOP or MOBILE)
+    const config = pageFixture.getConfig();
+    const mode = config.mode?.toUpperCase() || "DESKTOP";
+    let device = "DESKTOP";
+
+    if (mode === "MOBILE") {
       if (config.mobile && config.mobile.device) {
         device = config.mobile.device;
-        console.log(`[INFO] Running in mobile mode. Device: ${device}`);
+        console.log(chalk.cyan(`[INFO] Running in mobile mode. Device: ${device}`));
       } else {
-        throw new Error('Mobile device configuration is missing in config.');
+        throw new Error("Mobile device configuration is missing in config.");
       }
-  }else{
-    device = "DESKTOP";
-  }
-  const locatorItem = await manageYamlFile.lookUpElementInYaml(
-    elementId,
-    this.dataYaml, device
-  );
-  console.log(`Performing action "${action}" on element "${elementId}"`);
-  if(pageFixture.getConfig().mode.toUpperCase() === 'DESKTOP')
-  {
-    await manageStepsDefinitions.performActionOnElement(
-    action,
-    locatorItem,
-    this.page,
-    this.dataYaml, value
-  );
-  }else{
-    const element = await ManageStepsDefinitionsMobile.resolveLocatorMobile(this.driver, locatorItem)
-    await ManageStepsDefinitionsMobile.executeActions(action, element)
+    } else {
+      console.log(chalk.cyan(`[INFO] Running in desktop mode.`));
+    }
 
+    // Retrieve locator object from YAML based on the device type
+    const locatorItem = await manageYamlFile.lookUpElementInYaml(
+      elementId,
+      this.dataYaml,
+      device
+    );
+
+    console.log(
+      chalk.blue(
+        `Performing action "${action}" with value "${value}" on element "${elementId}"`
+      )
+    );
+
+    // Execute the action depending on the current platform
+    if (mode === "DESKTOP") {
+      const steps = new WebSteps(this.page);
+      const locator = await steps.resolveLocator(locatorItem);
+      await steps.execute(action, locator, value);
+    } else if (mode === "MOBILE") {
+      const steps = new MobileSteps(this.driver);
+      const locator = await steps.resolveLocator(locatorItem);
+      await steps.execute(action, locator, value);
+    } else {
+      throw new Error(`Unsupported mode: ${mode}`);
+    }
+
+    //  Log success message
+    console.log(
+      chalk.green(
+        `✅ Action "${action}" with value "${value}" performed on element "${elementId}" successfully.`
+      )
+    );
+  } catch (error) {
+    // 5️⃣ Catch and display any runtime errors
+    console.error(
+      chalk.red(
+        `❌ Error performing action "${action}" on element "${elementId}": ${error.message}`
+      )
+    );
+    console.error(chalk.gray(error.stack));
+    throw error; // Re-throw error so Cucumber marks the step as failed
   }
-         });
+});
+Then('I verify title this page is {string}', async function (expectedTitle) {
+  try {
+    // Wait for the page to load
+     const steps = new WebSteps(this.page);
+    console.log('Waiting for the page to load...');
+    await pageFixture.getPageFixture().waitForLoadState('load');
+
+    // Get the actual title of the page
+    const actualTitle = await pageFixture.getPageFixture().title();
+    console.log(`Verifying page title. Expected: "${expectedTitle}", Actual: "${actualTitle}"`);
+
+    // Assert the title matches the expected value
+    steps.execute("VERIFY TITLE", null, expectedTitle);
+    expect(actualTitle).toBe(expectedTitle);
+
+    console.log('Page title verification successful.');
+  } catch (error) {
+    console.error(`Error during title verification. Expected: "${expectedTitle}":`, error.message);
+    console.error('Stack trace:', error.stack);
+    throw error; // Re-throw the error to mark the step as failed
+  }
+});

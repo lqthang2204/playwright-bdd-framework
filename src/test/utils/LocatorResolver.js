@@ -1,6 +1,7 @@
 class LocatorResolver {
 
   static async buildLocatorChain(pageOrLocator, locatorObj){
+    locatorObj = locatorObj.locator
     if(!locatorObj || !Array.isArray(locatorObj.chain) || locatorObj.chain.length ===0){
       throw new Error("Locator object is empty or invalid");
     }

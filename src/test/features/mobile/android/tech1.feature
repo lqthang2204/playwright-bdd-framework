@@ -10,4 +10,4 @@ Feature: Login functionality android 2dsdsw
       And I click element no-thanks-button
       And I navigate to url tech1
       And I click element logon_button
-      And I wait 10000 seconds
+  

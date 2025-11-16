@@ -14,7 +14,8 @@ class WebSteps extends BaseSteps {
         await locator.fill(value);
     }
     async type(locator, value){
-        locator.type(value);
+        await locator.waitFor({ state: 'visible', timeout: 5000 });
+        await locator.type(value);
     }
     async clear(locator){
         await locator.clearValue();
