@@ -1,11 +1,14 @@
 const { Given, Then } = require("@cucumber/cucumber");
 const { expect } = require("@playwright/test");
-const manageStepsDefinitions = require("../utils/manageStepsDefinitions.js"); // Adjusted path
+const manageStepsDefinitions = require("../utils/manageSteps.js"); // Adjusted path
 const pageFixture = require("../../../support/pageFixture.js");
 const manageYamlFile = require("../../../libs/ManageYamlFile.js");
 const chalk = require("chalk");
-const ManageStepsDefinitionsMobile= require("../utils/ManageStepsDefinitionsMobile.js");
 const WebSteps = require("./WebSteps.js");
+const ManageMode = require("../utils/ManageMode.js");
+const MobileSteps = require("./MobileSteps.js");
+
+
 
 Given("I change the page spec to {word}", async function (fileName) {
   this.dataYaml = await manageYamlFile.readFileYaml(
@@ -16,45 +19,30 @@ Given("I change the page spec to {word}", async function (fileName) {
 });
 
 Then("I {word} element {word}", async function (action, elementId) {
-      let device = null;
-  if (pageFixture.getConfig().mode === 'mobile') {
-
-    const config = pageFixture.getConfig();
-    if (config.mobile && config.mobile.device) {
-      device = config.mobile.device;
-      console.log(`[INFO] Running in mobile mode. Device: ${device}`);
-    } else {
-      throw new Error('Mobile device configuration is missing in config.');
-    }
-  }else{
-    device = "DESKTOP";
-  }
+  // 1️⃣ Detect current execution mode (DESKTOP or MOBILE)
+  let _executionContext = ManageMode.getExecutionContext();
   
   const locatorItem = await manageYamlFile.lookUpElementInYaml(
     elementId,
-    this.dataYaml, device
+    this.dataYaml, _executionContext.device
   );
-  console.log(`Performing action "${action}" on element "${elementId}"`);
-  // if(pageFixture.getConfig().mode === 'DESKTOP')
-  // {
-  //   await manageStepsDefinitions.performActionOnElement(
-  //   action,
-  //   locatorItem,
-  //   this.page,
-  //   this.dataYaml
-  // );
-  // }else{
-  //   const element = await ManageStepsDefinitionsMobile.resolveLocatorMobile(this.driver, locatorItem)
-  //   await ManageStepsDefinitionsMobile.executeActions(action, element)
+  console.log(chalk.blue(`Performing action "${action}" on element "${elementId}"`));
 
   // }
-  if (device.toUpperCase() === "DESKTOP") {
-    const webSteps = new WebSteps(this.page);
-    const locator = await web
-  }
+  if (_executionContext.mode === "DESKTOP") {
+      const steps = new WebSteps(this.page);
+      const locator = await steps.resolveLocator(locatorItem);
+      await steps.execute(action, locator, null);
+    } else if (_executionContext.mode === "MOBILE") {
+      const steps = new MobileSteps(this.driver);
+      const locator = await steps.resolveLocator(locatorItem);
+      await steps.execute(action, locator, null);
+    } else {
+      throw new Error(`Unsupported mode: ${mode}`);
+    }
   console.log(
-    `Action "${action}" performed on element "${elementId}" successfully.`
-  );
+    chalk.blue(`Action "${action}" performed on element "${elementId}" successfully.`
+  ));
 });
 
 Given("I wait {int} seconds", async function (seconds) {
@@ -100,26 +88,13 @@ Given('I navigate to url {word}', async function (url) {
     Given("I {word} {string} into element {word}", async function (action, value, elementId) {
   try {
     //  Detect current execution mode (DESKTOP or MOBILE)
-    const config = pageFixture.getConfig();
-    const mode = config.mode?.toUpperCase() || "DESKTOP";
-    let device = "DESKTOP";
-
-    if (mode === "MOBILE") {
-      if (config.mobile && config.mobile.device) {
-        device = config.mobile.device;
-        console.log(chalk.cyan(`[INFO] Running in mobile mode. Device: ${device}`));
-      } else {
-        throw new Error("Mobile device configuration is missing in config.");
-      }
-    } else {
-      console.log(chalk.cyan(`[INFO] Running in desktop mode.`));
-    }
+    _executionContext = ManageMode.getExecutionContext();
 
     // Retrieve locator object from YAML based on the device type
     const locatorItem = await manageYamlFile.lookUpElementInYaml(
       elementId,
       this.dataYaml,
-      device
+      _executionContext.device
     );
 
     console.log(
@@ -129,11 +104,11 @@ Given('I navigate to url {word}', async function (url) {
     );
 
     // Execute the action depending on the current platform
-    if (mode === "DESKTOP") {
+    if (_executionContext.mode === "DESKTOP") {
       const steps = new WebSteps(this.page);
       const locator = await steps.resolveLocator(locatorItem);
       await steps.execute(action, locator, value);
-    } else if (mode === "MOBILE") {
+    } else if (_executionContext.mode === "MOBILE") {
       const steps = new MobileSteps(this.driver);
       const locator = await steps.resolveLocator(locatorItem);
       await steps.execute(action, locator, value);

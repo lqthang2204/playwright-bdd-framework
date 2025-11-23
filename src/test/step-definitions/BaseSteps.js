@@ -1,12 +1,12 @@
 const {expect} = require('@playwright/test');
-
+const chalk = require("chalk");
 class BaseSteps{
     constructor(driver){
         this.driver = driver;
     }
     log (action, locator){
         const timestamp  = new Date().toString();
-        console.log(`[${timestamp}] Action: ${action}, on Locator: ${JSON.stringify(locator)}`);
+        console.log(chalk.blue(`[${timestamp}] Action: ${action}, on Locator: ${JSON.stringify(locator)}`));
     }
     async execute(action, locator, value = null){
         const upper = action.toUpperCase();
@@ -29,7 +29,7 @@ class BaseSteps{
                 throw new Error(`Unsupported action: ${action}`);
         }
         }catch(err){
-            console.error(`Error executing action ${action} on locator ${JSON.stringify(locator)}: ${err}`);
+            console.error(chalk.red(`Error executing action ${action} on locator ${JSON.stringify(locator)}: ${err}`));
             throw err;  
         }
         

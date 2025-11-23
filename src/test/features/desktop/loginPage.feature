@@ -6,4 +6,5 @@ Feature: Login functionality for tech one web
     # And I verify title this page is equal "Log On - CiA"
     And I change the page spec to loginT1
     And I type "test" into element userName
+    And I click element logon-button
     And I wait 100000 seconds

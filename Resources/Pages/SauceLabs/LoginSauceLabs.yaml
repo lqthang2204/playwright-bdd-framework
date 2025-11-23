@@ -10,8 +10,40 @@ elements:
             role: link
             name: Get started
       - device: ANDROID
-        type: xpaTH
+        type: ACCESSIBILITY_ID
         value: test-LOGIN
       - device: IOS
         type: ACCESSIBILITY_ID
         value: test-LOGIN
+  - id: username
+    description: Login button
+    cache: true
+    timeout: 5000
+    locators:
+      - device: DESKTOP
+        chain:
+          - type: getbyrole
+            role: link
+            name: Get started
+      - device: ANDROID
+        type: ACCESSIBILITY_ID
+        value: test-Username
+      - device: IOS
+        type: ACCESSIBILITY_ID
+        value: test-Username
+  - id: password
+    description: Login button
+    cache: true
+    timeout: 5000
+    locators:
+      - device: DESKTOP
+        chain:
+          - type: getbyrole
+            role: link
+            name: Get started
+      - device: ANDROID
+        type: ACCESSIBILITY_ID
+        value: test-Password
+      - device: IOS
+        type: ACCESSIBILITY_ID
+        value: test-Password

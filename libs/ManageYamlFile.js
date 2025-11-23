@@ -2,6 +2,7 @@ const path = require("path");
 const fs = require("fs");
 const yaml = require("js-yaml");
 const pageFixture = require("../support/pageFixture.js");
+const chalk = require("chalk");
 
 /**
  * Utility class for managing YAML locator files.
@@ -72,7 +73,7 @@ class ManageYamlFile {
   async storeGeneralFileToCached(relativeTo = "../Resources/Pages/General", suffix = ".yaml") {
     //if flag is false, skip storing files
     if (!pageFixture.getFlag()) {
-      console.warn("[storeGeneralFileToCached] Skipped: General YAML files already cached.");
+      console.warn(chalk.yellow("[storeGeneralFileToCached] Skipped: General YAML files already cached."));
       return;
     }
     const rootDir = path.resolve(__dirname, relativeTo);
@@ -80,7 +81,7 @@ class ManageYamlFile {
     try {
       files = fs.readdirSync(rootDir, { withFileTypes: true });
     } catch (error) {
-      console.error(`[storeGeneralFileToCached] Error reading directory "${rootDir}":`, error.message);
+      console.error(chalk.red(`[storeGeneralFileToCached] Error reading directory "${rootDir}":`, error.message));
       return;
     }
     const mapYaml = pageFixture.getMapLocator();
@@ -96,7 +97,7 @@ class ManageYamlFile {
             mapYaml.set(key, data);
           }
         } catch (error) {
-          console.error(`[storeGeneralFileToCached] Error with file "${file.name}":`, error.message);
+          console.error(chalk.red(`[storeGeneralFileToCached] Error with file "${file.name}":`, error.message));
           // Continue to next file
         }
       }
@@ -111,14 +112,14 @@ class ManageYamlFile {
     }
     const element = data.elements.find(el => el.id === elementName);
     if(!element) {
-      throw new Error(`Element "${elementName}" not found in YAML data.`);
+      throw new Error(`Element "${elementName}" not found in YAML data `);
     }
     const locator = element.locators.find(d => d.device === device);
     if (!locator) {
       throw new Error(`Locator for device "${device}" not found in element "${elementName}".`);
     }
-    console.log(`Locator for device "${device}":`, locator);
-    console.log("element", element);
+    console.log(chalk.blue(`Locator for device "${device}":`, locator));
+    console.log(chalk.blue("element", element));
     return {
       id: element.id,
       description: element.description!== 'undefined' ? element.description : '',
