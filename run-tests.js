@@ -14,11 +14,11 @@ const screenshots = path.resolve(__dirname, "./reports/screenshots");
 [reportPathJson, reportPathHtml, reportFeatureFolder, screenshots].forEach(deleteFile);
 
 // Determine feature folder based on mode
-let featureFolder = "/Users/lequangthang/Playwright-workspace/playwright-bdd-framework/src/test/features/";
+let featureFolder = path.resolve(__dirname, "./src/test/features/");
 if (config.mode === "mobile") {
-    featureFolder = featureFolder +"mobile/";
+    featureFolder = featureFolder +"/mobile/";
 } else if (config.mode === "desktop") {
-    featureFolder = featureFolder+"desktop/";
+    featureFolder = featureFolder+"/desktop/";
 }
 
 // Get tags from the environment variable or fallback to config.json

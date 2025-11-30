@@ -112,6 +112,7 @@ class ManageYamlFile {
     }
     const element = data.elements.find(el => el.id === elementName);
     if(!element) {
+      console.log(chalk.red(`Element "${elementName}" not found in YAML data. with data:` , data));
       throw new Error(`Element "${elementName}" not found in YAML data `);
     }
     const locator = element.locators.find(d => d.device === device);

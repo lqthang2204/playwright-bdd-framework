@@ -2,9 +2,10 @@ Feature: Login functionality for tech one web
 
 @T1
   Scenario: Open rwch one login opageagte
-    Given I navigate to url tech1
+    Given I navigate to url ENV.URL_TECH
     # And I verify title this page is equal "Log On - CiA"
     And I change the page spec to loginT1
-    And I type "test" into element userName
+    And I type "ENV.USERNAME_TECH" into element userName
+    And I type "ENV.PASSWORD_TECH" into element password
     And I click element logon-button
-    And I wait 100000 seconds
+    And I wait 100 seconds

@@ -1,5 +1,6 @@
 const path = require("path");
 const fs = require("fs");
+require('dotenv').config();
 
 async function checkFileExists(fileName, relativeTo, suffix = ".json") {
   try {
@@ -26,5 +27,14 @@ async function findFileName(relativeTo, fileName, suffix = ".json") {
   } catch (error) {
     throw new Error(`Error reading directory: ${error.message}`);
   }
+  
 }
-module.exports = { checkFileExists, findFileName };
+async function processEnvVariable(data) {
+    if(typeof data !== 'string') return data
+    const m = data.match(/^env\.(.+)$/i)
+    if(!m) return data
+    const key = m[1].trim();
+    const value = process.env[key] ??  process.env[key.toUpperCase()];
+    return value
+  }
+module.exports = { checkFileExists, findFileName , processEnvVariable};

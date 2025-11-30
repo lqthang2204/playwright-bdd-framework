@@ -7,7 +7,7 @@ const chalk = require("chalk");
 const WebSteps = require("./WebSteps.js");
 const ManageMode = require("../utils/ManageMode.js");
 const MobileSteps = require("./MobileSteps.js");
-
+const genenal = require("../../../libs/general.js");
 
 
 Given("I change the page spec to {word}", async function (fileName) {
@@ -57,6 +57,7 @@ Given("I wait {int} seconds", async function (seconds) {
   console.log(chalk.green(`[WAIT] Done waiting for ${waitTime} second(s).`));
 });
 Given('I navigate to url {word}', async function (url) {
+  url = await genenal.processEnvVariable(url);
       console.log(`Resolving target URL for: ${url}`);
       const targetUrl = await manageStepsDefinitions.goToUrl(url, pageFixture.getConfig());
        console.log(`Navigating to: ${targetUrl}`);
@@ -87,22 +88,20 @@ Given('I navigate to url {word}', async function (url) {
        
     Given("I {word} {string} into element {word}", async function (action, value, elementId) {
   try {
+    value, is_display = await genenal.processEnvVariable(value);
     //  Detect current execution mode (DESKTOP or MOBILE)
     _executionContext = ManageMode.getExecutionContext();
-
     // Retrieve locator object from YAML based on the device type
     const locatorItem = await manageYamlFile.lookUpElementInYaml(
       elementId,
       this.dataYaml,
       _executionContext.device
     );
-
     console.log(
       chalk.blue(
         `Performing action "${action}" with value "${value}" on element "${elementId}"`
       )
     );
-
     // Execute the action depending on the current platform
     if (_executionContext.mode === "DESKTOP") {
       const steps = new WebSteps(this.page);

@@ -5,6 +5,6 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 /src/.DS_Store/
-
+.env
 # Ignore the entire reports folder
 reports/
