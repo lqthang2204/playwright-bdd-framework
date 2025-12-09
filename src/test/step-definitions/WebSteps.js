@@ -23,5 +23,13 @@ class WebSteps extends BaseSteps {
     async getText(locator){
         return await locator.textContent();
     }
-}
+    async waitForEnabled(locator, timeout = 5000, pollInterval = 500){
+        return await locator.isEnabled({ timeout: timeout });
+
+    }
+    async waitForNotEnabled(locator, timeout = 5000, pollInterval = 500){
+        console.log("Waiting for element to be not enabled");
+        return await locator.isDisabled({ timeout: timeout });
+    }
+}   
 module.exports = WebSteps;

@@ -88,7 +88,7 @@ Given('I navigate to url {word}', async function (url) {
        
     Given("I {word} {string} into element {word}", async function (action, value, elementId) {
   try {
-    value, is_display = await genenal.processEnvVariable(value);
+    value = await genenal.processEnvVariable(value);
     //  Detect current execution mode (DESKTOP or MOBILE)
     _executionContext = ManageMode.getExecutionContext();
     // Retrieve locator object from YAML based on the device type
@@ -152,5 +152,30 @@ Then('I verify title this page is {string}', async function (expectedTitle) {
     console.error(`Error during title verification. Expected: "${expectedTitle}":`, error.message);
     console.error('Stack trace:', error.stack);
     throw error; // Re-throw the error to mark the step as failed
+  }
+})
+Then('I wait for element {word} to be {word}', async function (elementId, status) {
+  try {
+    const _executionContext = ManageMode.getExecutionContext();
+    const locatorItem = await manageYamlFile.lookUpElementInYaml(
+      elementId,
+      this.dataYaml,
+      _executionContext.device
+    );
+
+    if (_executionContext.mode === "DESKTOP") {
+      const steps = new WebSteps(this.page);
+      const locator = await steps.resolveLocator(locatorItem);
+       await steps.waitForStatus(locator, status, 5000, 500);
+    } else if (_executionContext.mode === "MOBILE") {
+      const steps = new MobileSteps(this.driver);
+      const locator = await steps.resolveLocator(locatorItem);
+       await steps.waitForStatus(locator, status, 5000, 500);
+    } else {
+      throw new Error(`Unsupported mode: ${_executionContext.mode}`);
+    }
+  } catch (error) {
+    console.error(`Error in step 'I wait for element ${elementId} to be ${status}':`, error.message);
+    throw error;
   }
 });

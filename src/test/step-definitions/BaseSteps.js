@@ -34,6 +34,34 @@ class BaseSteps{
         }
         
     }
+    async waitForStatus(locator, status, timeout = 5000, pollInterval = 500){
+        switch(status.toUpperCase()){
+            case "ENABLED":
+                return await this.waitForEnabled(locator, timeout, pollInterval);
+            case "NOT_ENABLED":
+                return await this.waitForNotEnabled(locator, timeout, pollInterval);             
+            case "VISIBLE":
+                return await this.waitForVisible(locator, timeout, pollInterval);
+            case "NOT_VISIBLE":
+                return await this.waitForNotVisible(locator, timeout, pollInterval);
+            case "EDITABLE":
+                return await this.waitForEditable(locator, timeout, pollInterval);   
+            case "NOT_EDITABLE":
+                return await this.waitForNotEditable(locator, timeout, pollInterval);
+            case "CHECKED":
+                return await this.waitForChecked(locator, timeout, pollInterval);
+            case "NOT_CHECKED":
+                return await this.waitForNotChecked(locator, timeout, pollInterval);
+            case "DISABLED":
+                return await this.waitForDisabled(locator, timeout, pollInterval);
+            case "NOT_DISABLED":
+                return await this.waitForNotDisabled(locator, timeout, pollInterval);
+            default:
+                throw new Error(`Unsupported status: ${status}`);
+        }
+
+
+    }
 
     // Bse class defines interface that child classed must be ovverride
     async click(locator){throw new Error ("click() not implemented");}
@@ -42,5 +70,16 @@ class BaseSteps{
     async clear(locator){throw new Error ("clear() not implemented");}
     async getText(locator){throw new Error ("getText() not implemented");}  
     async verifyTitle(expectedTitle){throw new Error ("verifyTitle() not implemented");}
+    async waitForEnabled(locator, timeout, pollInterval){throw new Error ("waitForEnabled() not implemented");}
+    async waitForNotEnabled(locator, timeout, pollInterval){throw new Error ("waitForNotEnabled() not implemented");}  
+    async waitForVisible(locator,timeout, pollInterval){throw new Error ("waitForVisible() not implemented");}
+    async waitForNotVisible(locator, timeout, pollInterval){throw new Error ("waitForNotVisible() not implemented");}   
+    async waitForEditable(locator, timeout, pollInterval){throw new Error ("waitForEditable() not implemented");}
+    async waitForNotEditable(locator, timeout, pollInterval){throw new Error ("waitForNotEditable() not implemented");}   
+    async waitForChecked(locator,timeout, pollInterval){throw new Error ("waitForChecked() not implemented");}
+    async waitForNotChecked(locator, timeout, pollInterval){throw new Error ("waitForNotChecked() not implemented");}
+    async waitForDisabled(locator, timeout, pollInterval){throw new Error ("waitForDisabled() not implemented");}
+    async waitForNotDisabled(locator, timeout, pollInterval){throw new Error ("waitForNotDisabled() not implemented");}
+
 }
 module.exports = BaseSteps;
