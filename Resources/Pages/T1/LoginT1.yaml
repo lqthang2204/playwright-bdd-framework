@@ -1,6 +1,48 @@
 elements:
-  - id: use-without-account
+  - id: menu-item2
     description: A menu item that links to Dashboard
+    cache: true
+    timeout: 5000
+    locators:
+      - device: WEB
+        strategy: getByRole
+        role: button
+        name: singin
+        filter:
+          hasText: Dashboard
+          hasClass: active
+      - device: IOS
+        strategy: ACCESSIBILITY_ID
+        value: Add alarm
+      - device: ANDROID
+        strategy: ID
+        value: com.android.chrome:id/signin_fre_dismiss_button
+  - id: dashboard-title2
+    description: The title element on the Dashboard page
+    cache: false
+    locators:
+      - device: WEB
+        strategy: getByText
+        value: Dashboard
+      - device: ANDROID
+        strategy: ID
+        value: com.example.android:id/dashboard_title
+  - id: sign-in-button
+    description: The sign-in button for all platforms
+    cache: false
+    locators:
+      - device: WEB
+        strategy: getByRole
+        role: button
+        name: Sign in
+      - device: ANDROID
+        strategy: ACCESSIBILITY_ID
+        value: Sign in
+      - device: ANDROID
+        strategy: ID
+        value: com.android.chrome:id/signin_button
+  - id: use-without-account-button
+    description: The "Use without an account" button for all platforms
     cache: true
     timeout: 5000
     locators:
@@ -11,32 +53,8 @@ elements:
         filter:
           hasText: Dashboard
           hasClass: active
-      - device: IOS
-        type: ACCESSIBILITY_ID
-        value: Add alarm
-      - device: ANDROID
-        type: uiautomator
-        value: new UiSelector().resourceId("com.android.chrome:id/signin_fre_dismiss_button")
-  - id: no-thanks-button
-    description: A menu item that links to Dashboard
-    cache: true
-    timeout: 5000
-    locators:
-      - device: ANDROID
-        type: id
-        value: com.android.chrome:id/negative_button
-  - id: userName
-    description: A menu item that links to Dashboard
-    cache: true
-    timeout: 5000
-    locators:
-      - device: DESKTOP
-        chain:
-          - type: GETBYROLE
-            role: textbox
-            name: User name or email address
-      - device: IOS
-        type: ACCESSIBILITY_ID
+      - type: IOS
+        strategy: ACCESSIBILITY_ID
         value: Add alarm
       - device: ANDROID
         type: uiautomator
@@ -68,5 +86,7 @@ elements:
             role: button
             name: Log on
       - device: ANDROID
-        type: XPATH
+        type: xpath
         value: //android.widget.Button[@resource-id="BtnLogOn"]
+
+
