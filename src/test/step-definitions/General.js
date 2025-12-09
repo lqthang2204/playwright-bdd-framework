@@ -166,7 +166,7 @@ Then('I wait for element {word} to be {word}', async function (elementId, status
     if (_executionContext.mode === "DESKTOP") {
       const steps = new WebSteps(this.page);
       const locator = await steps.resolveLocator(locatorItem);
-       await steps.waitForStatus(locator, status, 5000, 500);
+       await steps.waitForStatus(locator, status, locatorItem.timeout ? locatorItem.timeout : pageFixture.getTimeout(), 500);
     } else if (_executionContext.mode === "MOBILE") {
       const steps = new MobileSteps(this.driver);
       const locator = await steps.resolveLocator(locatorItem);
