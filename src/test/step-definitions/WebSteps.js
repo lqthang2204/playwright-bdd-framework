@@ -1,5 +1,6 @@
 const BaseSteps = require('./BaseSteps');
 const LocatorResolver = require('../utils/LocatorResolver');
+const { expect } = require('@playwright/test');
 class WebSteps extends BaseSteps {
     constructor(page){
         super(page); //page = playwright page{
@@ -23,13 +24,11 @@ class WebSteps extends BaseSteps {
     async getText(locator){
         return await locator.textContent();
     }
-    async waitForEnabled(locator, timeout = 5000, pollInterval = 500){
-        return await locator.isEnabled({ timeout: timeout });
-
+    async waitForEnabled(locator, timeout = 5000){
+        return await expect(locator).toBeEnabled({ timeout });
     }
-    async waitForNotEnabled(locator, timeout = 5000, pollInterval = 500){
-        console.log("Waiting for element to be not enabled");
-        return await locator.isDisabled({ timeout: timeout });
+    async waitForNotEnabled(locator, timeout = 5000){
+        return await expect(locator).toBeDisabled({ timeout });
     }
 }   
 module.exports = WebSteps;

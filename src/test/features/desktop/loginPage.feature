@@ -7,6 +7,6 @@ Feature: Login functionality for tech one web
     And I change the page spec to loginT1
     And I type "ENV.USERNAME_TECH" into element userName
     And I type "ENV.PASSWORD_TECH" into element password
-    And I wait for element logon-button to be NOT_ENABLED
+    And I wait for element logon-button to be ENABLED
     And I click element logon-button
     And I wait 100 seconds
