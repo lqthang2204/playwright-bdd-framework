@@ -56,6 +56,10 @@ class BaseSteps{
                 return await this.waitForDisabled(locator, timeout, pollInterval);
             case "NOT_DISABLED":
                 return await this.waitForNotDisabled(locator, timeout, pollInterval);
+            case "DISPLAYED":
+                return await this.waitForDisplayed(locator, timeout, pollInterval);
+            case "NOT_DISPLAYED":
+                return await this.waitForNotDisplayed(locator, timeout, pollInterval);
             default:
                 throw new Error(`Unsupported status: ${status}`);
         }

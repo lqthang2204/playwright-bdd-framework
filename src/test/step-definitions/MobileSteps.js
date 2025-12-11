@@ -29,5 +29,18 @@ class MobileSteps extends BaseSteps {
     async getText(locator){
         return await locator.getText();
     }
+    async waitForEnabled(locator, timeout = 5000, pollInterval = 500){
+        return await locator.waitForEnabled({ timeout });
+
+    }
+    async waitForNotEnabled(locator, timeout = 5000, pollInterval= 500){
+        return await locator.waitForEnabled({ timeout, reverse: true });
+    }
+    async waitForDisabled(locator, timeout = 5000, pollInterval = 500){
+        return await locator.waitForDidplayed({ timeout });
+    }
+    async waitForNotDisplayed(locator, timeout = 5000, pollInterval = 500){
+        return await locator.waitForDisplayed({ timeout, reverse: true });
+    }
 }
 module.exports = MobileSteps;

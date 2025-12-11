@@ -10,4 +10,5 @@ Feature: Login functionality ios
        And I click element username
         And I type "standard_user" into element username
      And I type "secret_sauce" into element password
+     And I wait for element login-button to be NOT_ENABLED
       And I click element login-button

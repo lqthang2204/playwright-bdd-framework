@@ -170,7 +170,7 @@ Then('I wait for element {word} to be {word}', async function (elementId, status
     } else if (_executionContext.mode === "MOBILE") {
       const steps = new MobileSteps(this.driver);
       const locator = await steps.resolveLocator(locatorItem);
-       await steps.waitForStatus(locator, status, 5000, 500);
+       await steps.waitForStatus(locator, status, locatorItem.timeout? locatorItem.timeout : pageFixture.getTimeout(), 500);
     } else {
       throw new Error(`Unsupported mode: ${_executionContext.mode}`);
     }
