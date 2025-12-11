@@ -56,10 +56,10 @@ class BaseSteps{
                 return await this.waitForDisabled(locator, timeout, pollInterval);
             case "NOT_DISABLED":
                 return await this.waitForNotDisabled(locator, timeout, pollInterval);
-            case "DISPLAYED":
-                return await this.waitForDisplayed(locator, timeout, pollInterval);
-            case "NOT_DISPLAYED":
-                return await this.waitForNotDisplayed(locator, timeout, pollInterval);
+            case "HIDDEN":
+                return await this.waitForHidden(locator, timeout, pollInterval);
+            case "NOT_HIDDEN":
+                return await this.waitForNotHidden(locator, timeout, pollInterval);
             default:
                 throw new Error(`Unsupported status: ${status}`);
         }
@@ -84,6 +84,10 @@ class BaseSteps{
     async waitForNotChecked(locator, timeout, pollInterval){throw new Error ("waitForNotChecked() not implemented");}
     async waitForDisabled(locator, timeout, pollInterval){throw new Error ("waitForDisabled() not implemented");}
     async waitForNotDisabled(locator, timeout, pollInterval){throw new Error ("waitForNotDisabled() not implemented");}
+    async waitForDisplayed(locator, timeout, pollInterval){throw new Error ("waitForDisplayed() not implemented");}
+    async waitForNotDisplayed(locator, timeout, pollInterval){throw new Error ("waitForNotDisplayed() not implemented");}
+    async waitForHidden(locator, timeout, pollInterval){throw new Error ("waitForHidden() not implemented");}
+    async waitForNotHidden(locator, timeout, pollInterval){throw new Error ("waitForNotHidden() not implemented");}
 
 }
 module.exports = BaseSteps;
