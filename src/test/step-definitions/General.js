@@ -18,7 +18,8 @@ Given("I change the page spec to {word}", async function (fileName) {
   );
 });
 
-Then("I {word} element {word}", async function (action, elementId) {
+Then(/^I (\w+)(?: to)? element ([\w-]+)$/, async function (action, elementId) {
+   // 1️⃣ Detect current execution mode (DESKTOP or MOBILE)
   // 1️⃣ Detect current execution mode (DESKTOP or MOBILE)
   let _executionContext = ManageMode.getExecutionContext();
   

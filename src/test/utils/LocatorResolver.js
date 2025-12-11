@@ -28,17 +28,23 @@ static async resolveLocatorWeb(target, locatorItem) {
     const locatorType = locatorItem.type.toUpperCase();
     switch (locatorType) {
       case "LOCATOR":
+        if (!locatorItem.value) throw new Error(`LOCATOR requires "value" property ${JSON.stringify(locatorItem, null, 2)}`);
         return target.locator(locatorItem.value, locatorItem.options || {});
       case "GETBYROLE":
+        if (!locatorItem.role) throw new Error(`GETBYROLE requires "role" property ${JSON.stringify(locatorItem, null, 2)}`);
         const options = { ...(locatorItem.name && { name: locatorItem.name }) };
         return target.getByRole(locatorItem.role, options);
       case "GETBYLABEL":
+        if (!locatorItem.value) throw new Error(`GETBYLABEL requires "value" property ${JSON.stringify(locatorItem, null, 2)}`);
         return target.getByLabel(locatorItem.value);
       case "GETBYPLACEHOLDER":
+        if (!locatorItem.placeholder) throw new Error(`GETBYPLACEHOLDER requires "placeholder" property ${JSON.stringify(locatorItem, null, 2)}`);
         return target.getByPlaceholder(locatorItem.placeholder);
       case "GETBYTEXT":
+        if (!locatorItem.value) throw new Error(`GETBYTEXT requires "value" property ${JSON.stringify(locatorItem, null, 2)}`);
         return target.getByText(locatorItem.value, { exact: true });
       case "GETBYALTTEXT":
+        if (!locatorItem.text) throw new Error(`GETBYALTTEXT requires "text" property ${JSON.stringify(locatorItem, null, 2)}`);
         return target.getByAltText(locatorItem.text);
       case "FIRST":
         return target.first();

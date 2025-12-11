@@ -63,5 +63,8 @@ class WebSteps extends BaseSteps {
     async waitForNotDisabled(locator, timeout = 5000){
         await expect(locator).not.toBeDisabled({ timeout });
     }
+    async scrollToElement(locator){
+        await locator.scrollIntoViewIfNeeded();
+    }
 }   
 module.exports = WebSteps;

@@ -25,6 +25,8 @@ class BaseSteps{
                 return await this.getText(locator);
             case "VERIFY TITLE":
                 return await this.verifyTitle(value, expectedTitle);
+            case "SCROLL":
+                return await this.scrollToElement(locator);
             default:
                 throw new Error(`Unsupported action: ${action}`);
         }
@@ -73,6 +75,7 @@ class BaseSteps{
     async type(locator, value){throw new Error ("type() not implemented");}
     async clear(locator){throw new Error ("clear() not implemented");}
     async getText(locator){throw new Error ("getText() not implemented");}  
+    async scrollToElement(locator){throw new Error ("scrollToElement() not implemented");}
     async verifyTitle(expectedTitle){throw new Error ("verifyTitle() not implemented");}
     async waitForEnabled(locator, timeout, pollInterval){throw new Error ("waitForEnabled() not implemented");}
     async waitForNotEnabled(locator, timeout, pollInterval){throw new Error ("waitForNotEnabled() not implemented");}  

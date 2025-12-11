@@ -1,0 +1,76 @@
+elements:
+  - id: search-field
+    description: A menu item that links to Dashboard
+    cache: true
+    timeout: 5000
+    locators:
+      - device: DESKTOP
+        chain:
+          - type: GETBYROLE
+            role: textbox
+            name: Search with Plus
+      - device: IOS
+        type: ACCESSIBILITY_ID
+        value: Add alarm
+      - device: ANDROID
+        type: uiautomator
+        value: new UiSelector().resourceId("com.android.chrome:id/signin_fre_dismiss_button")
+  - id: Application-option
+    description: Application option in menu
+    cache: true
+    timeout: 5000
+    locators:
+      - device: DESKTOP
+        chain:
+          - type: locator
+            value: a
+            filter:
+              hasText: Applications Admissions and
+      - device: ANDROID
+        type: id
+        value: com.android.chrome:id/negative_button
+  - id: userName
+    description: A menu item that links to Dashboard
+    cache: true
+    timeout: 5000
+    locators:
+      - device: DESKTOP
+        chain:
+          - type: GETBYROLE
+            role: textbox
+            name: User name or email address
+      - device: IOS
+        type: ACCESSIBILITY_ID
+        value: Add alarm
+      - device: ANDROID
+        type: uiautomator
+        value: new UiSelector().resourceId("com.android.chrome:id/signin_fre_dismiss_button")
+  - id: password
+    description: A menu item that links to Dashboard
+    cache: true
+    timeout: 5000
+    locators:
+      - device: DESKTOP
+        chain:
+          - type: GETBYROLE
+            role: textbox
+            name: Password
+      - device: IOS
+        type: ACCESSIBILITY_ID
+        value: Add alarm
+      - device: ANDROID
+        type: uiautomator
+        value: new UiSelector().resourceId("com.android.chrome:id/signin_fre_dismiss_button")
+  - id: logon-button
+    description: A menu item that links to Dashboard
+    cache: true
+    timeout: 5000
+    locators:
+      - device: DESKTOP
+        chain:
+          - type: GETBYROLE
+            role: button
+            name: Log on
+      - device: ANDROID
+        type: XPATH
+        value: //android.widget.Button[@resource-id="BtnLogOn"]
