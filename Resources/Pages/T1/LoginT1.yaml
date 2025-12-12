@@ -70,3 +70,24 @@ elements:
       - device: ANDROID
         type: XPATH
         value: //android.widget.Button[@resource-id="BtnLogOn"]
+  - id: keep-me-logged-in-checkbox
+    description: Keep me logged in checkbox
+    cache: true
+    timeout: 5000
+    locators:
+      - device: DESKTOP
+        chain:
+          - type: GETBYROLE
+            role: checkbox
+            name: Keep me logged on
+  - id: accessibility-mode-checkbox
+    description: Accessibility checkbox 
+    cache: true
+    timeout: 5000
+    locators:
+      - device: DESKTOP
+        chain:
+          - type: GETBYROLE
+            role: checkbox
+            name: Accessibility Mode
+    
