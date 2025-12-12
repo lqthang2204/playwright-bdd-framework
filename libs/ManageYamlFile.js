@@ -119,8 +119,7 @@ class ManageYamlFile {
     if (!locator) {
       throw new Error(`Locator for device "${device}" not found in element "${elementName}".`);
     }
-    console.log(chalk.blue(`Locator for device "${device}":`, locator));
-    console.log(chalk.blue("element", element));
+    console.log(chalk.blue(`Locator for device "${device}":`, JSON.stringify(locator, null, 2)));
     return {
       id: element.id,
       description: element.description!== 'undefined' ? element.description : '',
