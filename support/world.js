@@ -1,6 +1,6 @@
 const { setWorldConstructor, World , setDefaultTimeout} = require('@cucumber/cucumber');
 const { chromium, firefox, webkit, devices } = require('playwright');
-const manageStepsDefinitions = require('../src/test/utils/manageStepsDefinitions.js');
+const manageStepsDefinitions = require('../src/test/utils/manageSteps.js');
 const pageFixture = require('./pageFixture.js'); // Adjusted path
 const config = require('../config.json');
 class CustomWorld extends World {

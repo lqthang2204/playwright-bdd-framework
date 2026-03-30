@@ -55,6 +55,12 @@ BeforeAll(async function () {
   try {
     pageFixture.setConfig(config) // Assign the config to the pageFixture object
     console.log(`Global setup: Running before all scenarios in environment "${pageFixture.getConfig().env}".`);
+    if (config.is_generate_report) {
+    this.startTime = new Date(); // record the start of the whole run
+    fs.writeFileSync('reports/times_run.json', JSON.stringify({
+    startTime: this.startTime,
+  }));
+  }
   } catch (error) {
     throw new Error(`Error during global setup: ${error.message}`);
     

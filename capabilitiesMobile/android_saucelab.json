@@ -1,0 +1,8 @@
+{
+"app": "https://github.com/saucelabs/sample-app-mobile/releases/download/2.7.1/Android.SauceLabs.Mobile.Sample.app.2.7.1.apk",
+    "automationName": "UIAutomator2",
+  "platformName": "android",
+  "udid": "emulator-5554",
+  "appium.appPackage": "com.swaglabsmobileapp",
+  "appWaitActivity": "com.swaglabsmobileapp.MainActivity"
+}

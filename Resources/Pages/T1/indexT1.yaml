@@ -1,27 +1,31 @@
 elements:
-  - id: use-without-account
+  - id: search-field
     description: A menu item that links to Dashboard
     cache: true
     timeout: 5000
     locators:
-      - device: WEB
-        type: getByRole
-        role: button
-        name: singin
-        filter:
-          hasText: Dashboard
-          hasClass: active
+      - device: DESKTOP
+        chain:
+          - type: GETBYROLE
+            role: textbox
+            name: Search with Plus
       - device: IOS
         type: ACCESSIBILITY_ID
         value: Add alarm
       - device: ANDROID
         type: uiautomator
         value: new UiSelector().resourceId("com.android.chrome:id/signin_fre_dismiss_button")
-  - id: no-thanks-button
-    description: A menu item that links to Dashboard
+  - id: Application-option
+    description: Application option in menu
     cache: true
     timeout: 5000
     locators:
+      - device: DESKTOP
+        chain:
+          - type: locator
+            value: a
+            filter:
+              hasText: Applications Admissions and
       - device: ANDROID
         type: id
         value: com.android.chrome:id/negative_button
@@ -70,24 +74,3 @@ elements:
       - device: ANDROID
         type: XPATH
         value: //android.widget.Button[@resource-id="BtnLogOn"]
-  - id: keep-me-logged-in-checkbox
-    description: Keep me logged in checkbox
-    cache: true
-    timeout: 5000
-    locators:
-      - device: DESKTOP
-        chain:
-          - type: GETBYROLE
-            role: checkbox
-            name: Keep me logged on
-  - id: accessibility-mode-checkbox
-    description: Accessibility checkbox 
-    cache: true
-    timeout: 5000
-    locators:
-      - device: DESKTOP
-        chain:
-          - type: GETBYROLE
-            role: checkbox
-            name: Accessibility Mode
-    

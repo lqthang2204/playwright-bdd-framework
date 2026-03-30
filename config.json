@@ -1,7 +1,7 @@
 {
-  "mode": "mobile",
+  "mode": "desktop",
   "env": "QA",
-  "tags": "@mobileAndroid2",
+  "tags": "@T1",
   "is_generate_report": true,
   "headless": false,
   "parallel":2,
@@ -13,8 +13,7 @@
         "automationexercise": "https://automationexercise.com/",
         "api": "https://api.qa.example.com",
         "KodeIT": "https://www.letskodeit.com/practice",
-        "playwright": "https://playwright.dev",
-          "tech1": "https://saas-rel-2026a.onespresso.net"
+        "playwright": "https://playwright.dev"
 
       },
       "screenshotOnFailure": true
@@ -70,7 +69,7 @@
     ]
   },
   "mobile": {
-    "device": "ANDROID",
+    "device": "android",
     "path_capability": "./capabilitiesMobile/capabilities_android.json"
   },
   "is_send_email": {

@@ -25,3 +25,13 @@ Feature: Login functionality android
   Scenario: Successful login with valid credentials android 1
     Given I open application with config below
       | capabilitiesFile | android_chrome   |
+
+  @demo_saucelab_android
+  Scenario: Successful login with valid credentials android 1
+    Given I open application with config below
+      | capabilitiesFile | android_saucelab   |
+            And I change the page spec to LoginSauceLabs
+       And I click element username
+        And I type "standard_user" into element username
+     And I type "secret_sauce" into element password
+      And I click element login-button
