@@ -58,10 +58,8 @@ Given("I wait {int} seconds", async function (seconds) {
   console.log(chalk.green(`[WAIT] Done waiting for ${waitTime} second(s).`));
 });
 Given('I navigate to url {word}', async function (url) {
-  url = await genenal.processEnvVariable(url);
-      console.log(`Resolving target URL for: ${url}`);
-      const targetUrl = await manageStepsDefinitions.goToUrl(url, pageFixture.getConfig());
-       console.log(`Navigating to: ${targetUrl}`);
+  result = await genenal.processEnvVariable(url);
+      const targetUrl = await manageStepsDefinitions.goToUrl(result.value, pageFixture.getConfig());
     try {
     if(pageFixture.getConfig().mode === 'mobile'){
       await this.driver.url(targetUrl)
@@ -77,10 +75,8 @@ Given('I navigate to url {word}', async function (url) {
 
     console.log('Navigation successful.');
     }
-
-   
   } catch (error) {
-    console.error(`Error during navigation to URL "${url}":`, error.message);
+    console.error(`Error during navigation to URL:`, error.message);
     console.error('Stack trace:', error.stack);
     throw error; // Re-throw the error to mark the step as failed
   }
@@ -89,7 +85,8 @@ Given('I navigate to url {word}', async function (url) {
        
     Given("I {word} {string} into element {word}", async function (action, value, elementId) {
   try {
-    value = await genenal.processEnvVariable(value);
+    result = await genenal.processEnvVariable(value);
+    // value = await genenal.formaInput(value);
     //  Detect current execution mode (DESKTOP or MOBILE)
     _executionContext = ManageMode.getExecutionContext();
     // Retrieve locator object from YAML based on the device type
@@ -98,23 +95,20 @@ Given('I navigate to url {word}', async function (url) {
       this.dataYaml,
       _executionContext.device
     );
-    console.log(
-      chalk.blue(
-        `Performing action "${action}" with value "${value}" on element "${elementId}"`
-      )
-    );
     // Execute the action depending on the current platform
     if (_executionContext.mode === "DESKTOP") {
       const steps = new WebSteps(this.page);
       const locator = await steps.resolveLocator(locatorItem);
-      await steps.execute(action, locator, value);
+      await steps.execute(action, locator, result.value);
     } else if (_executionContext.mode === "MOBILE") {
       const steps = new MobileSteps(this.driver);
       const locator = await steps.resolveLocator(locatorItem);
-      await steps.execute(action, locator, value);
-    } else {
+      await steps.execute(action, locator, result.value);
+    } 
+    else {
       throw new Error(`Unsupported mode: ${mode}`);
     }
+      value = result.found ? "***" :  result.value ; // Mask value in logs if it's from env variable
 
     //  Log success message
     console.log(

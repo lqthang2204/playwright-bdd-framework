@@ -5,10 +5,11 @@ Feature: Login functionality for tech one web
     Given I navigate to url ENV.URL_TECH
     # And I verify title this page is equal "Log On - CiA"
     And I change the page spec to loginT1
+    And I wait for element userName to be VISIBLE
     And I wait for element userName to be EDITABLE
     And I wait for element password to be NOT_DISABLED
-    And I type "ENV.USERNAME_TECH" into element userName
-    And I type "ENV.PASSWORD_TECH" into element password
+    And I fill "ENV.USERNAME_TECH" into element userName
+    And I fill "ENV.PASSWORD_TECH" into element password
     And I wait for element logon-button to be VISIBLE
     And I wait for element logon-button to be NOT_HIDDEN
     And I wait for element logon-button to be ENABLED
@@ -24,4 +25,4 @@ Feature: Login functionality for tech one web
     And I wait for element Add-Application-button to be VISIBLE
     And I wait for element page-spinner to be NOT_VISIBLE   
     And I click element Add-Application-button
-    And I wait 100 seconds
+    # And I wait 100 seconds

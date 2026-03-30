@@ -29,12 +29,18 @@ async function findFileName(relativeTo, fileName, suffix = ".json") {
   }
   
 }
-async function processEnvVariable(data) {
-    if(typeof data !== 'string') return data
-    const m = data.match(/^env\.(.+)$/i)
-    if(!m) return data
-    const key = m[1].trim();
-    const value = process.env[key] ??  process.env[key.toUpperCase()];
-    return value
-  }
-module.exports = { checkFileExists, findFileName , processEnvVariable};
+async function processEnvVariable(data, options = {}) {
+  if (typeof data !== 'string') return {value: data, found: false};
+  const m = data.match(/^env\.(.+)$/i);
+  if (!m) return {value: data, found: false};
+  const key = m[1].trim();
+  const value = process.env[key]
+  return {value: value, found: true};
+}
+async function formaInput(data){
+  //remove Unicode / emoji characters
+ return data.trim().normalize('NFKC').replace(/[^\x00-\x7F]/g, '') //remove special characters
+}
+
+
+module.exports = { checkFileExists, findFileName , processEnvVariable, formaInput};
