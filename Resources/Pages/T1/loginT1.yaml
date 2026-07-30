@@ -50,7 +50,7 @@ elements:
         chain:
           - type: GETBYROLE
             role: textbox
-            name: Password
+            name: Passwordz
       - device: IOS
         type: ACCESSIBILITY_ID
         value: Add alarm

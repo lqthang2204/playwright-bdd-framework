@@ -8,7 +8,7 @@ elements:
         chain:
           - type: GETBYROLE
             role: textbox
-            name: Search with Plus
+            name: Search with Plustest
       - device: IOS
         type: ACCESSIBILITY_ID
         value: Add alarm

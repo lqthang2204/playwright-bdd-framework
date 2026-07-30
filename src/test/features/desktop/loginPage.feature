@@ -7,7 +7,7 @@ Feature: Login functionality for tech one web
     And I change the page spec to loginT1
     And I wait for element userName to be VISIBLE
     And I wait for element userName to be EDITABLE
-    And I wait for element password to be NOT_DISABLED
+    And I wait for element password to be VISIBLE
     And I fill "ENV.USERNAME_TECH" into element userName
     And I fill "ENV.PASSWORD_TECH" into element password
     And I wait for element logon-button to be VISIBLE

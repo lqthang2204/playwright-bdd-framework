@@ -1,5 +1,6 @@
 const {expect} = require('@playwright/test');
 const chalk = require("chalk");
+const self_healing = require("../../../libs/self-healingAI.js");
 class BaseSteps{
     constructor(driver){
         this.driver = driver;
@@ -32,22 +33,55 @@ class BaseSteps{
         }
         }catch(err){
             console.error(chalk.red(`Error executing action ${action} on locator ${JSON.stringify(locator)}: ${err}`));
-            throw err;  
+            // Attempt self-healing on timeout / not found
+            if ((err.name === 'TimeoutError' || (err.message && (err.message.includes('not found') || err.message.includes('No node found'))))) {
+                try {
+                    console.log(chalk.yellow(`Attempting self-healing for action ${action} on locator ${JSON.stringify(locator)}...`));
+                    const runtimePage = this.page || this.driver || null;
+                    const newLocator = await self_healing.generateLocatorFromAI(err.message, runtimePage, locator);
+                    console.log(chalk.green(`Self-healing produced locator: ${JSON.stringify(newLocator)}`));
+                    const resolved = await this.resolveLocator(newLocator);
+                    // retry the same action with healed locator
+                    switch(upper){
+                        case "CLICK":
+                            return await this.click(resolved);
+                        case "FILL":
+                            return await this.fill(resolved, value);
+                        case "TYPE":
+                            return await this.type(resolved, value);
+                        case "CLEAR":
+                            return await this.clear(resolved);
+                        case "GET TEXT":
+                            return await this.getText(resolved);
+                        case "VERIFY TITLE":
+                            return await this.verifyTitle(value, expectedTitle);
+                        case "SCROLL":
+                            return await this.scrollToElement(resolved);
+                        default:
+                            throw err;
+                    }
+                } catch (healErr) {
+                    console.error(chalk.red(`Self-healing failed during execute(): ${healErr.message}`));
+                    throw err; // throw original
+                }
+            }
+            throw err;
         }
         
     }
-    async waitForStatus(locator, status, timeout = 5000, pollInterval = 500){
-        switch(status.toUpperCase()){
+   async waitForStatus(locator, status, timeout = 5000, pollInterval = 500, retry = 1) {
+    try {
+        switch (status.toUpperCase()) {
             case "ENABLED":
                 return await this.waitForEnabled(locator, timeout, pollInterval);
             case "NOT_ENABLED":
-                return await this.waitForNotEnabled(locator, timeout, pollInterval);             
+                return await this.waitForNotEnabled(locator, timeout, pollInterval);
             case "VISIBLE":
                 return await this.waitForVisible(locator, timeout, pollInterval);
             case "NOT_VISIBLE":
                 return await this.waitForNotVisible(locator, timeout, pollInterval);
             case "EDITABLE":
-                return await this.waitForEditable(locator, timeout, pollInterval);   
+                return await this.waitForEditable(locator, timeout, pollInterval);
             case "NOT_EDITABLE":
                 return await this.waitForNotEditable(locator, timeout, pollInterval);
             case "CHECKED":
@@ -65,9 +99,51 @@ class BaseSteps{
             default:
                 throw new Error(`Unsupported status: ${status}`);
         }
+    } catch (error) {
+        console.error(chalk.red(
+            `Error waiting for status ${status} on locator ${JSON.stringify(locator)}: ${error.message}`
+        ));
+        console.error(chalk.gray(error.stack));
 
+        // Detect timeout or element not found
+        if ((error.name === 'TimeoutError' || error.message.includes('not found') || error.message.includes('No node found')) && retry > 0) {
+            console.log(chalk.yellow(
+                `Attempting self-healing for locator ${JSON.stringify(locator)}...`
+            ));
 
+            try {
+                const runtimePage = this.page || this.driver || null;
+                const newLocator = await self_healing.generateLocatorFromAI(
+                    error.message,
+                    runtimePage,
+                    locator
+                );
+
+                console.log(chalk.green(
+                    `Self-healing successful. Raw AI locator: ${JSON.stringify(newLocator)}`
+                ));
+
+                const resolved = await this.resolveLocator(newLocator);
+                // Retry with new locator (decrease retry count)
+                return await this.waitForStatus(
+                    resolved,
+                    status,
+                    timeout,
+                    pollInterval,
+                    retry - 1
+                );
+
+            } catch (healError) {
+                console.error(chalk.red(`Self-healing failed: ${healError.message}`));
+                throw error; // original error
+            }
+        }
+
+        throw error; // rethrow if not healable
     }
+}
+
+    // Subclasses should implement `resolveLocator(locatorItem)`
 
     // Bse class defines interface that child classed must be ovverride
     async click(locator){throw new Error ("click() not implemented");}
