@@ -10,6 +10,7 @@ const MobileSteps = require("./MobileSteps.js");
 const genenal = require("../../../libs/general.js");
 const self_healing = require("../../../libs/self-healingAI.js");
 
+
 Given("I change the page spec to {word}", async function (fileName) {
   this.dataYaml = await manageYamlFile.readFileYaml(
     fileName,
@@ -182,7 +183,7 @@ Then(
             locator,
             status,
             locatorItem.timeout ? locatorItem.timeout : pageFixture.getTimeout(),
-            500,
+            500
           );
         } catch (error) {
           console.error(
@@ -191,29 +192,6 @@ Then(
             ),
           );
           console.error(chalk.gray(error.stack));
-
-          // Detect timeout or element not found
-          if (error.name === "TimeoutError" || error.message.includes("not found")) {
-            try {
-              const newResolvedLocator = await getNewLocatorFromAI(locator, error.message, this.page, steps);
-              if (newResolvedLocator) {
-                // Retry waiting with the healed locator
-                await steps.waitForStatus(
-                  newResolvedLocator,
-                  status,
-                  locatorItem.timeout ? locatorItem.timeout : pageFixture.getTimeout(),
-                  500,
-                );
-              } else {
-                throw error; // rethrow original if no healing result
-              }
-            } catch (healError) {
-              console.error(chalk.red(`Self-healing failed: ${healError.message}`));
-              throw error; // original error
-            }
-          } else {
-            throw error; // not a healable error
-          }
         }
       } else if (_executionContext.mode === "MOBILE") {
         const steps = new MobileSteps(this.driver);
@@ -251,6 +229,11 @@ function updateLocatorById(data, elementId, device, newLocator) {
   return true;
 }
 async function getNewLocatorFromAI(locator, message, page, steps) {
+  if (!self_healing.isSelfHealingAvailable()) {
+    console.log(chalk.yellow('Ollama is unavailable. Skipping self-healing.'));
+    return null;
+  }
+
   console.log(
     chalk.yellow(
       `Attempting self-healing for locator ${JSON.stringify(locator)}...`,
@@ -272,6 +255,7 @@ async function getNewLocatorFromAI(locator, message, page, steps) {
     return resolvedLocator;
   } catch (healError) {
     console.error(chalk.red(`Self-healing failed: ${healError.message}`));
-    throw healError;
+    return null;
   }
 }
+

@@ -1,6 +1,8 @@
 const {expect} = require('@playwright/test');
 const chalk = require("chalk");
 const self_healing = require("../../../libs/self-healingAI.js");
+const general = require("../../../libs/general.js");
+const pageFixture = require("../../../support/pageFixture.js");
 class BaseSteps{
     constructor(driver){
         this.driver = driver;
@@ -10,31 +12,48 @@ class BaseSteps{
         console.log(chalk.blue(`[${timestamp}] Action: ${action}, on Locator: ${JSON.stringify(locator)}`));
     }
     async execute(action, locator, value = null){
-        const upper = action.toUpperCase();
+        const upper = action.toUpperCase();         
         try{
             this.log(action, locator);
+            let result;
             switch(upper){
             case "CLICK":
-                return await this.click(locator);
+                result = await this.click(locator);
+                break;
             case "FILL":
-                return await this.fill(locator, value);
+                result = await this.fill(locator, value);
+                break;
             case "TYPE":
-                return await this.type(locator, value);
+                result = await this.type(locator, value);
+                break;
             case "CLEAR":
-                return await this.clear(locator);
+                result = await this.clear(locator);
+                break;
             case "GET TEXT":
-                return await this.getText(locator);
+                result = await this.getText(locator);
+                break;
             case "VERIFY TITLE":
-                return await this.verifyTitle(value, expectedTitle);
+                result = await this.verifyTitle(value, expectedTitle);
+                break;
             case "SCROLL":
-                return await this.scrollToElement(locator);
+                result = await this.scrollToElement(locator);
+                break;
             default:
                 throw new Error(`Unsupported action: ${action}`);
-        }
+        }                  
+            const cfg = pageFixture.getConfig ? pageFixture.getConfig() : null;
+                    if (cfg && cfg.highlight_element) {
+                        // highlight the element and screen shot and store the file in cache folder
+                        await general.highlightElement(locator);
+                       
+                        // const screenshotPath = await steps.takeScreenshot(elementId);
+                        // console.log(chalk.green(`Screenshot saved at: ${screenshotPath}`));
+                    }
+        return result;
         }catch(err){
             console.error(chalk.red(`Error executing action ${action} on locator ${JSON.stringify(locator)}: ${err}`));
             // Attempt self-healing on timeout / not found
-            if ((err.name === 'TimeoutError' || (err.message && (err.message.includes('not found') || err.message.includes('No node found'))))) {
+            if ((err.name === 'TimeoutError' || (err.message && (err.message.includes('not found') || err.message.includes('No node found')))) && self_healing.isSelfHealingAvailable()) {
                 try {
                     console.log(chalk.yellow(`Attempting self-healing for action ${action} on locator ${JSON.stringify(locator)}...`));
                     const runtimePage = this.page || this.driver || null;
@@ -60,6 +79,7 @@ class BaseSteps{
                         default:
                             throw err;
                     }
+                    
                 } catch (healErr) {
                     console.error(chalk.red(`Self-healing failed during execute(): ${healErr.message}`));
                     throw err; // throw original
@@ -71,34 +91,59 @@ class BaseSteps{
     }
    async waitForStatus(locator, status, timeout = 5000, pollInterval = 500, retry = 1) {
     try {
+        let result;
         switch (status.toUpperCase()) {
             case "ENABLED":
-                return await this.waitForEnabled(locator, timeout, pollInterval);
+                result = await this.waitForEnabled(locator, timeout, pollInterval);
+                break;
             case "NOT_ENABLED":
-                return await this.waitForNotEnabled(locator, timeout, pollInterval);
+                result = await this.waitForNotEnabled(locator, timeout, pollInterval);
+                break;
             case "VISIBLE":
-                return await this.waitForVisible(locator, timeout, pollInterval);
+                result = await this.waitForVisible(locator, timeout, pollInterval);
+                break;
             case "NOT_VISIBLE":
-                return await this.waitForNotVisible(locator, timeout, pollInterval);
+                result = await this.waitForNotVisible(locator, timeout, pollInterval);
+                break;
             case "EDITABLE":
-                return await this.waitForEditable(locator, timeout, pollInterval);
+                result = await this.waitForEditable(locator, timeout, pollInterval);
+                break;
             case "NOT_EDITABLE":
-                return await this.waitForNotEditable(locator, timeout, pollInterval);
+                result = await this.waitForNotEditable(locator, timeout, pollInterval);
+                break;
             case "CHECKED":
-                return await this.waitForChecked(locator, timeout, pollInterval);
+                result = await this.waitForChecked(locator, timeout, pollInterval);
+                break;
             case "NOT_CHECKED":
-                return await this.waitForNotChecked(locator, timeout, pollInterval);
+                result = await this.waitForNotChecked(locator, timeout, pollInterval);
+                break;
             case "DISABLED":
-                return await this.waitForDisabled(locator, timeout, pollInterval);
+                result = await this.waitForDisabled(locator, timeout, pollInterval);
+                break;
             case "NOT_DISABLED":
-                return await this.waitForNotDisabled(locator, timeout, pollInterval);
+                result = await this.waitForNotDisabled(locator, timeout, pollInterval);
+                break;
             case "HIDDEN":
-                return await this.waitForHidden(locator, timeout, pollInterval);
+                result = await this.waitForHidden(locator, timeout, pollInterval);
+                break;
             case "NOT_HIDDEN":
-                return await this.waitForNotHidden(locator, timeout, pollInterval);
+                result = await this.waitForNotHidden(locator, timeout, pollInterval);
+                break;
             default:
                 throw new Error(`Unsupported status: ${status}`);
         }
+
+        // wait for status successful
+        // if there is cached_locator is true then store highlight and locator into cache
+        const cfg = pageFixture.getConfig ? pageFixture.getConfig() : null;
+        if (cfg && cfg.highlight_element) {
+            // highlight the element and screen shot and store the file in cache folder
+            await general.highlightElement(locator);
+            
+            // const screenshotPath = await steps.takeScreenshot(elementId);
+            // console.log(chalk.green(`Screenshot saved at: ${screenshotPath}`));
+        }
+        return result;
     } catch (error) {
         console.error(chalk.red(
             `Error waiting for status ${status} on locator ${JSON.stringify(locator)}: ${error.message}`
@@ -106,23 +151,14 @@ class BaseSteps{
         console.error(chalk.gray(error.stack));
 
         // Detect timeout or element not found
-        if ((error.name === 'TimeoutError' || error.message.includes('not found') || error.message.includes('No node found')) && retry > 0) {
+        if ((error.name === 'TimeoutError' || error.message.includes('not found') || error.message.includes('No node found')) && retry > 0 && self_healing.isSelfHealingAvailable()) {
             console.log(chalk.yellow(
                 `Attempting self-healing for locator ${JSON.stringify(locator)}...`
             ));
 
             try {
                 const runtimePage = this.page || this.driver || null;
-                const newLocator = await self_healing.generateLocatorFromAI(
-                    error.message,
-                    runtimePage,
-                    locator
-                );
-
-                console.log(chalk.green(
-                    `Self-healing successful. Raw AI locator: ${JSON.stringify(newLocator)}`
-                ));
-
+                const newLocator = await self_healing.generateLocatorFromAI(error.message, runtimePage, locator);
                 const resolved = await this.resolveLocator(newLocator);
                 // Retry with new locator (decrease retry count)
                 return await this.waitForStatus(

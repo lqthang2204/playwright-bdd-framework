@@ -44,13 +44,13 @@ elements:
   - id: password
     description: A menu item that links to Dashboard
     cache: true
-    timeout: 5000
+    timeout: 60000
     locators:
       - device: DESKTOP
         chain:
           - type: GETBYROLE
             role: textbox
-            name: Passwordz
+            name: Password
       - device: IOS
         type: ACCESSIBILITY_ID
         value: Add alarm

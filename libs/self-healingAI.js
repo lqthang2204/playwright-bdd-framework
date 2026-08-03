@@ -2,21 +2,25 @@
 const cheerio = require('cheerio');
 const PromptGenerateLocator = require('./PromptGenerateLocator');
 let OllamaPkg;
+let Ollama;
+let ollamaEnabled = true;
+
 try {
   OllamaPkg = require("ollama");
+  Ollama = OllamaPkg.Ollama || OllamaPkg.default || OllamaPkg;
+  if (typeof Ollama !== "function") {
+    console.warn('The imported "ollama" module does not export a constructor. Self-healing will be disabled.');
+    ollamaEnabled = false;
+  }
 } catch (err) {
-  console.error('Package "ollama" is not installed. Run: npm install ollama');
-  process.exit(1);
-}
-
-const Ollama = OllamaPkg.Ollama || OllamaPkg.default || OllamaPkg;
-
-if (typeof Ollama !== "function") {
-  console.error('The imported "ollama" module does not export a constructor.');
-  process.exit(1);
+  console.warn('Package "ollama" is not installed. Self-healing will be disabled. Run: npm install ollama if you want AI locator healing.');
+  ollamaEnabled = false;
 }
 //  generateLocator(html, log_error, path_image, bdd_step, original_selector, selector_map)
 async function generateLocatorFromAI(log_error, page, original_selector) {
+  if (!ollamaEnabled) {
+    throw new Error('Ollama package unavailable; self-healing skipped.');
+  }
   const ollama = new Ollama(); // Defaults to http://localhost:11434
   const html = await getContent(page);
   // console.log("html is ", html);
@@ -85,4 +89,7 @@ function getCleanHtmlFromString(htmlString) {
 }
 
 
-module.exports = { generateLocatorFromAI };
+module.exports = {
+  generateLocatorFromAI,
+  isSelfHealingAvailable: () => ollamaEnabled,
+};

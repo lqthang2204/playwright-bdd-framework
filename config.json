@@ -4,6 +4,8 @@
   "tags": "@T1",
   "is_generate_report": true,
   "headless": false,
+  "cached_locators": false,
+  "highlight_element": true,
   "parallel":2,
   "environments": [
     {
@@ -40,7 +42,7 @@
   "remote": false,
   "remote_path_config": "remote_config.json",
   "browser": "chromium",
-  "setDefaultTimeout": 180000,
+  "setDefaultTimeout": 60000,
   "executablePath": null,
   "userDataDir": "/tmp/chrome-user-data",
   "ignoreDefaultArgs": [

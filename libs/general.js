@@ -41,6 +41,73 @@ async function formaInput(data){
   //remove Unicode / emoji characters
  return data.trim().normalize('NFKC').replace(/[^\x00-\x7F]/g, '') //remove special characters
 }
+async function highlightElement(locator) {
+  if (!locator) return null;
+  try {
+    // If locator supports count (Playwright Locator), check for matches first
+    if (typeof locator.count === 'function') {
+      const cnt = await locator.count();
+      if (!cnt || cnt === 0) return null; // nothing to highlight
+      if (cnt > 1) {
+        // choose the first match to avoid strict-mode violations
+        locator = locator.nth(0);
+      }
+    }
+
+    // Both Locator and ElementHandle support evaluate, use it to draw overlay
+    if (typeof locator.evaluate === 'function') {
+      // keep the overlay short-lived (in ms)
+      const keepMs = 1500;
+      await locator.evaluate((el, keepMsInner) => {
+        try {
+          const rect = el.getBoundingClientRect();
+          if (rect.width === 0 || rect.height === 0) return;
+
+          const existing = document.querySelectorAll('.playwright-debug-highlight');
+          existing.forEach((item) => item.remove());
+
+          const overlay = document.createElement('div');
+          overlay.className = 'playwright-debug-highlight';
+          overlay.style.position = 'absolute';
+          overlay.style.pointerEvents = 'none';
+          overlay.style.zIndex = '2147483647';
+          overlay.style.left = `${rect.left + window.scrollX}px`;
+          overlay.style.top = `${rect.top + window.scrollY}px`;
+          overlay.style.width = `${rect.width}px`;
+          overlay.style.height = `${rect.height}px`;
+          overlay.style.border = '2px solid red';
+          overlay.style.background = 'rgba(255, 255, 0, 0.35)';
+          overlay.style.boxShadow = '0 0 10px rgba(255, 0, 0, 0.5)';
+          overlay.style.transition = 'opacity 0.2s ease-in-out';
+          overlay.style.opacity = '1';
+          document.body.appendChild(overlay);
+
+          if (typeof el.blur === 'function') {
+            el.blur();
+          }
+
+          setTimeout(() => {
+            overlay.style.opacity = '0';
+            setTimeout(() => overlay.remove(), 200);
+          }, keepMsInner || 1500);
+        } catch (innerErr) {
+          // swallow DOM errors
+        }
+      }, keepMs);
+      return true;
+    }
+    console.warn('highlightElement: locator does not support evaluate()');
+    return null;
+  } catch (error) {
+    // If Playwright throws strict-mode or timeout errors, skip highlighting gracefully
+    if (error && error.message && (error.message.includes('strict mode') || error.message.includes('Timeout') || error.message.includes('No node found') || error.message.includes('not found'))) {
+      return null;
+    }
+    console.warn(`Error highlighting element: ${error?.message ?? error}`);
+    return null;
+  }
+}
 
 
-module.exports = { checkFileExists, findFileName , processEnvVariable, formaInput};
+
+module.exports = { checkFileExists, findFileName , processEnvVariable, formaInput, highlightElement};
