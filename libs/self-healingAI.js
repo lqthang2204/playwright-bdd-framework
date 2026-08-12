@@ -17,7 +17,7 @@ try {
   ollamaEnabled = false;
 }
 //  generateLocator(html, log_error, path_image, bdd_step, original_selector, selector_map)
-async function generateLocatorFromAI(log_error, page, original_selector) {
+async function generateLocatorFromAI(log_error, page, original_selector, elementId) {
   if (!ollamaEnabled) {
     throw new Error('Ollama package unavailable; self-healing skipped.');
   }
@@ -30,7 +30,7 @@ async function generateLocatorFromAI(log_error, page, original_selector) {
     messages: [
       {
         role: "user",
-        content: await PromptGenerateLocator.generateLocator(html, log_error, original_selector)
+        content: await PromptGenerateLocator.generateLocator(html, log_error, original_selector._selector, elementId)
       }
     ],
     options: {
@@ -39,12 +39,11 @@ async function generateLocatorFromAI(log_error, page, original_selector) {
   });
   
 
-  
-
   console.log(response.message?.content ?? response);
   const response_json = JSON.parse(response.message?.content);
   // console.log("Response from Ollama: ", response_json.type, response_json.value, response_json.description);
   return response_json;
+
   
 }
 async function getContent(page) {
@@ -55,21 +54,13 @@ async function getContent(page) {
     const cleanHTML = getCleanHtmlFromString(fullHTML);
     return cheerio.load(cleanHTML).html();
   } catch (error) {
-    logError("Error getting page content", error);
+    console.error("Error fetching or cleaning page content:", error.message);
     return null;
   }
-  const cheerio = require('cheerio');
- 
-/**
-
-* Nhận vào một chuỗi HTML thô (raw string) và trả về HTML đã làm sạch
-
-* @param {string} htmlString - Nội dung HTML lấy từ page.content()
-
-*/
- 
+  
 }
 function getCleanHtmlFromString(htmlString) {
+  const cheerio = require('cheerio');
     const $ = cheerio.load(htmlString);
     const garbageTags = ['script', 'style', 'svg', 'noscript', 'meta', 'link', 'iframe', 'head', 'title', 'noscript'];
     garbageTags.forEach(tag => $(tag).remove());

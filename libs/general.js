@@ -1,5 +1,6 @@
 const path = require("path");
 const fs = require("fs");
+const yaml = require("js-yaml");
 require('dotenv').config();
 
 async function checkFileExists(fileName, relativeTo, suffix = ".json") {
@@ -107,7 +108,87 @@ async function highlightElement(locator) {
     return null;
   }
 }
+async function CacheLocator(newLocator, name, path) {
 
 
+}
 
-module.exports = { checkFileExists, findFileName , processEnvVariable, formaInput, highlightElement};
+async function getLocatorFromCache(elemmentID, fileName, folderPath = "../Resources/Pages/healingAI/", suffix = ".yaml") {
+  try {
+    const filePath = path.resolve(__dirname, `${folderPath}${fileName}${suffix}`);
+    if (!fs.existsSync(filePath)) {
+      console.log(`Cache file not found: ${filePath}`);
+      return null;
+    }
+
+    const fileContent = fs.readFileSync(filePath, "utf8");
+    const data = yaml.load(fileContent);
+
+    if (data && data.elements && Array.isArray(data.elements) && data.elements.length > 0) {
+      //get locator for the elementID
+      const element = data.elements.find(el => el.id === elemmentID);
+      if (!element) {
+        console.log(`Element ID "${elemmentID}" not found in cache file: ${filePath}`);
+        return null;
+      }
+
+      if (element.locators && Array.isArray(element.locators) && element.locators.length > 0) {
+        return element.locators[0]; // Return the first locator (typically DESKTOP)
+      }
+      if (element.locators && Array.isArray(element.locators) && element.locators.length > 0) {
+        return element.locators[0]; // Return the first locator (typically DESKTOP)
+      }
+    }
+
+    console.log(`No locators found in cache file: ${filePath}`);
+    return null;
+  } catch (error) {
+    console.error(`Error reading locator from cache: ${error.message}`);
+    return null;
+  }
+}
+async function writeLocatorToFile(elementID, locator, folderPath, name) {
+  const locatorEntry = {
+    device: (locator && locator.device) || 'DESKTOP',
+  };
+
+  if (locator && locator.chain) {
+    locatorEntry.chain = locator.chain;
+  } else {
+    const chainNode = { ...(locator || {}) };
+    delete chainNode.device;
+    locatorEntry.chain = [chainNode];
+  }
+
+  const yamlContent = yaml.dump(
+    {
+      elements: [
+        {
+          id: elementID,
+          description: locator.reasoning || '',
+          cache: true,
+          timeout: 5000,
+          locators: [locatorEntry],
+        },
+      ],
+    },
+    {
+      noRefs: true,
+      indent: 2,
+    }
+  );
+
+  const targetDir = path.resolve(__dirname, folderPath);
+  if (!fs.existsSync(targetDir)) {
+    fs.mkdirSync(targetDir, { recursive: true });
+  }
+  const filePath = path.resolve(targetDir, `${name}.yaml`);
+  try {
+    fs.writeFileSync(filePath, yamlContent, 'utf8');
+    console.log(`Locator for element "${elementID}" written to ${filePath}`);
+  } catch (error) {
+    console.error(`Error writing locator to file: ${error.message}`);
+  }
+}
+
+module.exports = { checkFileExists, findFileName , processEnvVariable, formaInput, highlightElement, writeLocatorToFile, getLocatorFromCache};

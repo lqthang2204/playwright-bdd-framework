@@ -12,6 +12,7 @@ const self_healing = require("../../../libs/self-healingAI.js");
 
 
 Given("I change the page spec to {word}", async function (fileName) {
+  this.fileName = fileName;
   this.dataYaml = await manageYamlFile.readFileYaml(
     fileName,
     "../Resources/Pages/",
@@ -183,7 +184,7 @@ Then(
             locator,
             status,
             locatorItem.timeout ? locatorItem.timeout : pageFixture.getTimeout(),
-            500
+            500, 1,elementId, this.dataYaml, this.fileName
           );
         } catch (error) {
           console.error(
@@ -214,20 +215,20 @@ Then(
     }
   },
 );
-function updateLocatorById(data, elementId, device, newLocator) {
-  const element = data.elements.find((el) => el.id === elementId);
-  if (!element) return false;
+// function updateLocatorById(data, elementId, device, newLocator) {
+//   const element = data.elements.find((el) => el.id === elementId);
+//   if (!element) return false;
 
-  const index = element.locators.findIndex((l) => l.device === device);
+//   const index = element.locators.findIndex((l) => l.device === device);
 
-  if (index !== -1) {
-    element.locators[index] = newLocator; // replace
-  } else {
-    element.locators.push(newLocator); // add
-  }
+//   if (index !== -1) {
+//     element.locators[index] = newLocator; // replace
+//   } else {
+//     element.locators.push(newLocator); // add
+//   }
 
-  return true;
-}
+//   return true;
+// }
 async function getNewLocatorFromAI(locator, message, page, steps) {
   if (!self_healing.isSelfHealingAvailable()) {
     console.log(chalk.yellow('Ollama is unavailable. Skipping self-healing.'));

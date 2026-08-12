@@ -42,7 +42,7 @@
   "remote": false,
   "remote_path_config": "remote_config.json",
   "browser": "chromium",
-  "setDefaultTimeout": 60000,
+  "setDefaultTimeout": 120000,
   "executablePath": null,
   "userDataDir": "/tmp/chrome-user-data",
   "ignoreDefaultArgs": [

@@ -1,0 +1,13 @@
+elements:
+  - id: password
+    description: >-
+      The 'name' attribute is present in the HTML and uniquely identifies the
+      target element. It is also a high-priority attribute for locating
+      elements.
+    cache: true
+    timeout: 5000
+    locators:
+      - device: DESKTOP
+        chain:
+          - type: LOCATOR
+            value: //input[@name='Password']
