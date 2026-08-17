@@ -126,8 +126,10 @@ class BaseSteps {
                         default:
                             throw err;
                     }
-                    this.updateLocatorItem(locatorItem, newLocator);
-                    this.updateDataYaml(dataYaml, elementId, newLocator);
+                    if(healedResult){
+                        this.updateHealedLocator(locatorItem, dataYaml, elementId, newLocator);
+                    }
+                    
                     return healedResult;
                 } catch (healErr) {
                     console.error(
@@ -258,8 +260,7 @@ class BaseSteps {
                         locatorItem,
                     );
                     if (result === true) {
-                        this.updateLocatorItem(locatorItem, newLocator);
-                        this.updateDataYaml(dataYaml, elementId, newLocator);
+                        this.updateHealedLocator(locatorItem, dataYaml, elementId, newLocator);
                     }
                     return result;
                 } catch (healError) {
@@ -273,65 +274,43 @@ class BaseSteps {
     }
 
     /**
-     * Updates locatorItem with the newly healed locator chain from AI self-healing.
+     * Updates the healed locator into locatorItem in-memory.
+     * Since locatorItem.locator references the exact object inside dataYaml.elements,
+     * mutating locatorItem updates dataYaml automatically.
      * @param {Object} locatorItem 
-     * @param {Object} newLocator 
-     */
-    updateLocatorItem(locatorItem, newLocator) {
-        if (!locatorItem || !newLocator) return;
-        const newChain = newLocator.chain
-            ? newLocator.chain
-            : (newLocator.locator?.chain ? newLocator.locator.chain : [newLocator]);
-
-        if (locatorItem.locator) {
-            locatorItem.locator.chain = newChain;
-        } else {
-            locatorItem.chain = newChain;
-        }
-        console.log(
-            chalk.green(
-                `Updated locatorItem for "${locatorItem.id || 'element'}" with new self-healed locator chain.`,
-            ),
-        );
-    }
-
-    /**
-     * Updates dataYaml in-memory for the specified elementId and device with the newly healed locator.
      * @param {Object} dataYaml 
      * @param {string} elementId 
      * @param {Object} newLocator 
      */
-    updateDataYaml(dataYaml, elementId, newLocator) {
-        if (!dataYaml || !dataYaml.elements || !elementId || !newLocator) return;
+    updateHealedLocator(locatorItem, dataYaml, elementId, newLocator) {
+        if (!newLocator) return;
+        const newChain = newLocator.chain
+            ? newLocator.chain
+            : (newLocator.locator?.chain ? newLocator.locator.chain : [newLocator]);
+
+        // Cập nhật trực tiếp qua locatorItem (tự động cập nhật dataYaml nhờ Reference)
         const executionContext = ManageMode.getExecutionContext
             ? ManageMode.getExecutionContext()
             : { device: "DESKTOP" };
         const device = executionContext.device || "DESKTOP";
-
         const element = dataYaml.elements.find((el) => el.id === elementId);
         if (element) {
-            const newChain = newLocator.chain
-                ? newLocator.chain
-                : (newLocator.locator?.chain ? newLocator.locator.chain : [newLocator]);
-            const newLocatorObj = {
-                device: device,
-                chain: newChain,
-            };
-            if (!element.locators) {
-                element.locators = [];
-            }
-            const index = element.locators.findIndex((l) => l.device === device);
-            if (index !== -1) {
-                element.locators[index] = newLocatorObj;
+            if (!element.locators) element.locators = [];
+            const locObj = element.locators.find((l) => l.device === device);
+            if (locObj) {
+                locObj.chain = newChain;
             } else {
-                element.locators.push(newLocatorObj);
+                element.locators.push({ device, chain: newChain });
             }
-            console.log(
-                chalk.green(
-                    `Updated dataYaml for element "${elementId}" (${device}) with self-healed locator.`,
-                ),
-            );
         }
+
+
+        const targetId = elementId || locatorItem?.id || "element";
+        console.log(
+            chalk.green(
+                `✅ Self-healed locator updated for element "${targetId}".`,
+            ),
+        );
     }
 
     // Subclasses should implement `resolveLocator(locatorItem)`
