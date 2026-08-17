@@ -4,6 +4,8 @@ const self_healing = require("../../../libs/self-healingAI.js");
 const general = require("../../../libs/general.js");
 const pageFixture = require("../../../support/pageFixture.js");
 const manageYamlFile = require("../../../libs/ManageYamlFile.js");
+const ManageMode = require("../utils/ManageMode.js");
+
 class BaseSteps {
     constructor(driver) {
         this.driver = driver;
@@ -16,7 +18,15 @@ class BaseSteps {
             ),
         );
     }
-    async execute(action, locator, value = null) {
+    async execute(
+        action,
+        locator,
+        value = null,
+        elementId = null,
+        dataYaml = null,
+        fileName = null,
+        locatorItem = null,
+    ) {
         const upper = action.toUpperCase();
         try {
             this.log(action, locator);
@@ -66,7 +76,8 @@ class BaseSteps {
                 (err.name === "TimeoutError" ||
                     (err.message &&
                         (err.message.includes("not found") ||
-                            err.message.includes("No node found")))) &&
+                            err.message.includes("No node found") ||
+                            err.message.includes("Timed out")))) &&
                 self_healing.isSelfHealingAvailable()
             ) {
                 try {
@@ -80,6 +91,7 @@ class BaseSteps {
                         err.message,
                         runtimePage,
                         locator,
+                        elementId,
                     );
                     console.log(
                         chalk.green(
@@ -88,24 +100,35 @@ class BaseSteps {
                     );
                     const resolved = await this.resolveLocator(newLocator);
                     // retry the same action with healed locator
+                    let healedResult;
                     switch (upper) {
                         case "CLICK":
-                            return await this.click(resolved);
+                            healedResult = await this.click(resolved);
+                            break;
                         case "FILL":
-                            return await this.fill(resolved, value);
+                            healedResult = await this.fill(resolved, value);
+                            break;
                         case "TYPE":
-                            return await this.type(resolved, value);
+                            healedResult = await this.type(resolved, value);
+                            break;
                         case "CLEAR":
-                            return await this.clear(resolved);
+                            healedResult = await this.clear(resolved);
+                            break;
                         case "GET TEXT":
-                            return await this.getText(resolved);
+                            healedResult = await this.getText(resolved);
+                            break;
                         case "VERIFY TITLE":
-                            return await this.verifyTitle(value, expectedTitle);
+                            healedResult = await this.verifyTitle(value, expectedTitle);
+                            break;
                         case "SCROLL":
-                            return await this.scrollToElement(resolved);
+                            healedResult = await this.scrollToElement(resolved);
+                            break;
                         default:
                             throw err;
                     }
+                    this.updateLocatorItem(locatorItem, newLocator);
+                    this.updateDataYaml(dataYaml, elementId, newLocator);
+                    return healedResult;
                 } catch (healErr) {
                     console.error(
                         chalk.red(
@@ -124,9 +147,10 @@ class BaseSteps {
         timeout = 5000,
         pollInterval = 500,
         retry = 1,
-        elementId,
-        dataYaml,
-        fileName,
+        elementId = null,
+        dataYaml = null,
+        fileName = null,
+        locatorItem = null,
     ) {
         try {
             let result;
@@ -213,108 +237,31 @@ class BaseSteps {
                 );
 
                 try {
-                    const isFileExist = await general.checkFileExists(
-                        fileName,
-                        "../Resources/Pages/healingAI/",
-                        ".yaml",
+                    const runtimePage = this.page || this.driver || null;
+                    const newLocator = await self_healing.generateLocatorFromAI(
+                        error.message,
+                        runtimePage,
+                        locator,
+                        elementId,
                     );
-                    if (!isFileExist) {
-                        console.log(
-                            chalk.yellow(
-                                `File ${fileName} does not exist in healingAI folder. Skipping find element in file , ready finding by AI`,
-                            ),
-                        );
-                        const runtimePage = this.page || this.driver || null;
-                        const newLocator = await self_healing.generateLocatorFromAI(
-                            error.message,
-                            runtimePage,
-                            locator,
-                            elementId,
-                        );
-                        const resolved = await this.resolveLocator(newLocator);
-                        // Retry with new locator (decrease retry count)
-                        const result = await this.waitForStatus(
-                            resolved,
-                            status,
-                            timeout,
-                            pollInterval,
-                            retry - 1,
-                            elementId,
-                            dataYaml,
-                            fileName,
-                        );
-                        // cache the healed locator only when the retry truly succeeded
-                        if (result === true) {
-                            await general.writeLocatorToFile(
-                                elementId,
-                                newLocator,
-                                "../Resources/Pages/healingAI/",
-                                fileName,
-                            );
-                        } else {
-                            console.log(
-                                chalk.yellow(
-                                    `Retry did not complete successfully. Skipping cache write.`,
-                                ),
-                            );
-                        }
-                        return result;
-                    } else {
-                        try {
-                            const cachedLocator = await general.getLocatorFromCache(
-                                elementId,
-                                fileName,
-                                "../Resources/Pages/healingAI/",
-                            );
-                            if (cachedLocator) {
-                                console.log(
-                                    chalk.green(
-                                        `Found cached locator for ${elementId} in ${fileName}.yaml`,
-                                    ),
-                                );
-                                const resolved = await this.resolveLocator(cachedLocator);
-                                // Retry with cached locator (decrease retry count)
-                                const result = await this.waitForStatus(
-                                    resolved,
-                                    status,
-                                    timeout,
-                                    pollInterval,
-                                    retry - 1,
-                                    elementId,
-                                    dataYaml,
-                                    fileName,
-                                );
-                                if (result === true) {
-                                    console.log(
-                                        chalk.green(
-                                            `Successfully waited for status ${status} on cached locator for ${elementId}.`,
-                                        ),
-                                    );
-                                } else {
-                                    console.log(
-                                        chalk.yellow(
-                                            `Retry with cached locator did not complete successfully.`,
-                                        ),
-                                    );
-                                }
-                                return result;
-                            } else {
-                                console.log(
-                                    chalk.yellow(
-                                        `No cached locator found for ${elementId} in ${fileName}.yaml. Skipping retry.`,
-                                    ),
-                                );
-                                throw error; // Re-throw original error
-                            }
-                        } catch (cacheError) {
-                            console.error(
-                                chalk.red(
-                                    `Error retrieving cached locator for ${elementId} from ${fileName}.yaml: ${cacheError.message}`,
-                                ),
-                            );
-                            throw error; // Re-throw original error
-                        }
+                    const resolved = await this.resolveLocator(newLocator);
+                    // Retry with new locator (decrease retry count)
+                    const result = await this.waitForStatus(
+                        resolved,
+                        status,
+                        timeout,
+                        pollInterval,
+                        retry - 1,
+                        elementId,
+                        dataYaml,
+                        fileName,
+                        locatorItem,
+                    );
+                    if (result === true) {
+                        this.updateLocatorItem(locatorItem, newLocator);
+                        this.updateDataYaml(dataYaml, elementId, newLocator);
                     }
+                    return result;
                 } catch (healError) {
                     console.error(chalk.red(`Self-healing failed: ${healError.message}`));
                     throw error;
@@ -322,6 +269,68 @@ class BaseSteps {
             }
 
             throw error; // rethrow if not healable
+        }
+    }
+
+    /**
+     * Updates locatorItem with the newly healed locator chain from AI self-healing.
+     * @param {Object} locatorItem 
+     * @param {Object} newLocator 
+     */
+    updateLocatorItem(locatorItem, newLocator) {
+        if (!locatorItem || !newLocator) return;
+        const newChain = newLocator.chain
+            ? newLocator.chain
+            : (newLocator.locator?.chain ? newLocator.locator.chain : [newLocator]);
+
+        if (locatorItem.locator) {
+            locatorItem.locator.chain = newChain;
+        } else {
+            locatorItem.chain = newChain;
+        }
+        console.log(
+            chalk.green(
+                `Updated locatorItem for "${locatorItem.id || 'element'}" with new self-healed locator chain.`,
+            ),
+        );
+    }
+
+    /**
+     * Updates dataYaml in-memory for the specified elementId and device with the newly healed locator.
+     * @param {Object} dataYaml 
+     * @param {string} elementId 
+     * @param {Object} newLocator 
+     */
+    updateDataYaml(dataYaml, elementId, newLocator) {
+        if (!dataYaml || !dataYaml.elements || !elementId || !newLocator) return;
+        const executionContext = ManageMode.getExecutionContext
+            ? ManageMode.getExecutionContext()
+            : { device: "DESKTOP" };
+        const device = executionContext.device || "DESKTOP";
+
+        const element = dataYaml.elements.find((el) => el.id === elementId);
+        if (element) {
+            const newChain = newLocator.chain
+                ? newLocator.chain
+                : (newLocator.locator?.chain ? newLocator.locator.chain : [newLocator]);
+            const newLocatorObj = {
+                device: device,
+                chain: newChain,
+            };
+            if (!element.locators) {
+                element.locators = [];
+            }
+            const index = element.locators.findIndex((l) => l.device === device);
+            if (index !== -1) {
+                element.locators[index] = newLocatorObj;
+            } else {
+                element.locators.push(newLocatorObj);
+            }
+            console.log(
+                chalk.green(
+                    `Updated dataYaml for element "${elementId}" (${device}) with self-healed locator.`,
+                ),
+            );
         }
     }
 

@@ -38,11 +38,11 @@ Then(/^I (\w+)(?: to)? element ([\w-]+)$/, async function (action, elementId) {
   if (_executionContext.mode === "DESKTOP") {
     const steps = new WebSteps(this.page);
     const locator = await steps.resolveLocator(locatorItem);
-    await steps.execute(action, locator, null);
+    await steps.execute(action, locator, null, elementId, this.dataYaml, this.fileName, locatorItem);
   } else if (_executionContext.mode === "MOBILE") {
     const steps = new MobileSteps(this.driver);
     const locator = await steps.resolveLocator(locatorItem);
-    await steps.execute(action, locator, null);
+    await steps.execute(action, locator, null, elementId, this.dataYaml, this.fileName, locatorItem);
   } else {
     throw new Error(`Unsupported mode: ${_executionContext.mode}`);
   }
@@ -110,11 +110,11 @@ Given(
       if (_executionContext.mode === "DESKTOP") {
         const steps = new WebSteps(this.page);
         const locator = await steps.resolveLocator(locatorItem);
-        await steps.execute(action, locator, result.value);
+        await steps.execute(action, locator, result.value, elementId, this.dataYaml, this.fileName, locatorItem);
       } else if (_executionContext.mode === "MOBILE") {
         const steps = new MobileSteps(this.driver);
         const locator = await steps.resolveLocator(locatorItem);
-        await steps.execute(action, locator, result.value);
+        await steps.execute(action, locator, result.value, elementId, this.dataYaml, this.fileName, locatorItem);
       } else {
         throw new Error(`Unsupported mode: ${_executionContext.mode}`);
       }
@@ -184,7 +184,12 @@ Then(
             locator,
             status,
             locatorItem.timeout ? locatorItem.timeout : pageFixture.getTimeout(),
-            500, 1,elementId, this.dataYaml, this.fileName
+            500,
+            1,
+            elementId,
+            this.dataYaml,
+            this.fileName,
+            locatorItem,
           );
         } catch (error) {
           console.error(
@@ -202,6 +207,11 @@ Then(
           status,
           locatorItem.timeout ? locatorItem.timeout : pageFixture.getTimeout(),
           500,
+          1,
+          elementId,
+          this.dataYaml,
+          this.fileName,
+          locatorItem,
         );
       } else {
         throw new Error(`Unsupported mode: ${_executionContext.mode}`);
