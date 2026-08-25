@@ -128,6 +128,9 @@ class BaseSteps {
                     }
                     if(healedResult){
                         this.updateHealedLocator(locatorItem, dataYaml, elementId, newLocator);
+                        if(pageFixture.getConfig()?.selfHealing?.save_healed_to_yaml && fileName !== null){
+                            general.writeLocatorToFile(elementId, newLocator, "Resources/Pages/healingAI/", fileName);
+                        }
                     }
                     
                     return healedResult;
@@ -230,7 +233,7 @@ class BaseSteps {
                     error.message.includes("not found") ||
                     error.message.includes("No node found")) &&
                 retry > 0 &&
-                self_healing.isSelfHealingAvailable()
+                self_healing.isSelfHealingAvailable() && pageFixture.getConfig().selfHealing.enabled
             ) {
                 console.log(
                     chalk.yellow(
@@ -261,6 +264,10 @@ class BaseSteps {
                     );
                     if (result === true) {
                         this.updateHealedLocator(locatorItem, dataYaml, elementId, newLocator);
+                    }
+                    if(pageFixture.getConfig().selfHealing.save_healed_to_yaml && fileName !== null){
+                        general.writeLocatorToFile(elementId,newLocator, "Resources/Pages/healingAI/", fileName);
+
                     }
                     return result;
                 } catch (healError) {

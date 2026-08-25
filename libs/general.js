@@ -147,48 +147,106 @@ async function getLocatorFromCache(elemmentID, fileName, folderPath = "../Resour
     return null;
   }
 }
-async function writeLocatorToFile(elementID, locator, folderPath, name) {
-  const locatorEntry = {
-    device: (locator && locator.device) || 'DESKTOP',
-  };
+async function writeLocatorToFile(elementID, locator, folderPath = "Resources/Pages/healingAI/", name = "healed_elements") {
+  try {
+    if (!elementID || !locator) {
+      console.warn("[writeLocatorToFile] elementID or locator is missing. Skipping write.");
+      return;
+    }
 
-  if (locator && locator.chain) {
-    locatorEntry.chain = locator.chain;
-  } else {
-    const chainNode = { ...(locator || {}) };
-    delete chainNode.device;
-    locatorEntry.chain = [chainNode];
-  }
+    // 1. Resolve folder path (supports absolute, project-relative, and directory-relative)
+    let targetDir;
+    if (path.isAbsolute(folderPath)) {
+      targetDir = folderPath;
+    } else {
+      targetDir = path.resolve(process.cwd(), folderPath);
+    }
 
-  const yamlContent = yaml.dump(
-    {
-      elements: [
-        {
-          id: elementID,
-          description: locator.reasoning || '',
-          cache: true,
-          timeout: 5000,
-          locators: [locatorEntry],
-        },
-      ],
-    },
-    {
+    if (!fs.existsSync(targetDir)) {
+      fs.mkdirSync(targetDir, { recursive: true });
+    }
+
+    // 2. Sanitize file name
+    const sanitizedFileName = (name || "healed_elements").replace(/\.ya?ml$/i, "");
+    const filePath = path.join(targetDir, `${sanitizedFileName}.yaml`);
+
+    // 3. Build locator chain and device object
+    const device = (locator && locator.device) || "DESKTOP";
+    let chain = [];
+    if (locator.chain && Array.isArray(locator.chain)) {
+      chain = locator.chain;
+    } else if (locator.locator?.chain && Array.isArray(locator.locator.chain)) {
+      chain = locator.locator.chain;
+    } else {
+      const chainNode = { ...locator };
+      delete chainNode.device;
+      delete chainNode.id;
+      delete chainNode.confidence;
+      delete chainNode.reasoning;
+      chain = [chainNode];
+    }
+
+    const locatorEntry = {
+      device,
+      chain,
+    };
+
+    const description = locator.reasoning
+      ? `AI Healed (${locator.confidence || 'N/A'}): ${locator.reasoning}`
+      : "Self-healed locator";
+
+    // 4. Load existing YAML if file exists to merge elements without overwriting
+    let existingData = { elements: [] };
+    if (fs.existsSync(filePath)) {
+      try {
+        const fileContent = fs.readFileSync(filePath, "utf8");
+        const parsed = yaml.load(fileContent);
+        if (parsed && Array.isArray(parsed.elements)) {
+          existingData = parsed;
+        }
+      } catch (readErr) {
+        console.warn(`[writeLocatorToFile] Warning reading existing file "${filePath}": ${readErr.message}. Creating new.`);
+      }
+    }
+
+    // 5. Update existing element or append new element
+    const existingElement = existingData.elements.find((el) => el.id === elementID);
+    if (existingElement) {
+      existingElement.description = description;
+      existingElement.cache = true;
+      existingElement.timeout = existingElement.timeout || 5000;
+      if (!Array.isArray(existingElement.locators)) {
+        existingElement.locators = [];
+      }
+      const existingLocIndex = existingElement.locators.findIndex((l) => l.device === device);
+      if (existingLocIndex !== -1) {
+        existingElement.locators[existingLocIndex] = locatorEntry;
+      } else {
+        existingElement.locators.push(locatorEntry);
+      }
+    } else {
+      existingData.elements.push({
+        id: elementID,
+        description,
+        cache: true,
+        timeout: 5000,
+        locators: [locatorEntry],
+      });
+    }
+
+    // 6. Write back to YAML
+    const yamlContent = yaml.dump(existingData, {
       noRefs: true,
       indent: 2,
-    }
-  );
+      lineWidth: -1,
+    });
 
-  const targetDir = path.resolve(__dirname, folderPath);
-  if (!fs.existsSync(targetDir)) {
-    fs.mkdirSync(targetDir, { recursive: true });
-  }
-  const filePath = path.resolve(targetDir, `${name}.yaml`);
-  try {
-    fs.writeFileSync(filePath, yamlContent, 'utf8');
-    console.log(`Locator for element "${elementID}" written to ${filePath}`);
+    fs.writeFileSync(filePath, yamlContent, "utf8");
+    console.log(`[writeLocatorToFile] ✅ Healed locator for "${elementID}" written to ${filePath}`);
   } catch (error) {
-    console.error(`Error writing locator to file: ${error.message}`);
+    console.error(`[writeLocatorToFile] ❌ Error writing locator to file: ${error.message}`);
   }
 }
 
 module.exports = { checkFileExists, findFileName , processEnvVariable, formaInput, highlightElement, writeLocatorToFile, getLocatorFromCache};
+

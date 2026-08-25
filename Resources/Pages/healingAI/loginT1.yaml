@@ -1,9 +1,6 @@
 elements:
   - id: password
-    description: >-
-      The 'name' attribute is present in the HTML and uniquely identifies the
-      target element. It is also a high-priority attribute for locating
-      elements.
+    description: 'AI Healed (90%): The ''name'' attribute is present in the HTML and uniquely identifies the password input field. It is also the highest priority attribute for stability.'
     cache: true
     timeout: 5000
     locators:
@@ -11,3 +8,12 @@ elements:
         chain:
           - type: LOCATOR
             value: //input[@name='Password']
+  - id: userName
+    description: 'AI Healed (90%): The `name` attribute is present in the HTML and uniquely identifies the target element. It is also the highest priority attribute, ensuring its stability.'
+    cache: true
+    timeout: 5000
+    locators:
+      - device: DESKTOP
+        chain:
+          - type: LOCATOR
+            value: //input[@name='LogonName']

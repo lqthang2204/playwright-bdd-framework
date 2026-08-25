@@ -1,6 +1,7 @@
 
 const cheerio = require('cheerio');
 const PromptGenerateLocator = require('./PromptGenerateLocator');
+const pageFixture = require('../support/pageFixture');
 let OllamaPkg;
 let Ollama;
 let ollamaEnabled = true;
@@ -25,7 +26,7 @@ async function generateLocatorFromAI(log_error, page, original_selector, element
   const html = await getContent(page);
   // console.log("html is ", html);
   const response = await ollama.chat({
-    model: 'qwen2.5-coder:1.5b', // Ensure this model is available locally
+    model: pageFixture.getConfig().selfHealing.model, // Ensure this model is available locally
     format: "json",
     messages: [
       {
