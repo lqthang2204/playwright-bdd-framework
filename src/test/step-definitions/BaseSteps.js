@@ -129,7 +129,11 @@ class BaseSteps {
                     if(healedResult){
                         this.updateHealedLocator(locatorItem, dataYaml, elementId, newLocator);
                         if(pageFixture.getConfig()?.selfHealing?.save_healed_to_yaml && fileName !== null){
-                            general.writeLocatorToFile(elementId, newLocator, "Resources/Pages/healingAI/", fileName);
+                            try {
+                                general.writeLocatorToFile(elementId, newLocator, "Resources/Pages/healingAI/", fileName);
+                            } catch (writeErr) {
+                                console.warn(`Failed to persist healed locator to YAML: ${writeErr.message}`);
+                            }
                         }
                     }
                     
@@ -265,9 +269,12 @@ class BaseSteps {
                     if (result === true) {
                         this.updateHealedLocator(locatorItem, dataYaml, elementId, newLocator);
                     }
-                    if(pageFixture.getConfig().selfHealing.save_healed_to_yaml && fileName !== null){
-                        general.writeLocatorToFile(elementId,newLocator, "Resources/Pages/healingAI/", fileName);
-
+                    if(pageFixture.getConfig()?.selfHealing?.save_healed_to_yaml && fileName !== null){
+                        try {
+                            general.writeLocatorToFile(elementId, newLocator, "Resources/Pages/healingAI/", fileName);
+                        } catch (writeErr) {
+                            console.warn(`Failed to persist healed locator to YAML: ${writeErr.message}`);
+                        }
                     }
                     return result;
                 } catch (healError) {
