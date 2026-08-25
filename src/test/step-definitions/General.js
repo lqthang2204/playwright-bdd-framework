@@ -7,6 +7,7 @@ const chalk = require("chalk");
 const WebSteps = require("./WebSteps.js");
 const ManageMode = require("../utils/ManageMode.js");
 const MobileSteps = require("./MobileSteps.js");
+const StepFactory = require("../utils/StepFactory.js");
 const genenal = require("../../../libs/general.js");
 const self_healing = require("../../../libs/self-healingAI.js");
 
@@ -20,32 +21,43 @@ Given("I change the page spec to {word}", async function (fileName) {
   );
 });
 
-Then(/^I (\w+)(?: to)? element ([\w-]+)$/, async function (action, elementId) {
-  // 1️⃣ Detect current execution mode (DESKTOP or MOBILE)
-  // 1️⃣ Detect current execution mode (DESKTOP or MOBILE)
-  let _executionContext = ManageMode.getExecutionContext();
+/**
+ * Helper function to look up element in YAML, resolve locator, and execute step action.
+ */
+async function performElementAction(world, action, elementId, rawValue = null) {
+  let value = null;
+  let isEnvFound = false;
+
+  if (rawValue !== null) {
+    const result = await genenal.processEnvVariable(rawValue);
+    value = result.value;
+    isEnvFound = result.found;
+  }
+
+  const { context, steps } = StepFactory.getContextAndSteps(world);
 
   const locatorItem = await manageYamlFile.lookUpElementInYaml(
     elementId,
-    this.dataYaml,
-    _executionContext.device,
-  );
-  console.log(
-    chalk.blue(`Performing action "${action}" on element "${elementId}"`),
+    world.dataYaml,
+    context.device,
   );
 
-  // }
-  if (_executionContext.mode === "DESKTOP") {
-    const steps = new WebSteps(this.page);
-    const locator = await steps.resolveLocator(locatorItem);
-    await steps.execute(action, locator, null, elementId, this.dataYaml, this.fileName, locatorItem);
-  } else if (_executionContext.mode === "MOBILE") {
-    const steps = new MobileSteps(this.driver);
-    const locator = await steps.resolveLocator(locatorItem);
-    await steps.execute(action, locator, null, elementId, this.dataYaml, this.fileName, locatorItem);
-  } else {
-    throw new Error(`Unsupported mode: ${_executionContext.mode}`);
-  }
+  const locator = await steps.resolveLocator(locatorItem);
+  await steps.execute(
+    action,
+    locator,
+    value,
+    elementId,
+    world.dataYaml,
+    world.fileName,
+    locatorItem,
+  );
+
+  return { value, isEnvFound };
+}
+
+Then(/^I (\w+)(?: to)? element ([\w-]+)$/, async function (action, elementId) {
+  await performElementAction(this, action, elementId, null);
   console.log(
     chalk.blue(
       `Action "${action}" performed on element "${elementId}" successfully.`,
@@ -96,38 +108,15 @@ Given(
   "I {word} {string} into element {word}",
   async function (action, value, elementId) {
     try {
-      const result = await genenal.processEnvVariable(value);
-      // value = await genenal.formaInput(value);
-      //  Detect current execution mode (DESKTOP or MOBILE)
-      const _executionContext = ManageMode.getExecutionContext();
-      // Retrieve locator object from YAML based on the device type
-      const locatorItem = await manageYamlFile.lookUpElementInYaml(
-        elementId,
-        this.dataYaml,
-        _executionContext.device,
-      );
-      // Execute the action depending on the current platform
-      if (_executionContext.mode === "DESKTOP") {
-        const steps = new WebSteps(this.page);
-        const locator = await steps.resolveLocator(locatorItem);
-        await steps.execute(action, locator, result.value, elementId, this.dataYaml, this.fileName, locatorItem);
-      } else if (_executionContext.mode === "MOBILE") {
-        const steps = new MobileSteps(this.driver);
-        const locator = await steps.resolveLocator(locatorItem);
-        await steps.execute(action, locator, result.value, elementId, this.dataYaml, this.fileName, locatorItem);
-      } else {
-        throw new Error(`Unsupported mode: ${_executionContext.mode}`);
-      }
-      value = result.found ? "***" : result.value; // Mask value in logs if it's from env variable
+      const res = await performElementAction(this, action, elementId, value);
+      const displayValue = res.isEnvFound ? "***" : res.value;
 
-      //  Log success message
       console.log(
         chalk.green(
-          `✅ Action "${action}" with value "${value}" performed on element "${elementId}" successfully.`,
+          `✅ Action "${action}" with value "${displayValue}" performed on element "${elementId}" successfully.`,
         ),
       );
     } catch (error) {
-      // 5️⃣ Catch and display any runtime errors
       console.error(
         chalk.red(
           `❌ Error performing action "${action}" on element "${elementId}": ${error.message}`,
@@ -169,53 +158,26 @@ Then(
   "I wait for element {word} to be {word}",
   async function (elementId, status) {
     try {
-      const _executionContext = ManageMode.getExecutionContext();
+      const { context, steps } = StepFactory.getContextAndSteps(this);
+
       const locatorItem = await manageYamlFile.lookUpElementInYaml(
         elementId,
         this.dataYaml,
-        _executionContext.device,
+        context.device,
       );
 
-      if (_executionContext.mode === "DESKTOP") {
-        const steps = new WebSteps(this.page);
-        const locator = await steps.resolveLocator(locatorItem);
-        try {
-          await steps.waitForStatus(
-            locator,
-            status,
-            locatorItem.timeout ? locatorItem.timeout : pageFixture.getTimeout(),
-            500,
-            1,
-            elementId,
-            this.dataYaml,
-            this.fileName,
-            locatorItem,
-          );
-        } catch (error) {
-          console.error(
-            chalk.red(
-              `Error waiting for status ${status} on locator ${JSON.stringify(locator)}: ${error.message}`,
-            ),
-          );
-          console.error(chalk.gray(error.stack));
-        }
-      } else if (_executionContext.mode === "MOBILE") {
-        const steps = new MobileSteps(this.driver);
-        const locator = await steps.resolveLocator(locatorItem);
-        await steps.waitForStatus(
-          locator,
-          status,
-          locatorItem.timeout ? locatorItem.timeout : pageFixture.getTimeout(),
-          500,
-          1,
-          elementId,
-          this.dataYaml,
-          this.fileName,
-          locatorItem,
-        );
-      } else {
-        throw new Error(`Unsupported mode: ${_executionContext.mode}`);
-      }
+      const locator = await steps.resolveLocator(locatorItem);
+      await steps.waitForStatus(
+        locator,
+        status,
+        locatorItem.timeout ? locatorItem.timeout : pageFixture.getTimeout(),
+        500,
+        1,
+        elementId,
+        this.dataYaml,
+        this.fileName,
+        locatorItem,
+      );
     } catch (error) {
       console.error(
         `Error in step 'I wait for element ${elementId} to be ${status}':`,

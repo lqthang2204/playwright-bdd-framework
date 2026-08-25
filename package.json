@@ -2,7 +2,8 @@
   "name": "playwright-cucumber-bdd",
   "version": "1.0.0",
   "scripts": {
-    "test": "node run-tests.js",
+      "validate:yaml": "node -e \"const fs=require('fs'),yaml=require('js-yaml'); fs.readdirSync('Resources/Pages',{recursive:true}).filter(f=>f.endsWith('.yaml')).forEach(f=>yaml.load(fs.readFileSync('Resources/Pages/'+f))); console.log('✅ All YAML files valid!');\"",
+      "test": "npm run validate:yaml && node run-tests.js",
     "postinstall": "npx playwright install",
     "debug": "node run-tests.js /Users/lequangthang/Playwright-workspace/playwright-bdd-framework/src/test/features/mobile/loginMobile.feature"
   },

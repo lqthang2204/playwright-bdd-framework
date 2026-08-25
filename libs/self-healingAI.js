@@ -59,26 +59,40 @@ async function getContent(page) {
   }
   
 }
+// function getCleanHtmlFromString(htmlString) {
+//   const cheerio = require('cheerio');
+//     const $ = cheerio.load(htmlString);
+//     const garbageTags = ['script', 'style', 'svg', 'noscript', 'meta', 'link', 'iframe', 'head', 'title', 'noscript'];
+//     garbageTags.forEach(tag => $(tag).remove());
+//     const allowedAttrs = [
+//         'id', 'name', 'type', 'aria-label', 'aria-labelledby', 'aria-describedby',
+//         'data-testid', 'data-cy', 'placeholder', 'role', 'value', 'title', 'href', 'for'
+//     ];
+//     $('*').each((i, el) => {
+//         const attrs = el.attribs;
+//         for (let attrName in attrs) {
+//             if (!allowedAttrs.includes(attrName)) {
+//                 $(el).removeAttr(attrName);
+//             }
+//         }
+//     });
+//     return $('body').html(); 
+// }
+// Trong libs/self-healingAI.js:
 function getCleanHtmlFromString(htmlString) {
-  const cheerio = require('cheerio');
+    const cheerio = require('cheerio');
     const $ = cheerio.load(htmlString);
-    const garbageTags = ['script', 'style', 'svg', 'noscript', 'meta', 'link', 'iframe', 'head', 'title', 'noscript'];
+    
+    // Loại bỏ thẻ rác
+    const garbageTags = ['script', 'style', 'svg', 'noscript', 'meta', 'link', 'iframe', 'head'];
     garbageTags.forEach(tag => $(tag).remove());
-    const allowedAttrs = [
-        'id', 'name', 'type', 'aria-label', 'aria-labelledby', 'aria-describedby',
-        'data-testid', 'data-cy', 'placeholder', 'role', 'value', 'title', 'href', 'for'
-    ];
-    $('*').each((i, el) => {
-        const attrs = el.attribs;
-        for (let attrName in attrs) {
-            if (!allowedAttrs.includes(attrName)) {
-                $(el).removeAttr(attrName);
-            }
-        }
-    });
-    return $('body').html(); 
-}
 
+    // Nếu có form hoặc container chính thì ưu tiên lấy container đó
+    const mainContainer = $('form, main, [role="main"]').first();
+    const targetHtml = mainContainer.length ? mainContainer.html() : $('body').html();
+    
+    return targetHtml;
+}
 
 module.exports = {
   generateLocatorFromAI,

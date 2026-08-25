@@ -14,7 +14,10 @@ class CustomWorld extends World {
   }
   async launchBrowser() {
     try {
-      this.browser, this.context, this.page = await manageStepsDefinitions.getPage();
+      const { browser, context, page } = await manageStepsDefinitions.getPage();
+      this.browser = browser;
+      this.context = context;
+      this.page = page;
       console.log('Browser, context, and page initialized successfully.');
     } catch (error) {
       console.error('Error initializing browser, context, or page:', error.message);

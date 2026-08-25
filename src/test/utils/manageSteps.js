@@ -102,7 +102,8 @@ class ManageStepsDefinitions {
       // console.log('Browser and page initialized successfully.');
       // return pageFixture.getPageFixture();
 
-      return browser, context, await context.newPage();
+      const page = await context.newPage();
+      return { browser, context, page };
     } catch (error) {
       console.error("Error initializing browser and page:", error.message);
       throw error;
@@ -157,7 +158,7 @@ class ManageStepsDefinitions {
   async instanceDriver(dataCapabilities, appiumServerUrl) {
     console.log("Capabilities:", dataCapabilities);
     if (appiumServerUrl === undefined) {
-      appiumServerUrl = process.env.APPIUM_SERVER_URL || "http://127.0.1:4723/";
+      appiumServerUrl = process.env.APPIUM_SERVER_URL || "http://127.0.0.1:4723/";
     }
 
     // Parse the URL to extract protocol, hostname, port, and path
