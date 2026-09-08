@@ -126,9 +126,9 @@ class BaseSteps {
                         default:
                             throw err;
                     }
-                    if(healedResult){
+                    if (healedResult) {
                         this.updateHealedLocator(locatorItem, dataYaml, elementId, newLocator);
-                        if(pageFixture.getConfig()?.selfHealing?.save_healed_to_yaml && fileName !== null){
+                        if (pageFixture.getConfig()?.selfHealing?.save_healed_to_yaml && fileName !== null) {
                             try {
                                 general.writeLocatorToFile(elementId, newLocator, "Resources/Pages/healingAI/", fileName);
                             } catch (writeErr) {
@@ -136,7 +136,7 @@ class BaseSteps {
                             }
                         }
                     }
-                    
+
                     return healedResult;
                 } catch (healErr) {
                     console.error(
@@ -239,22 +239,36 @@ class BaseSteps {
                 retry > 0 &&
                 self_healing.isSelfHealingAvailable() && pageFixture.getConfig().selfHealing.enabled
             ) {
-                console.log(
-                    chalk.yellow(
-                        `Attempting self-healing for locator ${JSON.stringify(locator)}...`,
-                    ),
-                );
+                let resolved = null;
+                let healedLocator = null;
+                let fromCache = false;
 
                 try {
-                    const runtimePage = this.page || this.driver || null;
-                    const newLocator = await self_healing.generateLocatorFromAI(
-                        error.message,
-                        runtimePage,
-                        locator,
-                        elementId,
-                    );
-                    const resolved = await this.resolveLocator(newLocator);
-                    // Retry with new locator (decrease retry count)
+                    // 1. Try to get the element from the cache file first
+                    if (pageFixture.getConfig()?.selfHealing?.save_healed_to_yaml && fileName !== null) {
+                        const existingLocator = await general.getLocatorFromCache(elementId, fileName, "Resources/Pages/healingAI/", ".yaml");
+                        if (existingLocator !== null) {
+                            healedLocator = existingLocator;
+                            fromCache = true;
+                        }
+                    }
+
+                    // 2. If not found in cache (or caching is disabled), perform actual self-healing
+                    if (healedLocator === null) {
+                        console.info(`Locator not found in cache. Attempting self-healing for locator ${JSON.stringify(locator)}...`);
+                        const runtimePage = this.page || this.driver || null;
+                        healedLocator = await self_healing.generateLocatorFromAI(
+                            error.message,
+                            runtimePage,
+                            locator,
+                            elementId,
+                        );
+                    }
+
+                    // 3. Resolve the locator
+                    resolved = await this.resolveLocator(healedLocator);
+
+                    // 4. Retry the action
                     const result = await this.waitForStatus(
                         resolved,
                         status,
@@ -266,12 +280,16 @@ class BaseSteps {
                         fileName,
                         locatorItem,
                     );
+
+                    // 5. Update the memory reference
                     if (result === true) {
-                        this.updateHealedLocator(locatorItem, dataYaml, elementId, newLocator);
+                        this.updateHealedLocator(locatorItem, dataYaml, elementId, healedLocator);
                     }
-                    if(pageFixture.getConfig()?.selfHealing?.save_healed_to_yaml && fileName !== null){
+
+                    // 6. Save to YAML if it was newly healed (not from cache) and caching is enabled
+                    if (!fromCache && pageFixture.getConfig()?.selfHealing?.save_healed_to_yaml && fileName !== null) {
                         try {
-                            general.writeLocatorToFile(elementId, newLocator, "Resources/Pages/healingAI/", fileName);
+                            general.writeLocatorToFile(elementId, healedLocator, "Resources/Pages/healingAI/", fileName);
                         } catch (writeErr) {
                             console.warn(`Failed to persist healed locator to YAML: ${writeErr.message}`);
                         }
@@ -279,10 +297,9 @@ class BaseSteps {
                     return result;
                 } catch (healError) {
                     console.error(chalk.red(`Self-healing failed: ${healError.message}`));
-                    throw error;
+                    throw error; // throw original
                 }
             }
-
             throw error; // rethrow if not healable
         }
     }

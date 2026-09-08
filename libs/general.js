@@ -154,40 +154,48 @@ async function highlightElement(locator) {
  * @param {string} name - Cache entry name.
  * @param {string} path - Target path.
  */
-async function CacheLocator(newLocator, name, path) {}
+async function CacheLocator(newLocator, name, path) { }
 
 /**
  * Retrieves a cached locator for an element ID from a specific YAML file.
- * @param {string} elemmentID - Target element ID to look up.
+ * @param {string} elementID - Target element ID to look up.
  * @param {string} fileName - YAML file name (without extension).
- * @param {string} folderPath - Folder path where cache files reside.
+ * @param {string} folderPath - Folder path where cache files reside (relative to project root).
  * @param {string} suffix - File extension (default: '.yaml').
+ * @param {string} device - Target device (default: 'DESKTOP').
  * @returns {Promise<object|null>} Locator object if found, otherwise null.
  */
-async function getLocatorFromCache(elemmentID, fileName, folderPath = "../Resources/Pages/healingAI/", suffix = ".yaml") {
+async function getLocatorFromCache(elementID, fileName, folderPath = "Resources/Pages/healingAI/", suffix = ".yaml", device = "DESKTOP") {
   try {
-    const filePath = path.resolve(__dirname, `${folderPath}${fileName}${suffix}`);
-    if (!fs.existsSync(filePath)) {
+    // Resolve relative to project root (process.cwd()) to correctly handle paths like "Resources/Pages/..."
+    const filePath = path.resolve(process.cwd(), `${folderPath}${fileName}${suffix}`);
+    
+    // Asynchronously check if file exists
+    try {
+      await fs.promises.access(filePath, fs.constants.F_OK);
+    } catch {
       console.log(`Cache file not found: ${filePath}`);
       return null;
     }
 
-    const fileContent = fs.readFileSync(filePath, "utf8");
+    const fileContent = await fs.promises.readFile(filePath, "utf8");
     const data = yaml.load(fileContent);
 
-    if (data && data.elements && Array.isArray(data.elements) && data.elements.length > 0) {
-      const element = data.elements.find((el) => el.id === elemmentID);
+    if (data && Array.isArray(data.elements) && data.elements.length > 0) {
+      const element = data.elements.find((el) => el.id === elementID);
       if (!element) {
-        console.log(`Element ID "${elemmentID}" not found in cache file: ${filePath}`);
+        console.log(`Element ID "${elementID}" not found in cache file: ${filePath}`);
         return null;
       }
 
-      if (element.locators && Array.isArray(element.locators) && element.locators.length > 0) {
-        return element.locators[0]; // Return the primary locator (typically DESKTOP)
+      if (Array.isArray(element.locators) && element.locators.length > 0) {
+        // Try to find the locator for the specific device, fallback to the first one
+        const targetLocator = element.locators.find((l) => l.device === device) || element.locators[0];
+        return targetLocator;
       }
     }
 
-    console.log(`No locators found in cache file: ${filePath}`);
+    console.log(`No valid locators found for "${elementID}" in cache file: ${filePath}`);
     return null;
   } catch (error) {
     console.error(`Error reading locator from cache: ${error.message}`);
@@ -614,7 +622,7 @@ async function acquireFileLock(
       // =======================================================
       if (
         Date.now() -
-          startTime >=
+        startTime >=
         timeoutMs
       ) {
         throw new Error(
@@ -668,10 +676,6 @@ function delay(ms) {
   );
 }
 
-module.exports = {
-  writeLocatorToFile
-};
-
 
 
 module.exports = {
@@ -682,5 +686,6 @@ module.exports = {
   highlightElement,
   writeLocatorToFile,
   getLocatorFromCache,
+
 };
 

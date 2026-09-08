@@ -27,7 +27,7 @@ Feature: Login functionality for tech one web
     And I click element Add-Application-button
     # And I wait 100 seconds
 
-  @T1
+  @T2
   Scenario: Open application
     Given I navigate to url ENV.URL_TECH
     # And I verify title this page is equal "Log On - CiA"
