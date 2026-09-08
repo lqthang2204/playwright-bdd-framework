@@ -25,7 +25,7 @@ elements:
           - type: locator
             value: a
             filter:
-              hasText: Applications Admissions and Enrolments - SM
+              hasText: Applications Admissions and Enrolments - COPY - SM
       - device: ANDROID
         type: id
         value: com.android.chrome:id/negative_button

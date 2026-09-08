@@ -1,6 +1,7 @@
 const path = require("path");
 const fs = require("fs");
 const yaml = require("js-yaml");
+const { fi } = require("zod/v4/locales");
 require("dotenv").config();
 
 /**
@@ -203,111 +204,475 @@ async function getLocatorFromCache(elemmentID, fileName, folderPath = "../Resour
  * @param {string} name - Base name of the YAML file.
  * @returns {Promise<boolean>} True if written successfully, false if an error occurred.
  */
-async function writeLocatorToFile(elementID, locator, folderPath = "Resources/Pages/healingAI/", name = "healed_elements") {
+
+const fsp = fs.promises;
+
+/**
+ * Store a successfully validated AI-healed locator into YAML.
+ *
+ * Flow:
+ * 1. Validate locator
+ * 2. Acquire async file lock
+ * 3. Read the latest YAML
+ * 4. Update / add locator
+ * 5. Write YAML through a temporary file
+ * 6. Release lock
+ *
+ * This is designed to support parallel Playwright/Cucumber workers.
+ */
+async function writeLocatorToFile(
+  elementID,
+  locator,
+  folderPath = "Resources/Pages/healingAI/",
+  name = "healed_elements"
+) {
+  const LOCK_TIMEOUT_MS = 10_000;
+  const LOCK_RETRY_MS = 100;
+  const STALE_LOCK_MS = 60_000;
+
+  let lockPath = null;
+
   try {
-    if (!elementID || !locator) {
-      console.warn("[writeLocatorToFile] elementID or locator is missing. Skipping write.");
+    // =========================================================
+    // 1. Validate input
+    // =========================================================
+    if (
+      !elementID ||
+      !locator ||
+      typeof locator !== "object"
+    ) {
+      console.warn(
+        "[writeLocatorToFile] elementID or locator is missing/invalid. Skipping write."
+      );
+
       return false;
     }
 
-    // 1. Resolve folder path (supports both absolute and project-relative paths)
+    // =========================================================
+    // 2. Resolve target directory
+    // =========================================================
     let targetDir;
-    if (typeof folderPath === "string" && path.isAbsolute(folderPath)) {
+
+    if (
+      typeof folderPath === "string" &&
+      path.isAbsolute(folderPath)
+    ) {
       targetDir = folderPath;
     } else {
-      targetDir = path.resolve(process.cwd(), typeof folderPath === "string" ? folderPath : "Resources/Pages/healingAI/");
+      targetDir = path.resolve(
+        process.cwd(),
+        typeof folderPath === "string"
+          ? folderPath
+          : "Resources/Pages/healingAI/"
+      );
     }
 
-    // Ensure target directory exists safely
-    if (!fs.existsSync(targetDir)) {
-      fs.mkdirSync(targetDir, { recursive: true });
-    }
+    await fsp.mkdir(targetDir, {
+      recursive: true
+    });
 
-    // 2. Sanitize file name safely
-    const nameStr = typeof name === "string" ? name : String(name || "healed_elements");
-    const sanitizedFileName = nameStr.replace(/\.ya?ml$/i, "");
-    const filePath = path.join(targetDir, `${sanitizedFileName}.yaml`);
+    // =========================================================
+    // 3. Resolve YAML file
+    // =========================================================
+    const nameStr =
+      typeof name === "string"
+        ? name
+        : String(name || "healed_elements");
 
-    // 3. Build locator chain and device object
-    const device = (locator && locator.device) || "DESKTOP";
+    const sanitizedFileName =
+      nameStr.replace(/\.ya?ml$/i, "");
+
+    const filePath = path.join(
+      targetDir,
+      `${sanitizedFileName}.yaml`
+    );
+
+    lockPath = `${filePath}.lock`;
+
+    // =========================================================
+    // 4. Build device
+    // =========================================================
+    const device =
+      locator.device || "DESKTOP";
+
+    // =========================================================
+    // 5. Build locator chain
+    // =========================================================
     let chain = [];
-    if (locator.chain && Array.isArray(locator.chain)) {
+
+    if (Array.isArray(locator.chain)) {
       chain = locator.chain;
-    } else if (locator.locator?.chain && Array.isArray(locator.locator.chain)) {
+    } else if (
+      locator.locator &&
+      Array.isArray(locator.locator.chain)
+    ) {
       chain = locator.locator.chain;
     } else {
-      const chainNode = { ...(typeof locator === "object" ? locator : {}) };
+      const chainNode = {
+        ...locator
+      };
+
       delete chainNode.device;
       delete chainNode.id;
       delete chainNode.confidence;
       delete chainNode.reasoning;
+
       chain = [chainNode];
+    }
+
+    // =========================================================
+    // 6. Validate locator chain
+    // =========================================================
+    if (
+      !Array.isArray(chain) ||
+      chain.length === 0
+    ) {
+      console.warn(
+        `[writeLocatorToFile] Invalid locator chain for "${elementID}".`
+      );
+
+      return false;
     }
 
     const locatorEntry = {
       device,
-      chain,
+      chain
     };
 
+    // =========================================================
+    // 7. Build description
+    // =========================================================
     const description = locator.reasoning
-      ? `AI Healed (${locator.confidence || "N/A"}): ${locator.reasoning}`
+      ? `AI Healed (${locator.confidence ?? "N/A"}): ${locator.reasoning}`
       : "Self-healed locator";
 
-    // 4. Load existing YAML file if it exists to merge elements without overwriting
-    let existingData = { elements: [] };
-    if (fs.existsSync(filePath)) {
-      try {
-        const fileContent = fs.readFileSync(filePath, "utf8");
-        const parsed = yaml.load(fileContent);
-        if (parsed && Array.isArray(parsed.elements)) {
-          existingData = parsed;
-        }
-      } catch (readErr) {
-        console.warn(`[writeLocatorToFile] Warning reading existing file "${filePath}": ${readErr.message}. Creating new.`);
+    // =========================================================
+    // 8. Acquire async lock
+    // =========================================================
+    await acquireFileLock(
+      lockPath,
+      LOCK_TIMEOUT_MS,
+      LOCK_RETRY_MS,
+      STALE_LOCK_MS
+    );
+
+    console.log(
+      `[writeLocatorToFile] 🔒 Lock acquired: ${filePath}`
+    );
+
+    // =========================================================
+    // 9. IMPORTANT:
+    //    Read YAML AFTER acquiring the lock
+    // =========================================================
+    let existingData = {
+      elements: []
+    };
+
+    try {
+      const fileContent =
+        await fsp.readFile(
+          filePath,
+          "utf8"
+        );
+
+      const parsed =
+        yaml.load(fileContent);
+
+      if (
+        parsed &&
+        Array.isArray(parsed.elements)
+      ) {
+        existingData = parsed;
+      }
+    } catch (readError) {
+      if (readError.code !== "ENOENT") {
+        console.warn(
+          `[writeLocatorToFile] Warning reading "${filePath}": ${readError.message}`
+        );
       }
     }
 
-    // 5. Update existing element or append a new element entry
-    const existingElement = existingData.elements.find((el) => el.id === elementID);
+    // =========================================================
+    // 10. Find existing element
+    // =========================================================
+    let existingElement =
+      existingData.elements.find(
+        (element) =>
+          element.id === elementID
+      );
+
+    // =========================================================
+    // 11. Existing element
+    // =========================================================
     if (existingElement) {
-      existingElement.description = description;
+      existingElement.description =
+        description;
+
       existingElement.cache = true;
-      existingElement.timeout = existingElement.timeout || 5000;
-      if (!Array.isArray(existingElement.locators)) {
+
+      existingElement.timeout ??= 5000;
+
+      if (
+        !Array.isArray(
+          existingElement.locators
+        )
+      ) {
         existingElement.locators = [];
       }
-      const existingLocIndex = existingElement.locators.findIndex((l) => l.device === device);
+
+      // Find locator for same device
+      const existingLocIndex =
+        existingElement.locators.findIndex(
+          (locatorItem) =>
+            locatorItem.device === device
+        );
+
+      // =======================================================
+      // Same device exists → replace locator
+      // =======================================================
       if (existingLocIndex !== -1) {
-        existingElement.locators[existingLocIndex] = locatorEntry;
-      } else {
-        existingElement.locators.push(locatorEntry);
+        existingElement.locators[
+          existingLocIndex
+        ] = locatorEntry;
+
+        console.log(
+          `[writeLocatorToFile] 🔄 Updated "${elementID}" locator for ${device}.`
+        );
       }
-    } else {
+
+      // =======================================================
+      // Device does not exist → add locator
+      // =======================================================
+      else {
+        existingElement.locators.push(
+          locatorEntry
+        );
+
+        console.log(
+          `[writeLocatorToFile] ➕ Added ${device} locator for "${elementID}".`
+        );
+      }
+    }
+
+    // =========================================================
+    // 12. New element
+    // =========================================================
+    else {
       existingData.elements.push({
         id: elementID,
         description,
         cache: true,
         timeout: 5000,
-        locators: [locatorEntry],
+        locators: [
+          locatorEntry
+        ]
       });
+
+      console.log(
+        `[writeLocatorToFile] ➕ Added new healed element "${elementID}".`
+      );
     }
 
-    // 6. Serialize to YAML format and write to disk
-    const yamlContent = yaml.dump(existingData, {
-      noRefs: true,
-      indent: 2,
-      lineWidth: -1,
-    });
+    // =========================================================
+    // 13. Convert object to YAML
+    // =========================================================
+    const yamlContent =
+      yaml.dump(existingData, {
+        noRefs: true,
+        indent: 2,
+        lineWidth: -1
+      });
 
-    fs.writeFileSync(filePath, yamlContent, "utf8");
-    console.log(`[writeLocatorToFile] ✅ Healed locator for "${elementID}" written to ${filePath}`);
+    // =========================================================
+    // 14. Write temporary file
+    // =========================================================
+    const tempFilePath =
+      `${filePath}.${process.pid}.${Date.now()}.tmp`;
+
+    await fsp.writeFile(
+      tempFilePath,
+      yamlContent,
+      "utf8"
+    );
+
+    // =========================================================
+    // 15. Replace YAML with temp file
+    // =========================================================
+    await fsp.rename(
+      tempFilePath,
+      filePath
+    );
+
+    console.log(
+      `[writeLocatorToFile] ✅ Healed locator for "${elementID}" written to ${filePath}`
+    );
+
     return true;
   } catch (error) {
-    // Catch all errors to prevent disrupting ongoing test execution
-    console.error(`[writeLocatorToFile] ❌ Error writing locator to file: ${error.message}`);
+    console.error(
+      `[writeLocatorToFile] ❌ Error: ${error.message}`
+    );
+
     return false;
+  } finally {
+    // =========================================================
+    // 16. ALWAYS release lock
+    // =========================================================
+    if (lockPath) {
+      await releaseFileLock(lockPath);
+    }
   }
 }
+
+
+/**
+ * Acquire an asynchronous file lock.
+ *
+ * The lock is created using "wx".
+ *
+ * "wx" means:
+ * - Create the file
+ * - Fail if the file already exists
+ *
+ * This allows multiple Playwright workers to
+ * safely coordinate access to the YAML file.
+ */
+async function acquireFileLock(
+  lockPath,
+  timeoutMs,
+  retryMs,
+  staleLockMs
+) {
+  const startTime =
+    Date.now();
+
+  while (true) {
+    try {
+      // =======================================================
+      // Try to create lock
+      // =======================================================
+      const handle =
+        await fsp.open(
+          lockPath,
+          "wx"
+        );
+
+      try {
+        await handle.writeFile(
+          JSON.stringify({
+            pid: process.pid,
+            createdAt: Date.now()
+          })
+        );
+      } finally {
+        await handle.close();
+      }
+
+      return;
+    } catch (error) {
+      // =======================================================
+      // Lock already exists
+      // =======================================================
+      if (error.code !== "EEXIST") {
+        throw error;
+      }
+
+      // =======================================================
+      // Check stale lock
+      // =======================================================
+      try {
+        const stats =
+          await fsp.stat(
+            lockPath
+          );
+
+        const lockAge =
+          Date.now() -
+          stats.mtimeMs;
+
+        if (
+          lockAge >
+          staleLockMs
+        ) {
+          console.warn(
+            `[writeLocatorToFile] ⚠️ Removing stale lock: ${lockPath}`
+          );
+
+          await fsp.unlink(
+            lockPath
+          );
+
+          continue;
+        }
+      } catch (statError) {
+        // Another worker may have
+        // removed the lock already.
+      }
+
+      // =======================================================
+      // Check timeout
+      // =======================================================
+      if (
+        Date.now() -
+          startTime >=
+        timeoutMs
+      ) {
+        throw new Error(
+          `Could not acquire file lock within ${timeoutMs}ms: ${lockPath}`
+        );
+      }
+
+      // =======================================================
+      // Wait asynchronously
+      // =======================================================
+      await delay(
+        retryMs
+      );
+    }
+  }
+}
+
+
+/**
+ * Release file lock.
+ */
+async function releaseFileLock(
+  lockPath
+) {
+  try {
+    await fsp.unlink(
+      lockPath
+    );
+
+    console.log(
+      `[writeLocatorToFile] 🔓 Lock released: ${lockPath}`
+    );
+  } catch (error) {
+    // Lock may already have been removed.
+    if (error.code !== "ENOENT") {
+      console.warn(
+        `[writeLocatorToFile] ⚠️ Failed to release lock "${lockPath}": ${error.message}`
+      );
+    }
+  }
+}
+
+
+/**
+ * Non-blocking async delay.
+ */
+function delay(ms) {
+  return new Promise(
+    (resolve) =>
+      setTimeout(resolve, ms)
+  );
+}
+
+module.exports = {
+  writeLocatorToFile
+};
+
+
 
 module.exports = {
   checkFileExists,
