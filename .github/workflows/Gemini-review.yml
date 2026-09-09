@@ -1,4 +1,4 @@
-name: Automated Code Review by Gemini (Free)
+name: Automated Code Review by Gemini (Free Tier)
 
 on:
   pull_request:
@@ -20,10 +20,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Node.js
+      - name: Setup Node.js (Updated to Node 24)
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
 
       - name: Install Required NodeJS Dependencies
         run: npm install @actions/github @actions/core @google/genai
@@ -37,11 +37,12 @@ jobs:
             const fs = require('fs');
             const { GoogleGenAI } = require('@google/genai');
 
-            // Khởi tạo Gemini AI Client
+            // Khởi tạo Gemini AI Client với API Key bảo mật
             const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
             const { owner, repo, number: pull_number } = context.issue;
 
             try {
+              // 1. Lấy dữ liệu thay đổi (git diff) của PR từ GitHub API
               const response = await github.rest.pulls.get({
                 owner,
                 repo,
@@ -55,6 +56,7 @@ jobs:
                 return;
               }
 
+              // Cắt bớt độ dài mã nguồn nếu quá dài (Tránh tràn giới hạn token của API)
               const truncatedDiff = diffData.substring(0, 30000);
 
               const prompt = `You are a Senior Automation QA Engineer. Please review the following git diff from a Playwright BDD framework project. 
@@ -63,14 +65,15 @@ jobs:
               Git diff:
               ${truncatedDiff}`;
 
-              // Gọi mô hình gemini-2.5-flash (Miễn phí và rất nhanh)
+              // 2. Gọi mô hình gemini-3.6-flash theo khuyến nghị mới nhất từ Google
               const aiResponse = await ai.models.generateContent({
-                model: 'gemini-2.5-flash',
+                model: 'gemini-3.6-flash',
                 contents: prompt,
               });
 
               const reviewComment = aiResponse.text;
 
+              // 3. Đăng kết quả phân tích trực tiếp lên bình luận của Pull Request
               await github.rest.issues.createComment({
                 owner,
                 repo,
@@ -81,6 +84,6 @@ jobs:
               console.log("Successfully posted the Gemini review comment!");
 
             } catch (error) {
-              console.error("Error occurred:", error);
+              console.error("Error occurred during workflow execution:", error);
               core.setFailed(error.message);
             }
