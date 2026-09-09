@@ -37,12 +37,12 @@ jobs:
             const fs = require('fs');
             const { GoogleGenAI } = require('@google/genai');
 
-            // Khởi tạo Gemini AI Client với API Key bảo mật
+            // Initialize Gemini AI Client with secure API Key
             const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
             const { owner, repo, number: pull_number } = context.issue;
 
             try {
-              // 1. Lấy dữ liệu thay đổi (git diff) của PR từ GitHub API
+              // 1. Fetch the git diff data of the PR from the GitHub API
               const response = await github.rest.pulls.get({
                 owner,
                 repo,
@@ -56,7 +56,7 @@ jobs:
                 return;
               }
 
-              // Cắt bớt độ dài mã nguồn nếu quá dài (Tránh tràn giới hạn token của API)
+              // Truncate source code if it exceeds limits (Prevents API token overflow)
               const truncatedDiff = diffData.substring(0, 30000);
 
               const prompt = `You are a Senior Automation QA Engineer. Please review the following git diff from a Playwright BDD framework project. 
@@ -65,7 +65,7 @@ jobs:
               Git diff:
               ${truncatedDiff}`;
 
-              // 2. Gọi mô hình gemini-3.6-flash theo khuyến nghị mới nhất từ Google
+              // 2. Call the gemini-3.6-flash model as required by Google
               const aiResponse = await ai.models.generateContent({
                 model: 'gemini-3.6-flash',
                 contents: prompt,
@@ -73,7 +73,7 @@ jobs:
 
               const reviewComment = aiResponse.text;
 
-              // 3. Đăng kết quả phân tích trực tiếp lên bình luận của Pull Request
+              // 3. Post the analysis results directly onto the Pull Request comment section
               await github.rest.issues.createComment({
                 owner,
                 repo,
