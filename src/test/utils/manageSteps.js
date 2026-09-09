@@ -8,7 +8,7 @@ const manageYamlFile = require("../../../libs/ManageYamlFile.js");
 const { type } = require("os");
 
 class ManageStepsDefinitions {
-  
+
   /**
    * Resolve a URL based on environment config.
    */
@@ -75,10 +75,10 @@ class ManageStepsDefinitions {
   /**
    * Launch the browser, create a context, and initialize the page.
    */
-  async getPage() {
+  async getPage(config) {
     try {
-      const config = pageFixture.getConfig();
-      const browserType = this.getBrowserType();
+      // const config = pageFixture.getConfig();
+      const browserType = this.getBrowserType(config);
       const launchOptions = {
         headless: config.headless ?? true,
         executablePath: config.executablePath ?? undefined,
@@ -113,8 +113,8 @@ class ManageStepsDefinitions {
   /**
    * Get the browser type based on the configuration.
    */
-  getBrowserType() {
-    const browser = pageFixture.getConfig().browser;
+  getBrowserType(config) {
+    const browser = config.browser;
     switch (browser) {
       case "chromium":
         return chromium;
@@ -126,7 +126,7 @@ class ManageStepsDefinitions {
         throw new Error(`Unsupported browser type: ${browser}`);
     }
   }
-  async performActionOnElement(action, elementName, page, dataYaml, value= null) {
+  async performActionOnElement(action, elementName, page, dataYaml, value = null) {
     console.log(elementName, action);
     const locator = await this.buildLocator(
       elementName.locator,

@@ -16,9 +16,9 @@ const screenshots = path.resolve(__dirname, "./reports/screenshots");
 // Determine feature folder based on mode
 let featureFolder = path.resolve(__dirname, "./src/test/features/");
 if (config.mode === "mobile") {
-    featureFolder = featureFolder +"/mobile/";
+    featureFolder = featureFolder + "/mobile/";
 } else if (config.mode === "desktop") {
-    featureFolder = featureFolder+"/desktop/";
+    featureFolder = featureFolder + "/desktop/";
 }
 
 // Get tags from the environment variable or fallback to config.json
@@ -43,6 +43,7 @@ try {
     execSync(command, { stdio: "inherit" });
 } catch (error) {
     console.error("Error running tests:", error.message);
+    process.exitCode = error.status || 1;
 }
 
 // Conditionally run the posttest script
@@ -62,7 +63,7 @@ if (config.is_generate_report) {
 function deleteFile(filePath) {
     if (fs.existsSync(filePath)) {
         const stats = fs.statSync(filePath);
-        if(stats.isDirectory){
+        if (stats.isDirectory()) {
             try {
                 fs.rmSync(filePath, { recursive: true, force: true });
                 console.log("Directory deleted successfully:", filePath);
@@ -71,7 +72,7 @@ function deleteFile(filePath) {
                 console.error("Error deleting directory:", err);
             }
         }
-        else{
+        else {
             console.log("Report file exists:", filePath);
             // Delete the file
             try {
@@ -81,7 +82,7 @@ function deleteFile(filePath) {
                 console.error("Error deleting file:", err);
             }
         }
-        
+
     } else {
         console.log("File does not exist:", filePath);
     }
