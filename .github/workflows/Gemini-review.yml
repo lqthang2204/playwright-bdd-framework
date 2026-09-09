@@ -1,0 +1,89 @@
+name: Automated Code Review by Gemini (Free Tier)
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    branches:
+      - main
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  review:
+    name: Gemini Code Reviewer
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js (Updated to Node 24)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Install Required NodeJS Dependencies
+        run: npm install @actions/github @actions/core @google/genai
+
+      - name: Run AI Code Review
+        uses: actions/github-script@v7
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        with:
+          script: |
+            const fs = require('fs');
+            const { GoogleGenAI } = require('@google/genai');
+
+            // Initialize Gemini AI Client with secure API Key
+            const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+            const { owner, repo, number: pull_number } = context.issue;
+
+            try {
+              // 1. Fetch the git diff data of the PR from the GitHub API
+              const response = await github.rest.pulls.get({
+                owner,
+                repo,
+                pull_number,
+                mediaType: { format: 'diff' },
+              });
+              const diffData = response.data;
+
+              if (!diffData || diffData.trim().length === 0) {
+                console.log("No source code changes found in this PR.");
+                return;
+              }
+
+              // Truncate source code if it exceeds limits (Prevents API token overflow)
+              const truncatedDiff = diffData.substring(0, 30000);
+
+              const prompt = `You are a Senior Automation QA Engineer. Please review the following git diff from a Playwright BDD framework project. 
+              Look for async/await issues, parallel execution flaws, or architectural bad practices. Keep your response concise and professional in English.
+              
+              Git diff:
+              ${truncatedDiff}`;
+
+              // 2. Call the gemini-3.6-flash model as required by Google
+              const aiResponse = await ai.models.generateContent({
+                model: 'gemini-3.6-flash',
+                contents: prompt,
+              });
+
+              const reviewComment = aiResponse.text;
+
+              // 3. Post the analysis results directly onto the Pull Request comment section
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: pull_number,
+                body: `### 🤖 Gemini AI Code Reviewer Report\n\n${reviewComment}`,
+              });
+              
+              console.log("Successfully posted the Gemini review comment!");
+
+            } catch (error) {
+              console.error("Error occurred during workflow execution:", error);
+              core.setFailed(error.message);
+            }

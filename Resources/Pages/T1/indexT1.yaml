@@ -18,14 +18,14 @@ elements:
   - id: Application-option
     description: Application option in menu
     cache: true
-    timeout: 5000
+    timeout: 60000
     locators:
       - device: DESKTOP
         chain:
           - type: locator
             value: a
             filter:
-              hasText: Applications Admissions and
+              hasText: Applications Admissions and Enrolments - COPY - SM
       - device: ANDROID
         type: id
         value: com.android.chrome:id/negative_button

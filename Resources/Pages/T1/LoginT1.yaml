@@ -34,7 +34,7 @@ elements:
         chain:
           - type: GETBYROLE
             role: textbox
-            name: User name or email address
+            name: User name or email address1
       - device: IOS
         type: ACCESSIBILITY_ID
         value: Add alarm
@@ -50,7 +50,7 @@ elements:
         chain:
           - type: GETBYROLE
             role: textbox
-            name: Password
+            name: Passwords
       - device: IOS
         type: ACCESSIBILITY_ID
         value: Add alarm

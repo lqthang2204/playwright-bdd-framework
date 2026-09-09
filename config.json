@@ -4,7 +4,9 @@
   "tags": "@T1",
   "is_generate_report": true,
   "headless": false,
-  "parallel":2,
+  "cached_locators": false,
+  "highlight_element": true,
+  "parallel": 2,
   "environments": [
     {
       "name": "QA",
@@ -14,7 +16,6 @@
         "api": "https://api.qa.example.com",
         "KodeIT": "https://www.letskodeit.com/practice",
         "playwright": "https://playwright.dev"
-
       },
       "screenshotOnFailure": true
     },
@@ -37,10 +38,18 @@
       "screenshotOnFailure": true
     }
   ],
+  "selfHealing": {
+    "enabled": true,
+    "provider": "ollama",
+    "host": "http://localhost:11434",
+    "model": "qwen2.5-coder:1.5b",
+    "max_retries": 1,
+    "save_healed_to_yaml": true
+  },
   "remote": false,
   "remote_path_config": "remote_config.json",
   "browser": "chromium",
-  "setDefaultTimeout": 180000,
+  "setDefaultTimeout": 120000,
   "executablePath": null,
   "userDataDir": "/tmp/chrome-user-data",
   "ignoreDefaultArgs": [
@@ -84,7 +93,10 @@
       }
     },
     "from": "automation@test.com",
-    "to": ["peter@example.com", "qa-team@example.com"],
+    "to": [
+      "peter@example.com",
+      "qa-team@example.com"
+    ],
     "subject": "Playwright Test Execution Report",
     "attachReport": true,
     "reportPath": "./Template/index.html"

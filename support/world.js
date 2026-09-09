@@ -1,4 +1,4 @@
-const { setWorldConstructor, World , setDefaultTimeout} = require('@cucumber/cucumber');
+const { setWorldConstructor, World, setDefaultTimeout } = require('@cucumber/cucumber');
 const { chromium, firefox, webkit, devices } = require('playwright');
 const manageStepsDefinitions = require('../src/test/utils/manageSteps.js');
 const pageFixture = require('./pageFixture.js'); // Adjusted path
@@ -14,21 +14,29 @@ class CustomWorld extends World {
   }
   async launchBrowser() {
     try {
-      this.browser, this.context, this.page = await manageStepsDefinitions.getPage();
+      const { browser, context, page } = await manageStepsDefinitions.getPage(this.config);
+      this.browser = browser;
+      this.context = context;
+      this.page = page;
       console.log('Browser, context, and page initialized successfully.');
     } catch (error) {
       console.error('Error initializing browser, context, or page:', error.message);
       throw error;
     }
   }
-  
- async launchApplication(dataCapabilities, appiumServerUrl) {
-   const config = pageFixture.getConfig();
-   if(config.mode === 'mobile'){
-      this.driver = await manageStepsDefinitions.instanceDriver(dataCapabilities, appiumServerUrl);
-   }else{
-    throw new Error('Launching application is only supported in mobile mode');
-   }
- }
+  async launchApplication(dataCapabilities, appiumServerUrl) {
+
+    if (this.config.mode !== 'mobile') {
+      throw new Error(
+        'Launching application is only supported in mobile mode'
+      );
+    }
+
+    this.driver =
+      await manageStepsDefinitions.instanceDriver(
+        dataCapabilities,
+        appiumServerUrl
+      );
+  }
 }
 setWorldConstructor(CustomWorld);

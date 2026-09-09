@@ -119,21 +119,25 @@ AfterStep(async function (step) {
 
 // After: Runs after each scenario
 After(async function () {
- 
+  console.log('Scenario teardown: Closing browser/page/driver...');
+  try {
+    if (this.page) {
+      await this.page.close();
+    }
+    if (this.context) {
+      await this.context.close();
+    }
+    if (this.browser) {
+      await this.browser.close();
+    }
+    if (this.driver && typeof this.driver.deleteSession === 'function') {
+      await this.driver.deleteSession();
+    }
+  } catch (error) {
+    logError('Error during scenario teardown', error);
+  }
 });
+
 AfterAll(async function () {
-  // console.log('Scenario teardown: Closing browser...');
-  // try {
-  //   if (this.page) {
-  //     await this.page.close();
-  //   }
-  //   if (this.context) {
-  //     await this.context.close();
-  //   }
-  //   if (this.browser) {
-  //     await this.browser.close();
-  //   }
-  // } catch (error) {
-  //   logError('Error during browser teardown', error);
-  // }
+  console.log('Global setup teardown completed.');
 });
